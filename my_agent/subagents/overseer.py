@@ -1,7 +1,7 @@
 from google.adk.agents import LlmAgent
 from ..config import MODEL, OVERSEER_INSTRUCTION
-from .qa import qa_agent
-from .ticketstatus import ticketstatus_agent
+from qa import qa_agent
+from ticketstatus import ticketstatus_agent
 
 overseer_agent = LlmAgent(
     model=MODEL,

@@ -1,4 +1,3 @@
-from .subagents import overseer_agent
+from subagents import greet_and_assist_agent
 
-root_agent = overseer_agent
-
+root_agent = greet_and_assist_agent
