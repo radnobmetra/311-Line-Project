@@ -1,6 +1,6 @@
 from google.adk.agents import LlmAgent
 from ..config import MODEL, QA_INSTRUCTION
-from tools.lookup import search_docs
+from .tools.lookup import search_docs
 
 qa_agent = LlmAgent(
     model=MODEL,
