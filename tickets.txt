@@ -1,0 +1,13 @@
+Ticket Database:
+
+Ticket #: 14642
+Date Issued: 12/25/2025
+Status: Pending
+Inquery: Pothole on S. Watt Ave.
+Date Complete: N/A
+
+Ticket #: 45621
+Date Issued: 4/15/2026
+Status: Complete
+Inquery: Lost Dog in Oak Park.
+Date Complete: 4/16/2026
