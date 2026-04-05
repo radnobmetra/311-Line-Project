@@ -1,23 +1,19 @@
 import json
 
+#kyra and jimson
 def get_ticket_status(ticketNum:str) -> str:
-    
-    ticketStatus = 'no ticket found'
 
     #load ticket objects 
-    with open('tickets.json') as f:
+    with open('tickets.json', "r") as f:
         tickets = json.load(f)
 
-    #try to find ticket with given ticket number. If ticket is found, return its status.
-    #if ticket with correct ticket number isn't found, return 'no ticket found'
+    #try to find ticket with given ticket number. If ticket is found, return its chunk/ticket.
 
     for ticket in tickets['tickets']:
         if ticket['Ticket number'] == ticketNum:
-            ticketStatus = ticket['Status']
-            break
+            return ticket
 
     f.close() 
 
-    return(ticketStatus)
-
-#can edit this to make it return more information by chunking and editing configs
+ #if ticket with correct ticket number isn't found, return 'no ticket found'
+    return 'no ticket found'
