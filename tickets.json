@@ -1,0 +1,23 @@
+{
+    "tickets":
+    [
+        {
+            "Subject": "Broken streetlight",
+            "Ticket number": "1234",
+            "Description": "There is a broken streetlight on 1234 Example St.",
+            "Status": "Resolved"
+        },
+        {
+            "Subject": "Fallen tree in road",
+            "Ticket number": "5678",
+            "Description": "There is a fallen tree branch partially blocking the road at 5678 Some Rd.",
+            "Status": "Not resolved"
+        },
+        {
+            "Subject": "MALFORMED",
+            "Ticket number": "0123",
+            "Description": "MALFORMED",
+            "Status": "MALFORMED"
+        }
+    ]
+}
