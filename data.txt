@@ -13,3 +13,6 @@ Name: Peter
 Favorite Food: Apple
 Color: Yellow
 Age: 3
+
+3.
+Sacramento's trash day is every Wednesday.
