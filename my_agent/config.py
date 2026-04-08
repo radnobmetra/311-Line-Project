@@ -81,3 +81,7 @@ Rules:
 - If nothing is found, then say the ticket does not exist.
 - If the question is not about tickets, transfer to the overseer agent.
 """
+
+LOOKUP_INSTRUCTION = """
+Your job is to look up certain info.
+"""
