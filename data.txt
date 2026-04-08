@@ -1,15 +1,570 @@
-List of Dogs:
+
+  Zoning and Entitlements
+
+The City of Sacramento, Planning Division, reviews development proposals
+for consistency with adopted policy, development standards, and design
+guidelines.  Some development projects require the submittal of a
+planning application to approve a planning permit, also referred to as
+an "entitlement."  Depending on the scope of the project, a planning
+application may require discretionary or ministial review, and may be
+decided at a staff level or require a public hearing. 
+
+To learn more about the most common types of planning application,
+please visit the Entitlements <https://www.cityofsacramento.gov/
+community-development/planning/zoning-and-entitlements/entitlements> page.
+
+To look-up the zoning designation for a piece of property, please visit
+the City’s online Land Information Lookup Application <https://
+experience.arcgis.com/experience/426bbcca678342c6abf3855df7e0dc1a>, or
+email the Planning Helpdesk <mailto:planning@cityofsacramento.org> staff.
+
+Front agency counter, employee sitting behind counter behind computer
+monitor.
+Agency counter <https://sacramento.agencycounter.com/>
+
+Learn more about planning applications currently in-process.
+
+An over the shoulder view of a man working on a laptop.
+Planning forms <https://www.cityofsacramento.gov/community-development/
+planning/planning-forms>
+
+Access application forms and additional resources.
+
+Aerial view of Sacramento
+Lookup land information <https://experience.arcgis.com/
+experience/426bbcca678342c6abf3855df7e0dc1a>
+
+Look up the zoning designation for a piece of property
+
+Map of the different zones in Sacramento
+Zoning definitions <https://library.qcode.us/lib/sacramento_ca/pub/
+city_code>
+
+Zoning definitions per the City Code.
+
+Four people standing in front of a map of the city.
+Director hearings <https://www.cityofsacramento.gov/community-
+development/meetings-and-hearings/director-hearings>
+
+Access meeting materials from upcoming and prior hearings.
 
 
-1.
-Name: Fido
-Favorite Food: Carrot
-Color: Blue
-Age: 2
+More
+
+Entitlements <https://www.cityofsacramento.gov/community-development/
+planning/zoning-and-entitlements/entitlements>
+Planning Applications and Zoning Frequently Asked Questions <https://
+www.cityofsacramento.gov/community-development/planning/zoning-and-
+entitlements/planning-applications-and-zoning>
+Zoning <https://www.cityofsacramento.gov/community-development/planning/
+zoning-and-entitlements/zoning>
 
 
-2.
-Name: Peter
-Favorite Food: Apple
-Color: Yellow
-Age: 3
+Planning Applications and Zoning Frequently Asked Questions
+Departmental responsibilites
+
+What does the City of Sacramento Planning do? 
+
+The Community Development Department’s Planning Division is responsible for:
+
+    Long range planning policies 
+    Processing parcel and subdivision map applications 
+    Site plan and design review of applications to comply with the City’s design guidelines and principles 
+    Processing of conditional use permits 
+    Administering zoning ordinances 
+    Promoting high quality urban design 
+    Maintaining and registering historic resources 
+    Environmental compliance per the California Environmental Quality Act (CEQA)
+
+Where can I find the City's Zoning Ordinance?
+
+The Zoning Ordinance can be found in Title 17 (Planning and Development Code)  of the Sacramento City Code.
+
+The Zoning Ordinance is used by the City to regulate the size, type, structure, and use of land or buildings in designated areas of the City.
+
+What are your hours of operation?
+
+The Public Counter is open Mondays & Fridays: 9:00 a.m. – 12:00 p.m. (Appointment only) Tuesday – Thursday: 9:00 a.m. – 3:30 p.m. (Appointments prioritized; walk-ins accommodated as availability allows)
+
+You may contact the Planning division anytime by email at Planning@cityofsacramento.org. 
+
+How do I make an appointment?
+
+Appointments will be available on Tuesdays, Wednesdays, and Thursdays from 9:00 a.m. to 3:30 p.m. with two appointments available for each half-hour time slot.
+
+Please visit our Appointment Scheduling page  for more details, and to schedule an appointment.
+Obtaining information about a property
+
+What can I build on my property? What kind of uses are allowed? 
+
+Permitted uses for each zoning district can be found by using Title 17, Division II Zoning Districts and Land Use Regulations of the Sacramento City Code. 
+
+You can find the zoning designation for a parcel with the City of Sacramento Land Information Lookup App .
+
+For additional information, or if your property is located within a SPD, Overlay Zone, or PUD, please contact Planning at Planning@cityofsacramento.org .
+
+ 
+
+How do I obtain a zoning verification letter?
+
+The Planning Division will provide a letter that confirms the current zoning designation, general plan designation, and a description of what each designation means. The Planning Division no longer maintains records associated with parcel history, and no longer provides “Burn Letter.” To request such a letter, please email Planning@cityofsacramento.org .
+
+ 
+
+How do I know if my property is a Historic District Landmark or in a Historic District?
+
+The Land Information Look Up App  is an excellent tool to see if a property is in a Historic District or a Contributing Resource. Historic Landmarks are not listed on the GIS Map. 
+
+A list of Historic Landmarks, Historic Districts, and Cultural Resources can be found through the Preservation Sacramento Register  webpage (list updated in 2020). Landmarks added after 2020 will not be listed.
+
+You may also contact Planning to determine if the property is in a Historic District or Landmark.
+
+Please note, no changes to Historic Landmarks or properties within a Historic District can be made without approval from the City of Sacramento’s Preservation Division.
+
+ 
+
+Where are my property lines?
+
+The Planning Division does not verify, plot, or determine property lines.
+
+Limited lot size information may be available from the Sacramento County Assessor. 
+
+Planning does not know the location of a property line relative to a fence, sidewalk, nor to any other feature.
+
+Please contact a licensed land surveyor to determine specific property dimensions and property line locations.
+
+ 
+
+How can I speak with a planner regarding any question I may have?
+
+You may contact the Planning Division at any time by sending an email to Planning@cityofsacramento.org . 
+
+Please include the property address in the subject line. You will receive an automatic response acknowledging receipt of your message. Responses can be expected within two business days of receipt.
+
+Alternatively, you may speak with a planner in person at 300 Richards Boulevard with an appointment. Appointments will be available on Tuesdays, Wednesdays, and Thursdays from 9:00 a.m. to 3:30 p.m. with two appointments available for each half-hour time slot. Please visit our Appointment Scheduling page  for more details, and to schedule an appointment.
+
+ 
+Zoning questions: property use
+
+What is the zoning for my property?
+
+Zoning information can be found using the City of Sacramento's Land Information Look Up App .
+
+The site can also provide information regarding the General Plan designation, Design Review Area, Council Districts, and more.
+
+ 
+
+Where can I find my plot map? Does Planning provide plot maps? Can you send me a site plan/plot plan?
+
+The Planning Division does not verify, plot, or determine property lines. Limited lot size information may be available from the Sacramento County Assessor .
+
+ 
+
+Where can I find Planning requirements for setbacks, maximum structure height, lot coverage, and density (Development Standards)?
+
+Planning requirements are specific for the zoning district a parcel is in.
+
+A parcel’s zoning can be found using the City of Sacramento Land Information Lookup App .
+
+Regulations for each zone can be found in the zoning districts and land use regulations section of the City Code. 
+
+ 
+
+What can I do with my property?
+
+All properties are classified into a Zoning District, which will limit the allowable uses on the property.
+
+The zoning district for a specific address can be found using the City of Sacramento's Land Information Look Up App .
+
+Permitted uses for each zoning district can be found in Title 17, Division II of the Sacramento City Code .
+
+ 
+
+Can I operate a business out of my home?
+
+If you plan to conduct a business out of a residence in the City of Sacramento, you must obtain a Home Occupation Permit (HOP).
+
+A home occupation is a secondary use, not the primary use of the residence. The intent of regulating home occupations is to reduce the impact of the business on the surrounding neighborhood and to ensure compliance with applicable City codes. Home Occupation allowed uses and regulations can be found in Section 17.228 of the City Code .
+
+To obtain your licensing online please visit Revenue’s website . 
+
+ 
+
+Can I obtain a short-term rental license for my property?
+
+Short term rentals are regulated by the Revenue Division of the Department of Finance.
+
+Additional information can be found in the links below:
+
+Short-Term/Vacation Rental Website 
+
+Short-Term/Vacation Rental Fee Assessment Forms 
+
+Short-Term Rental City Code 
+
+ 
+
+Can I park my RV or boat at my home?
+
+Section 15.140.020 of the City Code ; Location of trailers in places other than authorized camp.
+
+A. Except as otherwise provided in this subsection, it shall be unlawful and a public nuisance for any person to establish, keep or maintain upon any lot or other place within the city, any trailer, auto coach or trailer coach primarily designed for transportation purposes upon a public highway, for occupancy as living quarters for a longer period than forty-eight (48) hours, unless the same is kept and maintained on a regularly established auto and trailer camp operated under permits from the state of California and city-county health department.
+
+B. Except for loading and unloading:
+
+        a. No trailer coach shall be parked within the setback area of a dwelling; and
+
+        b. No trailer coach shall be parked on residential property within five feet of the adjoining real property line.
+
+ 
+Zoning questions: development standards
+
+ 
+
+What are the standards for building a new fence or changing the fence on my property?
+
+Fences not over 7 feet high do not require a Building Permit.
+
+All proposed fencing is subject to Planning Division approval and the applicable standards set forth in Section 17.620 (Wall, Fence and Gate Regulations) .
+
+Questions related to fencing requirements can be directed to the Planning Division at Planning@cityofsacramento.org .
+
+ 
+
+What are the standards for adding a new detached structure (shed/garage/pool, etc.) to my property?
+
+Detached structures or “detached accessory structures” must follow setback, lot coverage, rear lot coverage, distance from main building, height, driveway and other standards found in Section 17.624.050 of the City Code. 
+
+ 
+
+What are the standards for adding to my home (adding a new room/extending an existing space/adding a patio, etc.)?
+
+Extending existing space within a home must comply with the standards (lot coverage, setbacks, height) for the zone that the main dwelling resides in.
+
+Attached structures and “attached accessory structures” must comply with setback, lot coverage, rear lot coverage, height, driveway and other standards found in Section 17.624.040  of the City Code. 
+
+ 
+
+Can I add an Accessory Dwelling Unit to my property?
+
+In most cases, a maximum of two accessory dwelling units are permitted on a lot developed with a single-unit, duplex, or multi-unit dwelling.
+
+For more information regarding ADUs in the City of Sacramento can be found using the Sacramento’s ADU website  or City Code Section 17.228.105  (Accessory Dwelling Units).
+
+ 
+
+Can I add a second driveway to my home or widen my existing driveway?
+
+Driveway and paving must comply with the landscaping and paving regulations set forth in City Code Section 17.612.010. 
+
+Information about adding or modifying driveways can be found on the City of Sacramento Development Engineering webpage , here. 
+
+ 
+
+Can I pave my front yard completely or replace my lawn with gravel?
+
+A maximum of 50% of each of the required front-yard and street side-yard setbacks may be paved for off-street parking, driveways, walkways, uncovered patios, and other forms of hardscape.
+
+However, this maximum limitation does not apply to that portion of the street side-yard located behind a fence that complies with the street side fence requirements set forth in Section 17.620 of the Sacramento City Code .
+
+ 
+Public hearings
+
+I received a postcard in the mail about an issue before the City Council, City Planning and Design Commission or Zoning Administrator; how do I find out more information?
+
+City of Sacramento’s Agency Counter  can be used to find information on development activity by using the site address or Planning project number. This will provide you with the project description, submitted documents, and the assigned project planner information for further inquiries.
+
+ 
+
+How do I submit public comment?
+
+Public comments can be submitted by emailing the assigned project planner.
+
+If you do not know the contact information for an assigned planner, you can email comments to Planning@cityofsacramento.org .
+
+ 
+
+How can I find out if the City Council, Planning and Design Commission or Zoning Administrator passed an item on the agenda?
+
+A list of active projects and recent project decisions can be found on the City of Sacramento's Planning meetings page . 
+
+Projects are listed by City Council District and the assigned planner's name and phone number is listed for each project.
+
+Please contact the planner directly or email planning@cityofsacramento.org  if you need additional information on a specific project. 
+Planning entitlement applications
+
+What is Site Plan and Design Review?
+
+The purpose of the Site Plan and Design Review entitlement is to ensure that the physical aspects of development projects are consistent with the City Code, zoning ordinance, general plan, and applicable specific plans or transit village plans, and with all applicable design guidelines.
+
+Site Plan and design review is a discretionary permit and approval is not the automatic right of an applicant.
+
+For more information, visit Section 17.808 Article I. Site Plan and Design Review. 
+
+ 
+
+What is a Conditional Use Permit?
+
+A conditional use permit is a zoning instrument used primarily to review the location and conduct of certain land uses that are known to have a distinct impact on the area in which they are located, or are capable of creating special problems for bordering properties, unless given special attention.
+
+A conditional use permit is a discretionary permit and approval is not the automatic right of an applicant.
+
+More information can be found within Section 17.808.200 (A) of the City Code. 
+
+ 
+
+What is an administrative permit?
+
+Administrative permits are used to determine the conformance of a proposed project to applicable development standards, use regulations, location restrictions, and similar requirements.
+
+Administrative permits are ministerial permits, meaning Planning staff reviews a project to determine conformity with applicable standards found in Title 17 of the City Code.
+
+The determinations are objective and solely based on the standards set forth in Title 17.
+
+ 
+
+How long is the review process?
+
+The following timelines assume projects are consistent with the zoning and development standards; or if exceptions/deviations are requested, those exceptions/deviations will meet required findings.
+
+Please note there are many variables in the review process and the timelines below are approximate estimates:
+
+Staff Level Site Plan and Design Review: 2-3 Months
+
+Director Level Site Plan and Design Review: 4-5 Months
+
+Planning and Design Commission: 6-7 Months
+
+ 
+
+ 
+
+What is the application process?
+
+Applications are submitted electronically through the Public Permit Portal : 
+
+Choose Planning then Create Planning Application OR Clearance to Submit to Building.
+
+Note: Upload files using the correct file naming convention , listed below:
+
+XYZaddress _APP_(Application – Form CDD 0063) –(Page 2 has a list of submittal components)
+
+XYZaddress __APP_(Design Review Checklist) XYZaddress __PLANS_(Plans/Drawings)
+
+XYZaddress __SUPP_(Includes Photos, Cutsheets, etc)
+
+View and download all forms and applications on the Planning Forms page .
+
+All forms need to be merged and attached as a PDF document. You have a successful submittal when you receive a PLN#.
+
+We will review for completeness, and you will then pay your fees online.
+
+All correspondence is through email.
+
+Click here to submit online. 
+
+*tutorial also available at this above link to assist (link to eplanning page)
+
+ 
+
+What are the application materials?
+
+Application materials for entitlements can be found on the Submittal Matrix on page 2 of the Planning Entitlement Application (CDD-0063).
+
+Planning Application Forms can be found here ..
+
+ 
+
+How much do Planning Entitlements cost?
+
+Planning entitlement fees can be found on the Planning Forms webpage here .
+
+Please contact the Planning email at Planning@cityofsacramento.org  for fee estimates.
+Record retention- where can I find copies of my plans?
+
+Record retention is maintained and researched through the City Clerk's online website .
+Signs
+
+What are the City's regulations for Signs?
+
+Sign Regulations can be found in Chapter 15.148 of the City Code . Regulations are specific to the Zone of the parcel the proposed signage is in.
+
+Applicants may use the Land Information Look Up App  to find the zone of the parcel..
+
+If a sign is in a Planned Urban Development (PUD) please reach out to planning@cityofsacramento.org , so a Planner can assist you with finding additional regulations specific to the PUD. 
+
+ 
+
+How do I submit my sign permit?
+
+Signs are submitted through the Building Division.
+
+Please email them at EZPermit@cityofsacramento.org  for their submittal process.
+
+What can I do if my pet passes away?
+
+If your pet passes away, you can bring the deceased body to the Front Street Animal Shelter and we will properly dispose the body. The fee is $40.
+
+Please note that we do NOT offer cremation services. 
+Can I come to the shelter and pick up pet food on any day of the week?
+
+Due to staffing and pet food limitations, we can only hand out pet food on Tuesdays from 10:00 am - 12:00 pm.
+How do I know if I live in the city limits or the county limits of Sacramento?
+
+Sacramento is divided into two parts:  the city limits and the county limits. The easiest way to tell whether you are in the city or county limits is to view your street sign attached to the pole, street light, traffic light, or any other structure on the corner of the street. If it is green colored, then you are in the city limits. If it is white colored, then you are in the county limits.
+
+Also, If you are serviced by the Sacramento Police, then you are in the city limits. If you are serviced by the Sacramento County Sheriffs, then you are in the county limits.
+
+Service for animal control is based on jurisdiction. The Front Street Animal Shelter responds to calls within the city limits of Sacramento and accepts animals only from residents who reside within the city limits of Sacramento. Conversely, the Sacramento County Animal Care and Regulation responds to calls from residents within the county limits of Sacramento.
+What is rabies?
+
+Rabies is a very serious viral disease that affects the brain and spinal cord of mammals. Cats, dogs, raccoons, coyotes and foxes are mammals, as are people. Rabies is caused by a virus and almost always causes death. It is usually a disease of animals, but it can spread from an infected animal to a person. Visit What is Rabies?  for frequently asked questions about this disease.
+Animal control regulations
+
+Frequently asked questions about animal control regulations for the City of Sacramento
+What can I do about wildlife that comes onto my property?
+
+Wildlife Services, a cooperative program between the United States Department of Agriculture and Sacramento County, is responsible for the control of non-domestic animals, such as skunks, opossums, raccoons, beavers, coyotes, and damaging birds that pose a threat to human or animal health and safety or cause damage to property or livestock. 
+
+Please note that they do NOT respond to requests involving common pests, such as rats, mice, or gophers.
+
+To request service, please call 916-875-6603, Monday - Friday, between 6:00 am - 8:00 am.
+
+    Direct assistance, site visit, or equipment placement - $25.00
+    Second or additional animal removal - $12.50 (per additional animal)
+    No fee will be charged in the event that there is an imminent hazard to health or safety, such as an animal expressing symptoms of rabies or a predatory species threatening the immediate safety of the public.
+    Fees can be paid directly when the Wildlife Service Specialist arrives or paid online .
+
+What can someone do about a barking dog?
+
+If possible and you feel comfortable, we recommend speaking to the dog owner about the noise, as people are often unaware that there is a problem. Additionally, please keep a written log to document the times and duration of the barking as well as any contact you may have with the owner
+
+In the meantime, please use the Sacramento Mediation Center for private conflict resolution services.
+
+More information about the Sacramento Mediation Center 
+How many dogs and cats are allowed per household?
+
+Each household within the city limits of Sacramento is allowed to have no more than 3 dogs and 7 cats. A dog is counted towards that limit if the dog is over the age of 4 months, while a cat is counted towards that limit if the cat is over the age of 2 months (see Sacramento City Code 9.44.370).
+
+In addition, it is permissible for a resident within the city limits of Sacramento to own a potbelly pig. A potbelly pig cannot be more than 22 inches high at the shoulder or weigh more than 150 pounds. Also, any male potbelly pig over the age of 4 months must be neutered (see Sacramento City Code 9.44.320). The number of potbelly pigs allowed is no more than 3, however, this limit is connected to the limit of dogs. In other words, a resident is not allowed more than a combination of 3 dogs and potbelly pigs.
+Am I allowed to tether my dog in the backyard?
+
+Effective January 1, 2007, California law prohibits tethering, chaining, fastening, or restraining of dogs to any stationary object. Violations can be punished by a fine up to $1000 and/or 6 months in jail.
+
+Chained or tethered dogs can injure or strangle themselves to death when their chains or tethers become entangled with other objects, or their collars become embedded in their necks. Also, chained or tethered dogs can become aggressive due to intense confinement, lack of socialization, and the inability to escape from perceived threats, and are more likely to bite or attack someone who approaches.
+
+However, an owner is permitted to attach a dog to a running line, pulley, or trolley system (use of a choke collar or pinch collar is prohibited). An owner may also tether a dog pursuant to requirements of a camping or recreational area or tether a dog no longer than is necessary to complete a temporary task that requires the dog to be restrained for a reasonable period (i.e. cannot exceed 3 hours in a 24-hour period).
+What can be done about stray cats coming onto my property?
+
+Within the city limits of Sacramento, cats are recognized as free-roaming animals, regardless of whether they are owned, stray, friendly or feral. Unlike dogs, cats may roam freely throughout the city, are not required to be on a leash, and do not need to be confined onto the owner's property.
+
+Visit Feral and Community Cats  for information about dealing with feral cats and stray/community cats.
+Is poultry or livestock allowed within the city limits of Sacramento?
+
+Residents within the city limits of Sacramento may own a maximum of three (3) chickens per residential parcel. Visit Poultry License and Permit  for the complete requirements, including applying for a license and permit.
+Pet licensing
+
+Frequently asked questions about pet licensing
+Am I required to purchase a dog or cat license?
+
+Yes, a person is required to purchase a City of Sacramento pet license if he/she owns a dog or a cat that is 4 months of age or older. According to city code 9.44.490(A), a license authorizes a person to own, harbor, and keep a dog or cat within the city limits of Sacramento.
+What do I need in order to purchase a dog or cat license?
+
+Your dog or cat will need a rabies vaccination administered by a veterinarian, and you must provide a copy of the rabies vaccination certificate. If your dog or cat is spayed or neutered, then you will need to provide proof of spay or neuter in order to receive a discount on the license fee. Visit Pet Licensing  to get more details about how to license your pet.
+Do I need to get a rabies vaccination for my pet before I license my pet?
+
+Yes, a rabies vaccination is mandatory before the issuance of a new license. You must submit a copy of the rabies vaccination certificate that was issued by a veterinarian. The license is only valid during the period that the rabies vaccination is effective, so please make sure that the rabies vaccination has not expired or is not expiring soon.
+Do I need to submit proof that my pet is spayed/neutered before I license my pet?
+
+If your pet is spayed or neutered, you will need to submit a copy of the spay/neuter certificate issued by a veterinarian. We will also accept a veterinary bill detailing the spay or neuter surgery or a rabies vaccination certificate that indicates a pet has been verified as being spayed or neutered.
+Are there any programs that help low-income residents with the cost of a license?
+
+Yes, a pet owner is eligible to receive a 1-year license at no-charge if (1) you reside within the city limits of Sacramento, (2) your pet is spayed or neutered, and (3) you participate in one of the following programs:
+
+    Lifeline (AT&T)
+    PG&E and SMUD Assistance Programs
+    City Utility Rate Assistance Program
+
+Proof of program participation is required. You must apply by mail.
+How do I qualify for the senior citizen discount?
+
+We offer a senior citizen discount for those who are 62 years of age or older AND whose pet is spayed or neutered. We require proof of age, such as a copy of a driver's license, an identification card, or any official document stating your identity and your age.
+What are the qualifications for a show dog license or show cat license?
+
+    Registration with a national animal registry
+    Participation in sanctioned show within last 12 months
+    Dog or cat cannot be bred during period of the license
+
+Proof of national animal registry and proof of show participation are required.
+How long does a license last before it expires?
+
+The length of a license is dependent on the length of the rabies vaccination. Licenses may be purchased for 1 year, 2 years, or 3 years. In order to qualify for a 2-year license or 3-year license, the rabies vaccination must be valid for the next 2 years or 3 years, respectively. For example, if you wish to purchase a 3-year license, then the rabies vaccination must be valid for the next three years. A license cannot expire after the rabies vaccination expiration date. In order for a license to be valid, the rabies vaccination must be valid for the same period of time as the license.
+I've lost my pet's license tag. How do I replace it?
+
+If your pet's license tag goes missing or the writing becomes illegible, you may purchase a replacement tag. You can purchase a replacement tag through your license account with DocuPet. 
+Poultry licensing
+
+Frequently asked questions about owning poultry
+What are the fees to purchase a chicken license and a chicken coop permit?
+
+The fee for a 1-year chicken license is $15 per chicken and the fee for a 1-year chicken coop permit is $30. A chicken license and chicken coop permit must be renewed annually. To purchase a poultry license and permit, visit our Poultry Licensing page to download the application.
+What are the requirements for owning a chicken?
+
+    A maximum of three (3) chickens per residential parcel
+    Roosters are prohibited
+    Slaughtering is prohibited
+    Coop may not be closer than 20 feet to the nearest neighboring dwelling
+    Chickens must be confined and properly caged in a coop at all times
+    Chickens are prohibited from being a noise disturbance
+    Coop must be well-maintained and clean and be a minimum of 15 square feet and a maximum of 42 square feet
+    Coop must have four walls and a roof and be constructed of suitable material
+    Coop may only be kept in the rear yard
+    Nesting boxes in the coop are required
+    Chickens must be provided with adequate food, water, and ventilation
+    Feed must be stored properly to prevent spoilage and to prevent access to other animals and rodents
+    Feces and feathers must be removed every 24 hours and shall be stored in an air tight container prior to disposal. Use of city issued garbage containers is acceptable.
+
+Microchipping
+
+Frequently asked questions about microchipping a pet
+How does a microchip work?
+
+A microchip is inserted into the scruff (back of the neck) of the animal's back. When an animal enters a shelter, a technician scans the animal's body with a portable, hand-held scanner. If an animal has a microchip, an identification number will appear on the scanner. The technician will call the appropriate microchip company and provide the microchip number to the company, who can check their database for the registered owner's name, address, and phone number(s). Afterwards, the shelter will attempt to make contact with the owner. It is important to know that a microchip is NOT a GPS device and is NOT a tracking device.
+Where can I microchip my pet?
+
+Any shelter or vet can microchip your pet. The Front Street Animal Shelter charges $5 per microchip, which includes microchip registration with a nationwide microchip company.
+
+A microchip is included with any dog or cat adoption and is offered free-of-charge to pet owners who reclaim their lost pet at our shelter. The more pets we microchip, the fewer end up in shelters, lost and alone.
+How can I find out if a microchip is registered?
+
+The American Animal Hospital Association (AAHA) provides a microchip registry lookup tool . This online tool works by searching the databases of participating companies and identifies which microchip registry should be contacted if someone finds a lost pet and discovers that the pet has a microchip. If the microchip is not registered, then it will provide the microchip's manufacturer.
+What microchip companies are out there?
+
+There are many microchip companies, registries, and pet recovery services. For a comprehensive list, visit American Animal Hospital Association .
+Caring for your pet
+
+Frequently asked questions about pet care
+Where are the off-leash dog parks in Sacramento?
+
+All dog parks managed by the Department of Youth, Parks & Community Enrichment are fenced with a double-gate system and include benches, shade areas, drinking fountains for dogs, and plenty of room to run. Dogs of all sizes are welcome.
+
+Dog park rules
+
+    Dog owners/handlers are personally and legally responsible for their animals. You are using these facilities at your own risk.
+    Dogs may be off a leash only within the designated fenced area.
+    Owners/handlers must clean up after their dogs.
+    Dogs must have a current license. LIcense must be on the dog's collar. The collar must be on the dog.
+    Aggressive dogs are not allowed. The owner/handler of any dog exhibiting aggressive or unruly behavior are required to immediately remove the offending animal.
+    For every two dogs brought to the park, there must be at least one owner/handler.
+    Children under 14 must be accompanied by an adult.
+    Female dogs in season are not allowed at the facility.
+
+Download a list of off-leash dog parks located within the city limits of Sacramento 
+What should I do to keep my home and yard safe for my pet?
+
+Home is a place where every life should be safe and protected from potential threats. When family members can't take steps to protect themselves, it is up to those who can to ensure their safety. For many, pets are considered a part of the family, and as with infants or small children, they must be protected from things that can harm them. The best way to do that is to pet-proof the home.
+
+Read the article called Pet-Proofing: Keeping Your Home and Yard Safe for Dogs or Cats 
+
+
+
