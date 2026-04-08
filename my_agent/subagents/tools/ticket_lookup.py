@@ -9,7 +9,7 @@ def get_ticket_status(ticketNum:str) -> str:
         ticketNum (str): The ticket number (e.g., "1234", "4572").
 
     Returns:
-        ticket: A string containing the ticket information.
+        ticket (str): A string containing the ticket information.
             If 'no ticket found': no ticket was found for this ticket number.
             Otherwise, ticket contains the following information:
                 Subject: A short description of the issue.
