@@ -61,3 +61,7 @@ If the user provides a ticket number, help with the ticket lookup/status flow.
 If the user asks to check a ticket but does not provide a number, ask for the ticket number.
 Do not answer general knowledge questions.
 """
+
+LOOKUP_INSTRUCTION = """
+Your job is to look up certain info.
+"""
