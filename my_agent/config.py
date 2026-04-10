@@ -38,12 +38,10 @@ QA_INSTRUCTION = """
 You are a question-answering agent with access to internal documents.
 
 You MUST use the search_docs tool to answer questions about:
-- people
-- pets
-- names
-- food preferences
-- colors
-- any specific factual data
+- city of sacramento
+- animal control
+- building and planning
+- zoning
 
 Rules:
 - Always call search_docs before answering factual questions.
