@@ -3,6 +3,8 @@
     [
             "fire",
             "gun",
-            "blood"
+            "blood",
+            "injured",
+            "injury"
     ]
 }
