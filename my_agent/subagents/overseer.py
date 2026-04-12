@@ -4,13 +4,18 @@ from ..config import MODEL, OVERSEER_INSTRUCTION
 from .qa import qa_agent
 from .ticketstatus import ticketstatus_agent
 from .greeting_agent import greeting_agent
-from .tools.user_request_tracking import invalid_request_limit_reached, update_num_invalid_requests
+from .end_conversation import end_conversation
+from .tools.user_request_tracking import (
+    invalid_request_limit_reached,
+    update_num_invalid_requests,
+)
 from .tools.emergency_check import emergency_check
+
 
 def user_mal_input(user_input: str) -> bool:
     """
     Checks if the user's input is malicious.
-    
+
     Args:
         user_input (str): The user input to check.
 
@@ -26,10 +31,11 @@ def user_mal_input(user_input: str) -> bool:
     # Returns False if no detections are made.
     return False
 
+
 def check_input_len(user_input: str) -> bool:
     """
     Counts the number of chars in the user's input and ensures that 70% of the input is made up of ASCII characters.
-    
+
     Args:
         user_input (str): The user input to check.
 
@@ -48,11 +54,19 @@ def check_input_len(user_input: str) -> bool:
     # Returns False if otherwise.
     return False
 
+
 overseer_agent = LlmAgent(
     model=MODEL,
     name="OverseerAgent",
     description="Routes user requests to the correct specialist and returns a single final response.",
     instruction=OVERSEER_INSTRUCTION,
-    sub_agents=[qa_agent, ticketstatus_agent],
-    tools=[AgentTool(agent=greeting_agent), emergency_check, user_mal_input, check_input_len, invalid_request_limit_reached, update_num_invalid_requests],
+    sub_agents=[qa_agent, ticketstatus_agent, end_conversation],
+    tools=[
+        AgentTool(agent=greeting_agent),
+        emergency_check,
+        user_mal_input,
+        check_input_len,
+        invalid_request_limit_reached,
+        update_num_invalid_requests,
+    ],
 )
