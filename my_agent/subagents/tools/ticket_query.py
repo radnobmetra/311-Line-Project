@@ -4,7 +4,8 @@ from zoneinfo import ZoneInfo
 import re
 
 
-def validate_ticket_num_format(ticket_number):
+# Private method intended for internal use only.
+def __validate_ticket_num_format(ticket_number):
     """
     Ticket number must exactly match this format (6 digits, a dash, then 7 digits).
     For example, ticket number should be like this "123456-1234567"
@@ -37,7 +38,8 @@ def validate_ticket_num_format(ticket_number):
     return is_correct_format, validated_number
 
 
-def convert_Epoch_to_localtime(epoch_time):
+# Private method intended for internal use only.
+def __convert_Epoch_to_localtime(epoch_time):
     """
     Time retrieved from the ArcGIS database is stored as UNIX Epoch time.
     This function converts epoch time to local time.
@@ -58,7 +60,8 @@ def convert_Epoch_to_localtime(epoch_time):
     return formatted_time
 
 
-def ArcGIS_get_ticket(ticket_number):
+# Private method intended for internal use only.
+def __ArcGIS_get_ticket(ticket_number):
     """
     A GET function to fetch ticket data from ArcGIS API endpoint.
 
@@ -87,6 +90,7 @@ def ArcGIS_get_ticket(ticket_number):
     return response_JSON
 
 
+# Public method intended to be used by Ticket Status agent.
 def get_ticket_details(ticket_number):
     """
     Gets the 311 Salesforce ticket details and returns it in a JSON format.
@@ -97,10 +101,10 @@ def get_ticket_details(ticket_number):
     OR
         A string containing error details if one occured.
     """
-    is_num_valid, validated_ticket_num = validate_ticket_num_format(ticket_number)
+    is_num_valid, validated_ticket_num = __validate_ticket_num_format(ticket_number)
 
     if is_num_valid:
-        response_JSON = ArcGIS_get_ticket(validated_ticket_num)
+        response_JSON = __ArcGIS_get_ticket(validated_ticket_num)
 
         if response_JSON["status"] == "success":
             ticket_details = {
@@ -109,13 +113,13 @@ def get_ticket_details(ticket_number):
                 "Council District": response_JSON["message"]["CouncilDistrictNumber"],
                 "Incident Source": response_JSON["message"]["SourceLevel1"],
                 "Neighborhood": response_JSON["message"]["Neighborhood"],
-                "Date Created": convert_Epoch_to_localtime(
+                "Date Created": __convert_Epoch_to_localtime(
                     response_JSON["message"]["DateCreated"]
                 ),
-                "Date Solved": convert_Epoch_to_localtime(
+                "Date Solved": __convert_Epoch_to_localtime(
                     response_JSON["message"]["DateClosed"]
                 ),
-                "Last Updated": convert_Epoch_to_localtime(
+                "Last Updated": __convert_Epoch_to_localtime(
                     response_JSON["message"]["DateUpdated"]
                 ),
                 "Cross Street": response_JSON["message"]["CrossStreet"],
