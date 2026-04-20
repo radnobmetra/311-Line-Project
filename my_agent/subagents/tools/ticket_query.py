@@ -62,7 +62,7 @@ def ArcGIS_get_ticket(ticket_number):
     """
     A GET function to fetch ticket data from ArcGIS API endpoint.
 
-    Returns a JSON with 2 fields: status and message containing ticket information.
+    Returns a JSON with 2 fields: status and message.
     """
     response_JSON = {"status": "", "message": ""}
 
@@ -85,3 +85,48 @@ def ArcGIS_get_ticket(ticket_number):
         response_JSON["message"] = f"ArcGIS API request failed: {e}"
 
     return response_JSON
+
+
+def get_ticket_details(ticket_number):
+    """
+    Gets the 311 Salesforce ticket details and returns it in a JSON format.
+    Args: ticket number
+    Returns:
+        A JSON containing Reference number, Service Category, Council District, Incident Source, Neighborhood,
+        Date Created, Date Solved, Last Updated, Cross Street, Address, ZipCode, and Case Status.
+    OR
+        A string containing error details if one occured.
+    """
+    is_num_valid, validated_ticket_num = validate_ticket_num_format(ticket_number)
+
+    if is_num_valid:
+        response_JSON = ArcGIS_get_ticket(validated_ticket_num)
+
+        if response_JSON["status"] == "success":
+            ticket_details = {
+                "Reference number": response_JSON["message"]["ReferenceNumber"],
+                "Service Category": response_JSON["message"]["CategoryName"],
+                "Council District": response_JSON["message"]["CouncilDistrictNumber"],
+                "Incident Source": response_JSON["message"]["SourceLevel1"],
+                "Neighborhood": response_JSON["message"]["Neighborhood"],
+                "Date Created": convert_Epoch_to_localtime(
+                    response_JSON["message"]["DateCreated"]
+                ),
+                "Date Solved": convert_Epoch_to_localtime(
+                    response_JSON["message"]["DateClosed"]
+                ),
+                "Last Updated": convert_Epoch_to_localtime(
+                    response_JSON["message"]["DateUpdated"]
+                ),
+                "Cross Street": response_JSON["message"]["CrossStreet"],
+                "Address": response_JSON["message"]["Address"],
+                "ZipCode": response_JSON["message"]["ZIP"],
+                "Case Status": response_JSON["message"]["PublicStatus"],
+            }
+            retval = ticket_details
+        elif response_JSON["status"] == "error":
+            retval = response_JSON["message"]
+    else:
+        retval = "Ticket number is not valid."
+
+    return retval
