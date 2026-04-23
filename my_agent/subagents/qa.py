@@ -6,12 +6,12 @@ from typing import AsyncGenerator, Optional
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
 from ..config import MODEL, QA_INSTRUCTION
-from .tools.lookup import search_docs
+from .tools.lookup import search_knowledge_tool
 
 
 def save_search_result(tool, args, tool_context: ToolContext, tool_response):
     # Grabs the search query and results
-    if getattr(tool, "name", "") == "search_docs":
+    if getattr(tool, "name", "") == "search_knowledge_tool":
         tool_context.state["lookup_query"] = args.get("query", "")
         tool_context.state["search_results"] = tool_response
     return None
@@ -38,7 +38,7 @@ qa_draft_agent = LlmAgent(
     name="QAAgent",
     description="Returns answers to general questions.",
     instruction=QA_INSTRUCTION,
-    tools=[search_docs],
+    tools=[search_knowledge_tool],
     before_model_callback=save_user_question,
     after_tool_callback=save_search_result,
     output_key="qa",
@@ -118,10 +118,7 @@ clarifier_agent = LlmAgent(
         {qa}
 
 
-        if the review result is NOT exactly pass_with_clarification then output exactly:
-        NO CLARIFICATION
-
-        If the review result is pass_with_clarification, write 1-2 sentences that:
+        write 1-2 sentences that:
         - briefly acknowledge the topic
         - ask the user to clarify what specifically they want
         - optionally suggest a few relevant directions (based on the question), but do not assume too much
@@ -132,10 +129,7 @@ clarifier_agent = LlmAgent(
 
         Example style:
         "Could you clarify what specifically you'd like to know about [topic]? I can help with [...]."
-
-        Output either:
-        - NO CLARIFICATION
-        - or the clarification text only''',
+        ''',
     output_key="clarification",
 )
 
@@ -174,6 +168,9 @@ class ValidateQA(BaseAgent):
                 "I need a little more detail to answer that. Please rephrase your question and include the Sacramento city service or issue you're asking about."
             )
         elif status == "pass_with_clarification":
+            async for _ in clarifier_agent.run_async(ctx):
+                pass
+
             clarification = ctx.session.state.get("clarification", "").strip()
             final_answer = answer
             if clarification:
@@ -202,7 +199,6 @@ qa_agent = SequentialAgent(
     sub_agents=[
         qa_draft_agent,
         qa_reviewer_agent,
-        clarifier_agent,
         validate_qa_agent,
     ],
 )
