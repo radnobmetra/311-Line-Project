@@ -11,8 +11,8 @@ def user_mal_input(user_input: str) -> bool:
         bool: True if the user's input is found to be malicious, False otherwise.
     """
     # Set list "mal_keywords" to the contents of the emergency_cases.json file
-    with open('data.json', 'r') as mal_keywords:
-        mal_keywords = json.load("emergency_cases.json")
+    with open('emergency_cases.json', 'r') as file:
+        mal_keywords = json.load(file)
 
     # Checks each keyword in the list against the user input.
     for keyword in mal_keywords:
