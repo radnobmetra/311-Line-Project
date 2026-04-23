@@ -10,50 +10,8 @@ from .tools.user_request_tracking import (
     update_num_invalid_requests,
 )
 from .tools.emergency_check import emergency_check
-
-
-def user_mal_input(user_input: str) -> bool:
-    """
-    Checks if the user's input is malicious.
-
-    Args:
-        user_input (str): The user input to check.
-
-    Returns:
-        bool: True if the user's input is found to be malicious, False otherwise.
-    """
-    mal_keywords = ["firewall", "phish", "hack", "bypass", "sql inject", "ddos"]
-    # Checks each keyword in the list against the user input.
-    for keyword in mal_keywords:
-        if keyword in user_input.lower():
-            # Returns True if any malicious keyword is found in the user input.
-            return True
-    # Returns False if no detections are made.
-    return False
-
-
-def check_input_len(user_input: str) -> bool:
-    """
-    Counts the number of chars in the user's input and ensures that 70% of the input is made up of ASCII characters.
-
-    Args:
-        user_input (str): The user input to check.
-
-    Returns:
-        bool: True if 70% or more of the characters in the user's input are ASCII, False otherwise.
-    """
-    counter = 0
-    # Progresses through each character in the user input.
-    for char in user_input:
-        # ord() returns the Unicode code point of the character.
-        if ord(char) < 128:
-            counter = counter + 1
-    # Returns True if the user's input is at least 70% ASCII characters.
-    if counter / len(user_input) >= 0.7:
-        return True
-    # Returns False if otherwise.
-    return False
-
+from .tools.user_mal_input import user_mal_input
+from .tools.check_input_len import check_input_len
 
 overseer_agent = LlmAgent(
     model=MODEL,
