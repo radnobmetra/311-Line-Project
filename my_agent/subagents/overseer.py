@@ -5,13 +5,8 @@ from .qa import qa_agent
 from .ticketstatus import ticketstatus_agent
 from .greeting_agent import greeting_agent
 from .end_conversation import end_conversation
-from .tools.user_request_tracking import (
-    invalid_request_limit_reached,
-    update_num_invalid_requests,
-)
-from .tools.emergency_check import emergency_check
-from .tools.user_mal_input import user_mal_input
-from .tools.check_input_len import check_input_len
+from .tools.user_request_tracking import update_num_invalid_requests
+from .tools.validateinput import validateInput
 
 overseer_agent = LlmAgent(
     model=MODEL,
@@ -21,10 +16,7 @@ overseer_agent = LlmAgent(
     sub_agents=[qa_agent, ticketstatus_agent, end_conversation],
     tools=[
         AgentTool(agent=greeting_agent),
-        emergency_check,
-        user_mal_input,
-        check_input_len,
-        invalid_request_limit_reached,
+        validateInput,
         update_num_invalid_requests,
     ],
 )
