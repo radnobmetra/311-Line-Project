@@ -34,7 +34,7 @@ def validate_user_input(user_input: str) -> dict:
 
 root_agent = Agent(
     name="overseer_agent",
-    model="gemini-3-flash-preview",
+    model="gemini-2.5-flash-preview",
     instruction=(
         "You are an agent whose job is to determine whether the user's input is valid and safe."
     ),
