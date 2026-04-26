@@ -6,12 +6,12 @@ from typing import AsyncGenerator, Optional
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
 from ..config import MODEL, QA_INSTRUCTION
-from .tools.lookup import search_knowledge_tool
+from .tools.lookup import search_docs
 
 
 def save_search_result(tool, args, tool_context: ToolContext, tool_response):
     # Grabs the search query and results
-    if getattr(tool, "name", "") == "search_knowledge_tool":
+    if getattr(tool, "name", "") == "search_docs":
         tool_context.state["lookup_query"] = args.get("query", "")
         tool_context.state["search_results"] = tool_response
     return None
@@ -38,7 +38,7 @@ qa_draft_agent = LlmAgent(
     name="QAAgent",
     description="Returns answers to general questions.",
     instruction=QA_INSTRUCTION,
-    tools=[search_knowledge_tool],
+    tools=[search_docs],
     before_model_callback=save_user_question,
     after_tool_callback=save_search_result,
     output_key="qa",
@@ -66,10 +66,14 @@ qa_reviewer_agent = LlmAgent(
         Classify the draft answer into exactly one of these labels:
 
         - pass
-            Use only if the answer is directly responsive and supported by the retrieved documents.
+            Use if the answer is directly responsive, supported by the retrieved documents,
+            and sufficiently complete to be useful without needing more information.
 
         - pass_with_clarification
-            The answer is supported and reasonably helpful, but the user's question is broad, vague, or underspecified, so the final response should also ask the user to clarify or narrow the topic.
+            Use ONLY if the answer is supported, but a critical piece of missing or ambiguous
+            information prevents a precise or complete answer. The clarification must be
+            necessary, not just helpful.
+            Do NOT use this label just because the question could be more specific.
 
         - unsupported_answer
             Use if the answer is unsupported, speculative, vague, generic, incomplete, or misses important details that the documents do contain.

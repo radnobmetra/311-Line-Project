@@ -53,6 +53,7 @@ Rules:
 - Call search_knowledge_tool at most once.
 - Use the returned information to answer.
 - The search_knowledge_tool IS your source of truth.
+- Answer as concisely as possible.
 """
 
 TICKETSTATUS_INSTRUCTION = """
