@@ -17,9 +17,8 @@ def check_input_len(user_input: str) -> bool:
     counter = 0
     # Progresses through each character in the user input.
     for char in user_input:
-        if char.isalnum():
-            counter += 1
-            
+        if (char.isalnum()):
+            counter = counter + 1
     # Returns True if the user's input is at least 70% alphanumeric characters.
     if counter / len(user_input) >= 0.7:
         return True
