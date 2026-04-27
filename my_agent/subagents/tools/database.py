@@ -1,5 +1,6 @@
 import os
 import random
+import re
 
 db = "sessions.log"
 
@@ -7,7 +8,16 @@ def data_file():
     if not os.path.exists(db):
         with open(db, "w") as file:
             file.write("--- Session Transcript ---\n")
-        
+
+def session_to_dash():
+    # Opens the sessions.log file and reads its entire content.
+    with open(db, "r") as file:
+        content = file.read()
+    
+    # Splits the file into sections based on the delimiter "For Context:", resulting in a list.
+    # "For Context:" will be dropped in the split.
+    lines_list = re.split(r'(For Context:)', content)
+
 def conversation_record(chat_transcript: str):
     """
     Logs the entire conversation history to the database once the session is done.
