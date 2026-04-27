@@ -12,7 +12,7 @@ import google.genai.types as types
 from pathlib import Path
 
 # Load once
-DOC_PATH = Path("data.txt")
+DOC_PATH = Path(__file__).resolve().parent.parent.parent.parent / "data.txt"
 
 with open(DOC_PATH, "r", encoding="utf-8") as f:
     DOCUMENT = f.read()
