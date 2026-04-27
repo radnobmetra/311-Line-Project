@@ -213,3 +213,6 @@ __marimo__/
 /.adk/
 
 sa-key.json
+
+# DS_Store
+.DS_Store
