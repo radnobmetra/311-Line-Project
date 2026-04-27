@@ -1,4 +1,5 @@
 <?php
+ 
   $conn = new SQLite3('../.adk/session.db');
   $sql = "Select * from sessions";
   $result = $conn->query($sql);
