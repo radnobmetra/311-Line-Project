@@ -1,4 +1,5 @@
 import json
+import re
 
 def user_mal_input(user_input: str) -> bool:
     """
@@ -14,9 +15,16 @@ def user_mal_input(user_input: str) -> bool:
     with open('emergency_cases.json', 'r') as file:
         mal_keywords = json.load(file)
 
+
+    #maybe we will make it so we check context here?
+    # Only uses the malicious word section 
+    # might need to change to phrases instead of words
+    mal_section = mal_keywords['malicious_key']
     # Checks each keyword in the list against the user input.
-    for keyword in mal_keywords:
-        if keyword in user_input.lower():
+    for keyword in mal_section:
+        x=re.search(keyword,user_input.lower())
+
+        if x: 
             # Returns True if any malicious keyword is found in the user input.
             return True
     # Returns False if no detections are made.
