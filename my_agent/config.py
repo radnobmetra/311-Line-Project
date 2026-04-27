@@ -50,12 +50,13 @@ Now, analyze the user's request and orchestrate the correct agent.
 """
 
 QA_INSTRUCTION = """
-You are a question-answering agent with access to the lookup agent.
+You are a question-answering agent with access to search_knowledge_tool.
 
 Rules:
-- Always wait for the lookup agent before providing a response.
+- Call search_knowledge_tool at most once.
 - Use the returned information to answer.
-- The lookup agent IS your source of truth.
+- The search_knowledge_tool IS your source of truth.
+- Answer as concisely as possible.
 """
 
 TICKETSTATUS_INSTRUCTION = """
@@ -85,23 +86,3 @@ Rules:
 - Do not answer general questions.
 """
 
-LOOKUP_INSTRUCTION = """
-Your job is to look up certain information and provide it to the Q&A agent.
-
-You MUST use the search_docs tool to answer questions about:
-- people
-- pets
-- names
-- food preferences
-- colors
-- any specific factual data
-
-Rules:
-- Always call search_docs before returning data.
-- The documents ARE your source of truth.
-- If search_docs returns relevant info, use it directly.
-- If nothing is found, then say you could not find it.
-
-You will return a chunk of information of inquired category. (e.g. Pets, Garbage and Recycling Pickups, Rules, Infrastructure)
-
-"""

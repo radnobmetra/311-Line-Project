@@ -66,10 +66,14 @@ qa_reviewer_agent = LlmAgent(
         Classify the draft answer into exactly one of these labels:
 
         - pass
-            Use only if the answer is directly responsive and supported by the retrieved documents.
+            Use if the answer is directly responsive, supported by the retrieved documents,
+            and sufficiently complete to be useful without needing more information.
 
         - pass_with_clarification
-            The answer is supported and reasonably helpful, but the user's question is broad, vague, or underspecified, so the final response should also ask the user to clarify or narrow the topic.
+            Use ONLY if the answer is supported, but a critical piece of missing or ambiguous
+            information prevents a precise or complete answer. The clarification must be
+            necessary, not just helpful.
+            Do NOT use this label just because the question could be more specific.
 
         - unsupported_answer
             Use if the answer is unsupported, speculative, vague, generic, incomplete, or misses important details that the documents do contain.
@@ -118,10 +122,7 @@ clarifier_agent = LlmAgent(
         {qa}
 
 
-        if the review result is NOT exactly pass_with_clarification then output exactly:
-        NO CLARIFICATION
-
-        If the review result is pass_with_clarification, write 1-2 sentences that:
+        write 1-2 sentences that:
         - briefly acknowledge the topic
         - ask the user to clarify what specifically they want
         - optionally suggest a few relevant directions (based on the question), but do not assume too much
@@ -132,10 +133,7 @@ clarifier_agent = LlmAgent(
 
         Example style:
         "Could you clarify what specifically you'd like to know about [topic]? I can help with [...]."
-
-        Output either:
-        - NO CLARIFICATION
-        - or the clarification text only''',
+        ''',
     output_key="clarification",
 )
 
@@ -174,6 +172,9 @@ class ValidateQA(BaseAgent):
                 "I need a little more detail to answer that. Please rephrase your question and include the Sacramento city service or issue you're asking about."
             )
         elif status == "pass_with_clarification":
+            async for _ in clarifier_agent.run_async(ctx):
+                pass
+
             clarification = ctx.session.state.get("clarification", "").strip()
             final_answer = answer
             if clarification:
@@ -202,7 +203,6 @@ qa_agent = SequentialAgent(
     sub_agents=[
         qa_draft_agent,
         qa_reviewer_agent,
-        clarifier_agent,
         validate_qa_agent,
     ],
 )
