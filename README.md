@@ -7,20 +7,20 @@ This repository is Team Rollback Netcode's Repository for our Senior Project. It
 
 
 # Project Breakdown
-Our project focusers on shortening response time for users when asking questions to the City of Sacramento's 311 Department. Often when calling it with a question due to time to get the information you will be called back at a later time instead of having an answer due to the needed knowledge not being available immediately. By utilizing Gemini with Twilio as well residents can text in and get information regarding a ticket as well as general questions and answers. 
+Our project focuses on shortening response time for users when they ask the City of Sacramento's 311 Department questions. Often when callers have a question, they have to deal with long wait times for reasons like staff shortages and the information not being immediately available. By utilizing Gemini with Twilio residents can text the SMS line and get information about a ticket as well as general questions and answers. 
 
 ## AI Agents
-Current there are multiple agents that each handle their own responsibities and link together as follows.
+Currently there are multiple agents that each handle their own responsibities and link together as follows.
 
 
 ### Overseer / Receptionist Agent
 This agent acts as the main orchestrator and coordinates whether or not a request is valid. It also handles greeting the user by using the greeting agent tool. It runs multiple security functions to avoid spam issues such as spamming numbers or other characters.
 
 ### Ticket Lookup Agent
-This agent finds the reference ticket number in the users message. If there is multiple valid tickets inside the message then it will ask which one you want. It then will use a lookup to get information from the City's ArcGIS Database that is publically available information.
+This agent finds the reference ticket number in the user's message. If there are multiple valid tickets inside the message then it will ask which one you want. It then uses a lookup tool to get information from the City's ArcGIS Database that is publicly available information.
 
 ### Q&A Agent 
-This agent answers questions and can handle most requests. It will link into an RAG pipeline based on ElasticSearch. This allows it to have accurate and valid information. Currently it links into the __Information Lookup Agent__. Once we have integrated the City's ElasticSearch tool it will link to that to provide fast, accurate and up to date results for residents. This agent also utilizes feedback loops so if it is unsure of its answer it will either fix the answer or provide a tag asking if it helps answer the question. 
+This agent answers questions and can handle most requests. It will link into a RAG pipeline based on ElasticSearch. This allows it to have accurate and valid information. Currently it links into the __Information Lookup Agent__. Once we have integrated the City's ElasticSearch tool it will link to that to provide fast, accurate and up to date results for residents. This agent also utilizes feedback loops so if it's unsure of its answer it will either fix the answer or provide a tag asking if it helps answer the question. 
  
 ### Information Lookup Agent
 This agent handles lookup from a .txt document. This agent acts as our temporary endpoint tester. This will be replaced by ElasticSearch once that is developed and linked into the system. By using this it allows us to simulate getting information from an external source.
@@ -30,7 +30,7 @@ This agent handles lookup from a .txt document. This agent acts as our temporary
 ## External APIs:
 
 ### Sacramento 311 ArcGIS
-The City of Sacramento holds a public ArcGIS endpoint that allows for people to see noted requests. This is linked into our system so you can see the status of a ticket via a simple text.
+The City of Sacramento holds a public ArcGIS endpoint that allows people to see noted requests. This is linked into our system so you can see the status of a ticket via a simple text.
 
 ### Elastic Search
 By using the City's internal ElasticSearch we are able to grab the relevant information to a residents query and respond accurately minimizing halluciations.
