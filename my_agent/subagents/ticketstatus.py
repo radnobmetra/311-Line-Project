@@ -6,8 +6,7 @@ from typing import AsyncGenerator, Optional
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse 
 from ..config import MODEL, TICKETSTATUS_INSTRUCTION
-from .tools.ticket_lookup import get_ticket_status
-from .tools.ticket_validator import validate_ticket
+from .tools.ticket_query import get_ticket_details
 
 def save_user_question(
     callback_context: CallbackContext,
@@ -33,7 +32,7 @@ ticketstatus_draft_agent = LlmAgent(
     name="TicketStatusAgent",
     description="Finds and returns ticket status updates.",
     instruction=TICKETSTATUS_INSTRUCTION,
-    tools=[get_ticket_status, validate_ticket],
+    tools=[get_ticket_details],
     before_model_callback=save_user_question,
     output_key="ticketstatus",
 )

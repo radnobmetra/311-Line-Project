@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import re
+from google.adk.tools.tool_context import ToolContext
 
 
 # Private method intended for internal use only.
@@ -39,6 +40,46 @@ def __validate_ticket_num_format(ticket_number):
 
 
 # Private method intended for internal use only.
+def __ticket_num_correctly_identified(tool_context:ToolContext, validated_ticket_num):
+    """
+    verifies that the ticket status agent has correctly extracted the 
+    ticket number from the user's message. Called by get_ticket_details.
+    
+    Arguments:
+    tool_context
+    ticket_number: the validated ticket number (in 123456-1234567 format)
+
+    Returns:
+        true if ticket_number was found in user input
+        false if ticket_number was not found in user input
+    """
+
+    #get user question.
+    user_question = ""
+
+    t_num_first_part = validated_ticket_num[:6]
+    t_num_2nd_part = validated_ticket_num[7:]
+    pattern = r".*" + t_num_first_part + r"\-*\s*" + t_num_2nd_part + r".*"
+    user_messages_searched = 0
+
+    #search last 5 user messages for the number provided by the agent
+
+    for event in reversed(tool_context.session.events):
+        if event.author == 'user':
+
+            #quit after 5 messages have been searched
+            if user_messages_searched >= 5:
+                return False
+
+            user_question = event.content.parts[0].text
+            match = re.match(pattern, user_question)
+            if match is not None:
+                return True
+
+    return False
+
+
+# Private method intended for internal use only.
 def __convert_Epoch_to_localtime(epoch_time):
     """
     Time retrieved from the ArcGIS database is stored as UNIX Epoch time.
@@ -58,6 +99,16 @@ def __convert_Epoch_to_localtime(epoch_time):
         formatted_time = datetime_obj.strftime("%m/%d/%Y %I:%M %p")
 
     return formatted_time
+
+# Private method intended for internal use only.
+def __ArcGIS_query_returned_correct_ticket(validated_ticket_num, response_JSON):
+    """
+    Returns true if ArcGIS query returned data for the correct ticket; returns false otherwise.
+    """
+    if validated_ticket_num == response_JSON["message"]["ReferenceNumber"]:
+        return True
+    else:
+        return False
 
 
 # Private method intended for internal use only.
@@ -91,7 +142,7 @@ def __ArcGIS_get_ticket(ticket_number):
 
 
 # Public method intended to be used by Ticket Status agent.
-def get_ticket_details(ticket_number):
+def get_ticket_details(ticket_number, tool_context:ToolContext):
     """
     Gets the 311 Salesforce ticket details and returns it in a JSON format.
     Args: ticket number
@@ -99,38 +150,50 @@ def get_ticket_details(ticket_number):
         A JSON containing Reference number, Service Category, Council District, Incident Source, Neighborhood,
         Date Created, Date Solved, Last Updated, Cross Street, Address, ZipCode, and Case Status.
     OR
-        A string containing error details if one occured.
+        A string containing error details if one occurred.
     """
     is_num_valid, validated_ticket_num = __validate_ticket_num_format(ticket_number)
+
+    #verify that agent has correctly extracted ticket number from user message
+    if not __ticket_num_correctly_identified(tool_context, validated_ticket_num):
+        retval = "Clarification needed"
+        return retval
 
     if is_num_valid:
         response_JSON = __ArcGIS_get_ticket(validated_ticket_num)
 
         if response_JSON["status"] == "success":
-            ticket_details = {
-                "Reference number": response_JSON["message"]["ReferenceNumber"],
-                "Service Category": response_JSON["message"]["CategoryName"],
-                "Council District": response_JSON["message"]["CouncilDistrictNumber"],
-                "Incident Source": response_JSON["message"]["SourceLevel1"],
-                "Neighborhood": response_JSON["message"]["Neighborhood"],
-                "Date Created": __convert_Epoch_to_localtime(
-                    response_JSON["message"]["DateCreated"]
-                ),
-                "Date Solved": __convert_Epoch_to_localtime(
-                    response_JSON["message"]["DateClosed"]
-                ),
-                "Last Updated": __convert_Epoch_to_localtime(
-                    response_JSON["message"]["DateUpdated"]
-                ),
-                "Cross Street": response_JSON["message"]["CrossStreet"],
-                "Address": response_JSON["message"]["Address"],
-                "ZipCode": response_JSON["message"]["ZIP"],
-                "Case Status": response_JSON["message"]["PublicStatus"],
-            }
-            retval = ticket_details
+
+            #return error if ArcGIS query returned data for a ticket other than
+            #the one specified by the agent
+
+            if __ArcGIS_query_returned_correct_ticket(validated_ticket_num, response_JSON):
+                ticket_details = {
+                    "Reference number": response_JSON["message"]["ReferenceNumber"],
+                    "Service Category": response_JSON["message"]["CategoryName"],
+                    "Council District": response_JSON["message"]["CouncilDistrictNumber"],
+                    "Incident Source": response_JSON["message"]["SourceLevel1"],
+                    "Neighborhood": response_JSON["message"]["Neighborhood"],
+                    "Date Created": __convert_Epoch_to_localtime(
+                        response_JSON["message"]["DateCreated"]
+                    ),
+                    "Date Solved": __convert_Epoch_to_localtime(
+                        response_JSON["message"]["DateClosed"]
+                    ),
+                    "Last Updated": __convert_Epoch_to_localtime(
+                        response_JSON["message"]["DateUpdated"]
+                    ),
+                    "Cross Street": response_JSON["message"]["CrossStreet"],
+                    "Address": response_JSON["message"]["Address"],
+                    "ZipCode": response_JSON["message"]["ZIP"],
+                    "Case Status": response_JSON["message"]["PublicStatus"],
+                }
+                retval = ticket_details
+            else:
+                retval = "There was an error retrieving ArcGIS data for this ticket."
         elif response_JSON["status"] == "error":
             retval = response_JSON["message"]
     else:
-        retval = "Ticket number is not valid."
+        retval = "Invalid ticket number"
 
     return retval
