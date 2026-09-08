@@ -13,16 +13,11 @@ def save_user_question(
     llm_request: LlmRequest,
 ) -> Optional[LlmResponse]:
     user_question = ""
-    if llm_request.contents:
-        for content in reversed(llm_request.contents):
-            if getattr(content, "role", None) == "user" and getattr(content, "parts", None):
-                for part in content.parts:
-                    text = getattr(part, "text", None)
-                    if text:
-                        user_question = text
-                        break
-            if user_question:
-                break
+
+    for event in reversed(callback_context.session.events):
+        if event.author == "user":
+            user_question = event.content.parts[0].text
+            break
 
     callback_context.state["user_question"] = user_question
     return None
