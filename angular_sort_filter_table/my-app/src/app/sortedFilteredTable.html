@@ -1,0 +1,101 @@
+<!--The table in this component is only meant to be a placeholder for developing -->
+<!-- the sorting and filtering tool. Ideally, the form with sort/filter options -->
+<!-- would be a separate component from the table. I tried to implement this -->
+<!-- but couldn't figure out how to share the data between components. -->
+
+<!-- The form that collects sort/filter options from the user (lines 32-100 of this file) -->
+<!-- as well as the code in sortedFilteredTable.ts will need to be copy and pasted to -->
+<!-- the real table component. Or, this component could be addded to. -->
+
+<table>
+    <caption>
+        This is a placeholder table used to implement sorting and filtering.
+    </caption>
+    <thead>
+        <tr>
+            <th scope="col">Conversation ID</th>
+            <th scope="col">Phone number</th>
+            <th scope="col">Topic</th>
+            <th scope="col">Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (record of displayed_records; track record.id) {
+        <tr>
+            <th scope="row">{{record.id}}</th>
+            <td>{{record.phone_number}}</td>
+            <td>{{record.request_type}}</td>
+            <td>{{record.date}}</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<!-- =========================================================================== -->
+<!-- html for form with sort/filter options. -->
+<!-- =========================================================================== -->
+
+<form (submit)="onSubmit($event)">
+    <fieldset id="sort-date-fieldset">
+        <legend>Sort by date</legend>
+        <div>
+            <label>
+                <input type="radio" [formField]="sortFilterForm.sortDate" value="newest" />
+                Date - newest</label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" [formField]="sortFilterForm.sortDate" value="oldest" />
+                Date - oldest</label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" [formField]="sortFilterForm.sortDate" value="" />
+                Don't sort by date</label>
+        </div>
+    </fieldset>
+
+    <fieldset id="filter-date-fieldset">
+        <legend>Filter by date</legend>
+        <div>
+            <label>After date
+                <input type="date" [formField]="sortFilterForm.filterStartDate" />
+            </label>
+        </div>
+        <div>
+            <label>Before date
+                <input type="date" [formField]="sortFilterForm.filterEndDate" />
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Filter by topic</legend>
+        <div>
+            <label>
+                <input type="radio" value="ticket" [formField]="sortFilterForm.filterTopic" />
+                Topic - ticket </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="general" [formField]="sortFilterForm.filterTopic" />
+                Topic - general question </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="both" [formField]="sortFilterForm.filterTopic" />
+                Topic - both (ticket and general question) </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="none" [formField]="sortFilterForm.filterTopic" />
+                Topic - none </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="" [formField]="sortFilterForm.filterTopic" />
+                Don't filter by topic </label>
+        </div>
+    </fieldset>
+    <button type="submit">Apply</button>
+</form>
