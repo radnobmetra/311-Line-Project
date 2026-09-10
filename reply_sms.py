@@ -26,7 +26,6 @@ async def reply_sms():
     incoming_msg = request.values.get('Body', '')
     # Gets the user's phone number as the user_id and removes the '+' character at the start of the number.
     user_id = request.values.get('From', 'default_user').replace('+', '')
-    update_user_status(user_id, incoming_msg)
     # A runner is required to process the conversation with the ADK app.
     runner = Runner(
         app=adk_app,
@@ -47,6 +46,8 @@ async def reply_sms():
                 user_id=user_id, 
                 session_id=user_id
             )
+        #Log activity and reset timer for the user.
+        update_user_status(user_id, incoming_msg)
         # Packages the incoming message as a Content object for the AI to understand, with a user role.
         new_msg = Content(parts=[Part(text=incoming_msg)], role="user")
         # Runs the entire AI process, including agent function calls.
