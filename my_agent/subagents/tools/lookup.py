@@ -2,7 +2,7 @@ import os, proto, json, traceback, logging
 from typing import Any
 
 import google.auth
-from elasticsearch import Elasticsearch
+# from elasticsearch import Elasticsearch
 from google.cloud import discoveryengine_v1 as discoveryengine
 
 from google.adk.tools import ToolContext
