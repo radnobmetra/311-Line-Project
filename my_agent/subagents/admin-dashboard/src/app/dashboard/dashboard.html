@@ -30,15 +30,6 @@
         text-align: left;
       }
 
-      td:nth-child(2) {
-        word-break: break-all;
-      }
-      
-      th:nth-child(3), td:nth-child(3) {
-        width: 35%;
-        word-break: break-word;
-      }
-
       th {
         background-color: #2c2c2c;
         color: #4da6ff;
@@ -49,24 +40,59 @@
       tr:nth-child(even) {
         background-color: #252525;
       }
+
+      .search_container {
+        margin-bottom: 20px;
+        width: 45%;
+      }
+
+      label {
+        font-weight: bold;
+      }
+      
+      input[type="text"] {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 2px solid #333333; /* Width, style, color */
+        border-radius: 5px; /* Rounded boarders */
+        width: 100%;
+        padding: 10px; /* All four sides */
+        box-sizing: border-box;
+      }
     </style>
 
   </head>
   <body>
     <h1>Admin Dashboard</h1>
 
-   <table>
-      <tr>
-        <th>App Name</th>
-        <th>ID</th>
-        <th>State</th>
-        <th>Create Time</th>
-        <th>Update Time</th>
-      </tr>
-      
+    <div class="search_container">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search by Phone Number, ID, or Request Type...">
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Phone Number</th>
+                <th>ID</th>
+                <th>Request Type</th>
+                <th>Create Time</th>
+                <th>Update Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (log of filteredLogs(); track log.phoneNum) {
+                <tr>
+                    <td>{{ log.phoneNum }}</td>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.requestType }}</td>
+                </tr>
+            } @empty {
+                <tr>
+                    <td colspan="5" style="text-align: center;">No results found.</td>
+                </tr>
+            }
 
-
-
+        </tbody>
     </table>
 
   </body>
