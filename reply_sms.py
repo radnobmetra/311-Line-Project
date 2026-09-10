@@ -2,18 +2,17 @@ from dotenv import load_dotenv
 import os
 
 from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
 from google.genai.types import Content, Part
 
 from google.adk.apps.app import App
+from timertracker import update_user_status
 
 from flask import Flask, request, Response
 from twilio.twiml.messaging_response import MessagingResponse
 
 load_dotenv() # Probably not needed, I'm tired
 
-app_name = "my_agent"
-session_service = InMemorySessionService()
+from session_manager import app_name, session_service
 
 app = Flask(__name__)
 
@@ -27,6 +26,7 @@ async def reply_sms():
     incoming_msg = request.values.get('Body', '')
     # Gets the user's phone number as the user_id and removes the '+' character at the start of the number.
     user_id = request.values.get('From', 'default_user').replace('+', '')
+    update_user_status(user_id, incoming_msg)
     # A runner is required to process the conversation with the ADK app.
     runner = Runner(
         app=adk_app,

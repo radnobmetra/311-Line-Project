@@ -4,8 +4,8 @@ import os
 import asyncio
 from my_agent.subagents.end_conversation import end_conversation 
 from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
 from google.genai import types
+from session_manager import app_name, session_service
 
 #hurryup checks if user sent a message, timesup is the timer in seconds
 HURRY_UP = "useronline.json"
@@ -31,21 +31,23 @@ def run_loop():
                     transcript = data.get("transcript", "")
                     #doesnt rly work but it does?
                     prompt_text = f"System: The user is inactive. Log this transcript using your tool, say goodbye, and run the session_reviewer. Transcript:\n{transcript}" 
-                    
-                    app_name = "TimeoutMonitor"
-                    sess_id = f"timeout_{user_id}"
-                    session_service = InMemorySessionService()
-                    asyncio.run(session_service.create_session(app_name=app_name, user_id=user_id, session_id=sess_id))
-                    runner = Runner(agent=end_conversation, app_name=app_name, session_service=session_service)
+
+                    sess_id = user_id
+
+                    runner = Runner(
+                        agent=end_conversation,
+                        app_name=app_name,
+                        session_service=session_service
+                    )
                     content = types.Content(role="user", parts=[types.Part(text=prompt_text)])
                     
                     # bugs agent to run and captures it
                     events = runner.run(user_id=user_id, session_id=sess_id, new_message=content)
                     for event in events:
                         pass
-                    print("Logged!")
-                    
-                    
+                    asyncio.run(session_service.delete_session(app_name=app_name,
+                                                               user_id=user_id, session_id=sess_id))
+                    print("Logged and session ended!")
                     # will likely come back to edit this heavily when sms drops
                     # web server is rly weird with this stuff, sms should be more flexible, i hope..
 
