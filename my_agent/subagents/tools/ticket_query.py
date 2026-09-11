@@ -94,7 +94,7 @@ def __ArcGIS_get_ticket(ticket_number):
 def get_ticket_details(ticket_number):
     """
     Gets the 311 Salesforce ticket details and returns it in a JSON format.
-    Args: ticket number
+    Args: Reference Number from https://data.cityofsacramento.org/datasets/5b9a9448663f41b1898643b6d91201c4_0/
     Returns:
         A JSON containing Reference number, Service Category, Council District, Incident Source, Neighborhood,
         Date Created, Date Solved, Last Updated, Cross Street, Address, ZipCode, and Case Status.
@@ -105,7 +105,7 @@ def get_ticket_details(ticket_number):
 
     if is_num_valid:
         response_JSON = __ArcGIS_get_ticket(validated_ticket_num)
-
+        print(response_JSON)
         if response_JSON["status"] == "success":
             ticket_details = {
                 "Reference number": response_JSON["message"]["ReferenceNumber"],
@@ -129,8 +129,8 @@ def get_ticket_details(ticket_number):
             }
             retval = ticket_details
         elif response_JSON["status"] == "error":
-            retval = response_JSON["message"]
+             
+             retval = response_JSON["message"]
     else:
         retval = "Ticket number is not valid."
-
     return retval
