@@ -1,13 +1,14 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
 import { Sidebar } from './sidebar/sidebar';
+import { CommonModule } from '@angular/common'; 
 
 @Component({
-  imports: [RouterOutlet, Sidebar],
+  imports: [RouterOutlet, Sidebar, CommonModule],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('frontend');
+  router = inject(Router);
 }

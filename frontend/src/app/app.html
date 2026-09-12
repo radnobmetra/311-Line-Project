@@ -1,4 +1,8 @@
-<div style="display: flex; min-height: 100vh;">
+<div *ngIf="router.url === '/login'">
+  <router-outlet></router-outlet>
+</div>
+
+<div *ngIf="router.url !== '/login'" style="display: flex; min-height: 100vh;">
   <app-sidebar></app-sidebar>
   <main style="padding: 20px; width: 100%;">
     <router-outlet></router-outlet>
