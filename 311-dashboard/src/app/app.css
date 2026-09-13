@@ -9,7 +9,6 @@
 /*Body Styles*/
 
 .body {
-    background-color: lightyellow;
     display: grid;
     grid-template-columns: 1fr 11fr;
     gap: 1em;

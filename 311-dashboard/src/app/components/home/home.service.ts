@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 
-export class GraphService {
+export class HomeService {
     API_URL = 'http://localhost:3000/ticket_counts';
 
     constructor(private _httpclient:HttpClient) { 
