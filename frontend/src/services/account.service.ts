@@ -6,10 +6,11 @@ import { Observable } from 'rxjs';
 @Service()
 export class AccountService {
     http = inject(HttpClient);
-    // Hardcoded a profile ID for testing. TODO: track active logged in user.
-    currentProfileID: number = 0;
     // Accounts API endpoint.
     apiUrl = 'http://localhost:3000/accounts';
+   
+    // Hardcoded a profile ID for testing. TODO: track active logged in user.
+    currentProfileID: number = 0;
 
     // A fetch function that calls the endpoint to get the current user's profile data. 
     getCurrentProfile(): Observable<UserProfile> {
