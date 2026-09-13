@@ -1,6 +1,6 @@
 import os, proto, json, traceback, logging
 from typing import Any
-
+from elasticsearch import Elasticsearch
 import google.auth
 from google.cloud import discoveryengine_v1 as discoveryengine
 
