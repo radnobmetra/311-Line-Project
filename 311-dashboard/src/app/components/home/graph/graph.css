@@ -1,0 +1,29 @@
+.body {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 150px;
+    row-gap: 70px;
+    margin: 25px;
+    margin-top: 0;
+    padding: 25px;
+    padding-top: 0;
+}
+
+.title {
+    padding: 10px 0;
+    margin: 0;
+}
+
+.graph {
+    width: 700px;
+    height: 380px;
+}
+
+/* Placeholder, Will remove once we have more graphs */
+.img {
+    width: 700px;
+    height: 380px;
+}

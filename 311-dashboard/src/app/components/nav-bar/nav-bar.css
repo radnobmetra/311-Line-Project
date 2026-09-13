@@ -1,0 +1,12 @@
+.directory {
+    display: flex;
+    flex-direction: column;
+}
+
+li {
+    list-style-type: none;
+    cursor: pointer;
+    text-wrap: nowrap;
+    padding: 8px 16px;
+    margin: 4px 0;
+}

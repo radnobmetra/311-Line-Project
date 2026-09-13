@@ -1,0 +1,16 @@
+{
+    "ticket_counts": [
+        {
+            "status": "Resolved",
+            "count": 4
+        },
+        {
+            "status": "Not resolved",
+            "count": 2
+        },
+        {
+            "status": "MALFORMED",
+            "count": 1
+        }
+    ]
+}

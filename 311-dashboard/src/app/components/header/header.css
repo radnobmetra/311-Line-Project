@@ -1,0 +1,34 @@
+.mainHeader {
+    background-color: lightgreen;
+    padding: 8px 16px;
+    gap: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    object-fit: fill;
+}
+
+.pfp {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
