@@ -10,6 +10,8 @@ import { Profile } from './profile/profile';
 export const routes: Routes = [
     // Disabled authentication temporarily until we are done creating all pages.  
 
+
+export const routes: Routes = [
     // { path: 'login', component: Login }, //login page
     // { path: 'overview', component: Overview, canActivate: [guardian] }, //guadian ensures valid entry
     // { path: 'settings', component: Settings, canActivate: [guardian] },
