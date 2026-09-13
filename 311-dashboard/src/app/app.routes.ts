@@ -15,4 +15,5 @@ export const routes: Routes = [
     }
 ];
 
+
 /*login page goes here, dashboard page goes here, 404 page goes here. NEED TO IMPLEMENT*/
