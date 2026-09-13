@@ -6,14 +6,12 @@
     justify-content: center;
     column-gap: 150px;
     row-gap: 70px;
-    margin: 25px;
-    margin-top: 0;
-    padding: 25px;
-    padding-top: 10px;
+    margin: 0px 25px;
+    padding: 0px 25px;
 }
 
 .title {
-    padding: 10px 0;
+    padding: 20px 0 10px;
     margin: 0;
 }
 

@@ -21,6 +21,7 @@ app-header {
 app-nav-bar {
     grid-column:  1/1;
     background-color: lightgrey;
+    
 }
 
 .page-content {
