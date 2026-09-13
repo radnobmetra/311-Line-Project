@@ -2,9 +2,15 @@
   <router-outlet></router-outlet>
 </div>
 
+
 <div *ngIf="router.url !== '/login'" style="display: flex; min-height: 100vh;">
-  <app-sidebar></app-sidebar>
-  <main style="padding: 20px; width: 100%;">
-    <router-outlet></router-outlet>
-  </main>
+  <div class="container">
+    <app-header></app-header>
+    <div class="body">
+      <app-sidebar></app-sidebar>
+      <main style="padding: 20px; width: 100%;">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
 </div>

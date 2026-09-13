@@ -1,0 +1,32 @@
+.container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 11fr;
+    min-height: 100vh;
+}
+
+app-header {
+    display: grid;
+}
+
+/*Body Styles*/
+
+.body {
+    display: grid;
+    grid-template-columns: 1fr 11fr;
+    align-content: start;
+
+}
+
+app-nav-bar {
+    grid-column:  1/1;
+    background-color: lightgrey;
+    
+}
+
+main {
+    grid-column:  2/12;
+    /*background-color: lightblue; */
+}
+
+/* END of Body Styles*/

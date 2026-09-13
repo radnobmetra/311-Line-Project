@@ -1,0 +1,74 @@
+.mainHeader {
+    background-color: rgb(85, 100, 230);
+    padding: 0px 32px;
+    gap: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: whitesmoke;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+    padding: 0;
+    margin: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    overflow: hidden;
+}
+
+li {
+    display: inline-flex;
+    align-items: stretch;
+}
+
+li a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 8px 16px;
+    color: whitesmoke;
+
+}
+
+li a:hover {
+    height: 100%;
+    background-color: rgb(65, 77, 184);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+}
+
+.profile-setting {
+    visibility: hidden;
+    text-align: center;
+    padding: 8px 16px;
+    position: absolute;
+}
+
+.user-info:hover .profile-setting {
+    visibility: visible;
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    object-fit: fill;
+}
+
+.pfp {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
