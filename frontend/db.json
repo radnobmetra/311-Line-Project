@@ -1,0 +1,16 @@
+{
+    "accounts": [
+        {
+            "id": 0,
+            "name": "John Doe",
+            "username": "john_doe",
+            "email": "john@test.com"
+        },
+        {
+            "id": 1,
+            "name": "Joe Smith",
+            "username": "joe_smith",
+            "email": "joe@test.com"
+        }
+    ]
+}
