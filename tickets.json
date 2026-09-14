@@ -18,6 +18,24 @@
             "Ticket number": "0123",
             "Description": "MALFORMED",
             "Status": "MALFORMED"
+        },
+        {
+            "Subject": "Pothole on Main St.",
+            "Ticket number": "1235",
+            "Description": "There is a pothole on Main St.",
+            "Status": "Resolved"
+        },
+        {
+            "Subject": "Parking meter not working",
+            "Ticket number": "1334",
+            "Description": "There is a broken parking meter on 131 Example St.",
+            "Status": "Resolved"
+        },
+        {
+            "Subject": "Fallen tree in road",
+            "Ticket number": "7652",
+            "Description": "There is a fallen tree branch partially blocking the road at 5444 Some Rd.",
+            "Status": "Not resolved"
         }
     ]
-}
+} 
