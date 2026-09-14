@@ -1,0 +1,17 @@
+<div class="login-wrapper">
+    <h1>Login Page</h1>
+    <div class="container">
+        <form name="loginForm" #loginForm="ngForm" (submit)="login()">
+            <div class="element">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="emailLogin" [(ngModel)]="user.email" placeholder="Your Email" required/>
+            </div>
+            <div class="element">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="passLogin" [(ngModel)]="user.password" placeholder="Your Password" required/>
+            </div>
+            <button type="submit" [disabled]="!loginForm.valid">Login</button>
+        </form>
+        <label class="error_message" *ngIf="loginError">Invalid email or password.</label>
+    </div>
+</div>
