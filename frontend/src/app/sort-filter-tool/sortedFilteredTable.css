@@ -1,0 +1,16 @@
+form {
+    outline: solid black 1px;
+}
+
+form>fieldset>legend {
+    font-weight: bold;
+}
+
+form>button {
+    outline: solid black 1px;
+    margin: 3px;
+}
+
+input[type=date]{
+    outline: solid black 1px;
+}
