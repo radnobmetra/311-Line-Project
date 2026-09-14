@@ -1,0 +1,22 @@
+<section class="messages-page">
+    <h1>Incoming SMS Messages</h1>
+    @if(messages().length > 0)
+    {
+    <table>
+        <tr>
+            <th>From</th>
+            <th>Message Body</th>
+            <th>Receive Time</th>
+        </tr>
+        @for (message of messages(); track message.id) {
+        <tr>
+            <td>{{ message.from }}</td>
+            <td>{{ message.body }}</td>
+            <td>{{ message.receivedAt }}</td>
+        </tr>
+        }
+    </table>
+    } @else {
+    <p class="empty-state">No messages yet.</p>
+    }
+</section>
