@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 
+
 @Component({
   imports: [FormsModule, CommonModule],
   selector: 'app-login',
