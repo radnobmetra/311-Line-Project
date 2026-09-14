@@ -5,6 +5,8 @@ import { Requests } from './requests/requests';
 import { Analytics } from './analytics/analytics';
 import { Login } from './login/login';
 import { guardian } from './guardian'; 
+import { Profile } from './profile/profile';
+import { Messages } from './messages/messages';
 
 export const routes: Routes = [
      { path: 'login', component: Login }, //login page
@@ -21,6 +23,8 @@ export const routes: Routes = [
     { path: 'settings', component: Settings,  },
     { path: 'analytics', component: Analytics,  },
     { path: 'requests', component: Requests,  },
+    { path: 'messages', component: Messages,  },
+    { path: 'profile', component: Profile,  },
     { path: '', redirectTo: '/overview', pathMatch: 'full' } //redirct
      */
 ];

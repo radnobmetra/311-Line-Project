@@ -1,0 +1,35 @@
+<section class="profile-page">
+    <h1 id="profile-heading">My profile</h1>
+    <p class="page-description">Your account information and password settings.</p>
+
+    @if (profileDetails()) {
+    <article class="profile-card">
+        <h1>Profile Details</h1>
+
+        <dl class="details">
+            <div class="detail-row">
+                <dt>Name</dt>
+                <dd>{{ profileDetails()?.name }}</dd>
+            </div>
+            <div class="detail-row">
+                <dt>Username</dt>
+                <dd>{{ profileDetails()?.username }}</dd>
+            </div>
+            <div class="detail-row">
+                <dt>Email</dt>
+                <dd>{{ profileDetails()?.email }}</dd>
+            </div>
+        </dl>
+
+        <section class="password-section">
+            <div>
+                <h2 id="password-heading">Password</h2>
+                <p>Manage the password you use to sign in.</p>
+            </div>
+            <button type="button" class="change-password-button" (click)="changePassword()">Change Password</button>
+        </section>
+    </article>
+    } @else {
+    <p class="empty-state" role="status">Profile information is currently unavailable.</p>
+    }
+</section>

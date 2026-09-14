@@ -1,0 +1,31 @@
+{
+    "accounts": [
+        {
+            "id": "0",
+            "name": "John Doe",
+            "username": "john_doe",
+            "email": "john@test.com"
+        },
+        {
+            "id": "1",
+            "name": "Joe Smith",
+            "username": "joe_smith",
+            "email": "joe@test.com"
+        }
+    ],
+    "messages": [
+        {
+            "from": "+1123456789",
+            "body": "There is a broken streetlight on Main Street.",
+            "receivedAt": "09/13/2026 08:00 AM",
+            "id": "lLo7fL7FjaM"
+        },
+        {
+            "from": "+1987654321",
+            "body": "There is a pothole on 123 Street.",
+            "receivedAt": "09/13/2026 08:15 AM",
+            "id": "0Vf9v96gAjc"
+        }
+    ],
+    "$schema": "./node_modules/json-server/schema.json"
+}
