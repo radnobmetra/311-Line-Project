@@ -1,0 +1,26 @@
+<div class="analytics-container">
+  <h1 class="analytics-title">Events</h1>
+
+    <table>
+      <tr>
+          <th>Status</th>
+          <th>User ID</th>
+          <th>Outcome</th>
+      </tr>
+      @for (message of messages(); track message.id) {
+      <tr>
+          <td>{{ message.status }}</td>
+          <td>{{ message.user_id }}</td>
+        <td>{{ message.outcome }}</td>
+      </tr>
+      }
+    </table>
+
+  <button
+    type="button"
+    class="export-btn"
+    (click)="onExport()"
+    aria-label="Export analytics data">
+    Export
+  </button>
+</div>

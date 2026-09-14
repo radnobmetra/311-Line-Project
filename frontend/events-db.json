@@ -1,0 +1,28 @@
+{
+  "events": [
+    {
+      "id": "5a18eb8e-e87f-45ad-b245-7d4de9fb9ad5",
+      "status": "closed",
+      "user_id": "user",
+      "outcome": "resolved"
+    },
+    {
+      "id": "6ee26b75-7ebb-4a77-a886-4d5cf6714b81",
+      "status": "closed",
+      "user_id": "user",
+      "outcome": "resolved"
+    },
+    {
+      "id": "cfedbfb5-6154-40e0-b5ed-8f2c132612c8",
+      "status": "closed",
+      "user_id": "user",
+      "outcome": "resolved"
+    },
+    {
+      "id": "cfedbfb5-6154-40e0-b5ed-8f2c132612c8",
+      "status": "open",
+      "user_id": "user",
+      "outcome": "resolved"
+    }
+  ]
+}
