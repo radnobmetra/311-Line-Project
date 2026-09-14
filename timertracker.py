@@ -5,6 +5,18 @@ import os
 #checks if user is still around
 HURRY_UP = "useronline.json"
 
+def get_active_user_count():
+    if not os.path.exists(HURRY_UP):
+        return 0
+
+    with open(HURRY_UP, "r") as file:
+        try:
+            sessions = json.load(file)
+        except json.JSONDecodeError:
+            return 0
+
+    return len(sessions)
+
 #logs messages and resets timer
 def update_user_status(user_id: str, new_message: str):
     sessions = {}
