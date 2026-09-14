@@ -2,18 +2,17 @@ from dotenv import load_dotenv
 import os
 
 from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
 from google.genai.types import Content, Part
 
 from google.adk.apps.app import App
+from timertracker import update_user_status
 
 from flask import Flask, request, Response
 from twilio.twiml.messaging_response import MessagingResponse
 
 load_dotenv() # Probably not needed, I'm tired
 
-app_name = "my_agent"
-session_service = InMemorySessionService()
+from session_manager import app_name, session_service
 
 app = Flask(__name__)
 
@@ -47,6 +46,8 @@ async def reply_sms():
                 user_id=user_id, 
                 session_id=user_id
             )
+        #Log activity and reset timer for the user.
+        update_user_status(user_id, incoming_msg)
         # Packages the incoming message as a Content object for the AI to understand, with a user role.
         new_msg = Content(parts=[Part(text=incoming_msg)], role="user")
         # Runs the entire AI process, including agent function calls.

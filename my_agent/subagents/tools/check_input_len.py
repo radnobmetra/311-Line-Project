@@ -1,4 +1,4 @@
-from timertracker import update_user_status
+
 
 def check_input_len(user_input: str) -> bool:
     """
@@ -10,9 +10,9 @@ def check_input_len(user_input: str) -> bool:
     Returns:
         bool: True if 70% or more of the characters in the user's input are alphanumeric chars, False otherwise.
     """
-    # logs activity first when ran
-    update_user_status("user", user_input) 
-    
+
+    if not user_input:
+        return False
     # character check logic
     counter = 0
     # Progresses through each character in the user input.
