@@ -1,4 +1,37 @@
-<div class="img_container">
-    <input type="image" id="notifications_img" alt="notifications"
-        onclick="toggleNotifications()" [src]="icon_url" />
+<div class="notifications_container">
+
+    <!-- mailbox icon in header -->
+
+    <div class="img_container">
+        <input type="image" id="notifications_img" alt="notifications" 
+            (click)="toggleNotifications()" [src]="icon_url" />
+    </div>
+
+    <!-- container of popup showing notifications -->
+    <!-- popup_hidden variable determines whether popup is shown or not -->
+
+    <div class="popup_container" [hidden]="popup_hidden">
+
+        <!-- header of popup container; has title and exit button -->
+
+        <div class="popup_header">
+            <p>Notifications</p>
+            <input type="image" alt="close notifications" (click)="toggleNotifications()"
+            src="black_x_icon.png" />
+        </div>
+
+        <!-- Display all notifications (for now, placeholder notifications) -->
+
+        @for (notification of displayed_notifs; track notification.id) {
+            <div class="notif_header">
+                <p>{{notification.date}}: {{notification.title}}</p>
+                <input type="image" alt="delete" src="trash_icon_black.png"
+                (click)="deleteNotification(notification.id)"/>
+            </div>
+            <p>{{notification.content}}</p>
+        } 
+        @empty {
+            <p>No notifications.</p>
+        }
+    </div>
 </div>

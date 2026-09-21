@@ -1,3 +1,70 @@
-img {
-    object-fit: contain;
+.notifications_container {
+    position: relative;
+}
+
+.popup_container {
+    position: absolute;
+    width: 400px;
+    float: right;
+    top: 75px;
+    z-index: 20;
+    left: -375px;
+    color: black;
+    background-color: white;
+    border: 1px #a3a3a3 solid;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+.popup_header {
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+input[type="button"] {
+    background-color: white;
+}
+
+.notif_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top: grey 1px solid;
+    border-bottom: grey 1px dotted;
+    border-left: none;
+    border-right: none;
+}
+
+.notif_header > p {
+    font-weight: bold;
+}
+
+[hidden] { display: none !important; }
+
+input[type="image"] {
+    height: 3em;
+    width: auto;
+}
+
+.notif_header > input[type="image"] {
+    height: 2em;
+    width: auto;
+}
+
+.popup_header > input[type="image"] {
+    height: 1.5em;
+    width: auto;
+}
+
+.notif_header > input[type="image"]:hover {
+    border: 1px grey solid;
+}
+
+.popup_header > input[type="image"]:hover {
+    border: 1px grey solid;
 }
