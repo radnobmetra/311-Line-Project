@@ -54,6 +54,8 @@ export class Events {
       next: (messages) => this.messages.set(messages),
       error: (err) => console.error("Messages polling error:", err)
     });
+
+    this.selectedMessages = [];
   }
 
 
@@ -62,7 +64,16 @@ export class Events {
   //==============================================
 
   onExport(): void {
-    const rows = this.messages();
+    let rows = this.displayedMessages();
+
+    //if messages have been selected, only export the messages that have
+    //been selected
+    if (this.selectedMessages) {
+      if (this.selectedMessages.length > 0) {
+        rows = rows.filter((record) => this.selectedMessages.indexOf(record.id) >= 0);
+      }
+    }
+
     if (!rows.length) {
       console.warn('No messages to export.');
       return;
@@ -135,8 +146,15 @@ export class Events {
   //==============================================
 
   displayedMessages = computed(() => {
-    return this.sortMessages();
+    //sortMessages() applies searching and filtering to messages.
+    return this.sortMessages();     
   });
+
+  //==============================================
+  //            signal for search bar
+  //==============================================
+
+    searchInput = signal<string>('');
 
   //==============================================
   //       record sorting/filtering options
@@ -145,36 +163,86 @@ export class Events {
   private sortMessages(): any[] {
     let tempArr = this.messages();
 
-    //filter
+    //filter by status
     if (this.sortFilterForm.filterStatus().value()) {
       tempArr = tempArr.filter(
-        (record) => record.status == this.sortFilterForm.filterStatus().value());
+        (record) => {
+          if (!(record.status == this.sortFilterForm.filterStatus().value())) {
+            //if record is filtered out, deselect it to avoid errors
+            this.toggleSelectedMsg(record.id, true);
+            return false;
+          }
+          else return true;
+        });
     }
 
+    //filter by outcome
     if (this.sortFilterForm.filterOutcome().value()) {
       tempArr = tempArr.filter(
-        (record) => record.outcome == this.sortFilterForm.filterOutcome().value());
+        (record) => {
+          if (!(record.outcome == this.sortFilterForm.filterOutcome().value())) {
+            //if record is filtered out, deselect it to avoid errors
+            this.toggleSelectedMsg(record.id, true);
+            return false;
+          }
+          else return true;
+        });
     }
 
     const searchTerm = this.searchInput().toLowerCase();
 
     //search bar
     if (searchTerm) {
-      tempArr = tempArr.filter (
-        (record) => record.status.toLowerCase().includes(searchTerm) ||
-        record.user_id.toLowerCase().includes(searchTerm) ||
-        record.outcome.toLowerCase().includes(searchTerm)
-      )
+      tempArr = tempArr.filter(
+        (record) => {
+          if (!(record.status.toLowerCase().includes(searchTerm) ||
+            record.user_id.toLowerCase().includes(searchTerm) ||
+            record.outcome.toLowerCase().includes(searchTerm))) {
+            //if record is filtered out, deselect it to avoid errors
+            this.toggleSelectedMsg(record.id, true);
+            return false;
+          }
+          else return true;
+        });
     }
 
     return tempArr;
   }
 
   //==============================================
-  //                search bar
+  //       selecting messages to export
   //==============================================
 
-    searchInput = signal<string>('');
+  selectedMessages: string[];    //array of elements that are selected to be exported.
 
+  toggleSelectedMsg(message_id: any, onlyRemoveMessage: boolean) {
+    //this function updates the selectedMessages array when the user 
+    // selects or unselects a message's checkbox.
+    //if onlyRemoveMessage = true, the function will deselect the message 
+    //if it's selected, and it will not select the message if it's not selected.
+
+    if (this.selectedMessages.length > 0) {
+      let msg_id_index = this.selectedMessages.indexOf(message_id);
+      //if message_id is in array of selected elements, remove it 
+      // from array to unselect it
+      if (msg_id_index != -1) {
+        this.selectedMessages.splice(msg_id_index, 1);
+      } 
+      //if ID isn't in array of selected elements, add it to array
+      else if (onlyRemoveMessage == false) {
+        this.selectedMessages.push(message_id);
+      }
+    }
+    else {
+      //create selectedMessages array if its not initialized
+    if (!this.selectedMessages) {
+      this.selectedMessages = [];
+    }
+    //add id to array if array is empty
+    if (this.selectedMessages.length == 0 && onlyRemoveMessage == false) {
+      this.selectedMessages.push(message_id);
+    }
+    }
+  }
 }
 

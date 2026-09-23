@@ -14,12 +14,14 @@
           <th>Status</th>
           <th>User ID</th>
           <th>Outcome</th>
+          <th>Export</th>
       </tr>
-      @for (message of displayedMessages(); track message.id) {
+      @for (message of displayedMessages(); track $index) {
       <tr>
           <td>{{ message.status }}</td>
           <td>{{ message.user_id }}</td>
-        <td>{{ message.outcome }}</td>
+          <td>{{ message.outcome }}</td>
+          <td><input type="checkbox" (click) = "toggleSelectedMsg(message.id, false)"/></td>
       </tr>
       }
     </table>
@@ -31,12 +33,12 @@
       <div>
         <label>
           <input type="radio" value="open" [formField]="sortFilterForm.filterStatus" />
-          Filter by status - open </label>
+          Filter by status = open </label>
       </div>
       <div>
         <label>
           <input type="radio" value="closed" [formField]="sortFilterForm.filterStatus" />
-          Filter by status - closed </label>
+          Filter by status = closed </label>
       </div>
       <div>
         <label>
