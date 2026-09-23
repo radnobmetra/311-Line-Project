@@ -1,7 +1,9 @@
 import { EventMessage } from './../../interfaces/events-db.interface';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from './../../services/events.service';
+import { form, FormField } from '@angular/forms/signals';
+import { FormsModule } from '@angular/forms';
 
 // A custom data type for each row.
 // interface Logs {
@@ -10,18 +12,40 @@ import { EventService } from './../../services/events.service';
 //   requestType: string;
 // }
 
+//needed for getting data from filter/sort options form
+interface sortFilterInput {
+  //sortDate: string;
+  //filterStartDate: string;
+  //filterEndDate: string;
+  //filterTopic: string;
+  filterStatus: string;
+  filterOutcome: string;
+}
+
 @Component({
-  imports: [],
+  imports: [FormField, FormsModule],
   selector: 'app-events',
   styleUrl: './events.css',
   templateUrl: './events.html',
 })
+
 export class Events {
   // Inject the messages service so we can consume the messages polling service.
   eventsService = inject(EventService);
   // Array that holds all messages.
   messages = signal<EventMessage[]>([]);
 
+  //needed for getting data from filter/sort options form
+  sortFilterModel = signal<sortFilterInput>({
+    //sortDate: "",
+    //filterStartDate: "",
+    //filterEndDate: "",
+    //filterTopic: "",
+    filterStatus: "", 
+    filterOutcome: "",
+  });
+  sortFilterForm = form(this.sortFilterModel);
+    
   constructor() {
     // New messages will be fetched here.
     // Must register takeUntilDestroyed() to unsubscribe when the component is destroyed to avoid
@@ -31,6 +55,12 @@ export class Events {
       error: (err) => console.error("Messages polling error:", err)
     });
   }
+
+
+  //==============================================
+  //              exporting to csv 
+  //==============================================
+
   onExport(): void {
     const rows = this.messages();
     if (!rows.length) {
@@ -99,6 +129,52 @@ export class Events {
     }
     return lines.join('\r\n') + '\r\n';
   }
+
+  //==============================================
+  //        signal for sorted/filtered data
+  //==============================================
+
+  displayedMessages = computed(() => {
+    return this.sortMessages();
+  });
+
+  //==============================================
+  //       record sorting/filtering options
+  //==============================================
+
+  private sortMessages(): any[] {
+    let tempArr = this.messages();
+
+    //filter
+    if (this.sortFilterForm.filterStatus().value()) {
+      tempArr = tempArr.filter(
+        (record) => record.status == this.sortFilterForm.filterStatus().value());
+    }
+
+    if (this.sortFilterForm.filterOutcome().value()) {
+      tempArr = tempArr.filter(
+        (record) => record.outcome == this.sortFilterForm.filterOutcome().value());
+    }
+
+    const searchTerm = this.searchInput().toLowerCase();
+
+    //search bar
+    if (searchTerm) {
+      tempArr = tempArr.filter (
+        (record) => record.status.toLowerCase().includes(searchTerm) ||
+        record.user_id.toLowerCase().includes(searchTerm) ||
+        record.outcome.toLowerCase().includes(searchTerm)
+      )
+    }
+
+    return tempArr;
+  }
+
+  //==============================================
+  //                search bar
+  //==============================================
+
+    searchInput = signal<string>('');
 
 }
 
