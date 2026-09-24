@@ -6,6 +6,7 @@
     flex-direction: row;
     justify-content: space-between;
     color: whitesmoke;
+    max-height: 100px;
 }
 
 .title {
@@ -71,4 +72,12 @@ li a:hover {
     width: 35px;
     height: 35px;
     border-radius: 50%;
+}
+
+.notifications_container {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
