@@ -1,6 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 
+import { FormsModule } from '@angular/forms'; // Permits the use of ngModel in the .html
+
 //needed for getting data from filter/sort options form
 interface sortFilterInput {
     sortDate: string;
@@ -13,7 +15,7 @@ interface sortFilterInput {
     selector: 'records-table',
     templateUrl: './sortedFilteredTable.html',
     styleUrl: './sortedFilteredTable.css',
-    imports: [FormField],
+    imports: [FormField, FormsModule],
 })
 
 export class recordsTable {
@@ -41,6 +43,9 @@ export class recordsTable {
         { id: 212, phone_number: "2345678901", request_type: "both", date: "2013/11/01" },
     ];
 
+    // Will hold the search bar input.
+    searchInput = signal<string>('');
+
     //displayed_records = the version of the list of records that is actually displayed.
     //The '@for...' statement in sortedFilteredTable.html displays records from this array.
     displayed_records = this.conversation_records;
@@ -58,6 +63,17 @@ export class recordsTable {
 
         //processed_records = temporary variable to store list as sorts and filters are applied
         let processed_records = this.conversation_records;
+
+        // Search Bar functionality
+        const query = this.searchInput().toLowerCase().trim();
+        if (query !== '') {
+            processed_records = processed_records.filter(record =>
+                record.id.toString().includes(query) ||
+                record.phone_number.toLowerCase().includes(query) ||
+                record.request_type.toLowerCase().includes(query) ||
+                record.date.toLowerCase().includes(query)
+            );
+        }
 
         //filter by topic
         if (this.sortFilterForm.filterTopic().value()) {
