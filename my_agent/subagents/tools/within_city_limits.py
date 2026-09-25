@@ -1,34 +1,39 @@
-import pandas as panda
+import os
 import geopandas as geopanda
 from shapely.geometry import Point
+from .address_to_coords import get_coordinates
 
-
-
-def within_city_limits(
-    coordinates_raw:str
-) -> bool:
+def verify_address(address: str) -> dict:
     """
-    Checks to see if a given set of coordinates are within city limits.
-    Has a preset file (SacramentoCityLimits).geojson which data is dervied from.
-
-    Args: 
-        user_input (str): The user input, comes as a space seperated coordinate string.
-
-    Returns:
-        bool: True if the coordinates are in city limits. False if outside of city limits.    
+    calls get_coordinates to retrieve location data, then verifies 
+    if it falls within sac  limits.
     """
-    coords = coordinates_raw.split(" ")
-    latitude_value = float(coords[0])
-    longitude_value = float(coords[1])
-    coords2 = Point(longitude_value, latitude_value)
-    file = open("311-Line-Project\\my_agent\\subagents\\tools\\SacramentoCityLimits.geojson")
-    city_limits = geopanda.read_file(file)
-    city_limits_mask = (city_limits.loc[0,'geometry'])
+    # address2coords tool
+    coords = get_coordinates(address)
     
-
-    within_limits = city_limits.contains(coords2)
-
-    print(within_limits[0])
-    return city_limits
-
-
+    if not coords:
+        return {
+            "verified": False,
+            "lat": None,
+            "lng": None,
+            "message": "Error address not found."}
+        
+    lat, lng = coords
+    
+    # boundary logic
+    coords_point = Point(lng, lat) # Shapely uses (longitude, latitude)
+    
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "SacramentoCityLimits.geojson")
+    
+    city_limits = geopanda.read_file(file_path)
+    within_limits = city_limits.contains(coords_point)
+    is_verified = bool(within_limits[0])
+    
+    # return compiled data
+    return {
+        "verified": is_verified,
+        "lat": lat,
+        "lng": lng,
+        "message": "Within limits." if is_verified else "Outside limits."
+    }
