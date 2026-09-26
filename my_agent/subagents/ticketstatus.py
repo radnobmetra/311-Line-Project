@@ -107,7 +107,7 @@ validate_ticketstatus_agent = ValidateTicketStatus(
     description="Returns the ticket answer only if it passed review.",
 )
 
-ticketstatus_agent = SequentialAgent(
+ticketstatus_agent = LlmAgent(
     name="TicketStatusWorkflowAgent",
     sub_agents=[
         ticketstatus_draft_agent,
