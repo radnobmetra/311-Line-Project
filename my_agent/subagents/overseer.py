@@ -8,18 +8,17 @@ from .end_conversation import end_conversation
 from .pothole_reporting import pothole_report_draft_agent
 from .tools.user_request_tracking import update_num_invalid_requests
 from .tools.validateinput import validateInput
+from .streetlight_reporting import streetlight_reporting_agent
 
 overseer_agent = LlmAgent(
     model=MODEL,
     name="OverseerAgent",
     description="Routes user requests to the correct specialist and returns a single final response.",
     instruction=OVERSEER_INSTRUCTION,
-    sub_agents=[qa_agent, ticketstatus_agent, end_conversation, pothole_report_draft_agent],
+    sub_agents=[qa_agent, ticketstatus_agent, end_conversation, pothole_report_draft_agent,streetlight_reporting_agent],
     tools=[
         AgentTool(agent=greeting_agent),
         validateInput,
         update_num_invalid_requests,
     ],
 )
-
-

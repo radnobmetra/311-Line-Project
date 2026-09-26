@@ -142,7 +142,7 @@ def _hybrid_search(query):
 
 def _rerank(query, docs: list[dict[str,str]]):
     records = [
-        discoveryengine.RankingRecord(id=  f"{doc.get("index")}/" + doc["doc_id"] + f"/{doc.get("offset")}", title=doc.get("title", ""), content=doc.get("text", ""))
+        discoveryengine.RankingRecord(id=f"{doc.get('index')}/" + doc["doc_id"] + f"/{doc.get('offset')}", title=doc.get("title", ""), content=doc.get("text", ""))
         for doc in docs
     ]
 
