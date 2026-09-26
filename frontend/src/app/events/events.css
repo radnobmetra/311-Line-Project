@@ -12,6 +12,17 @@
   color: #1f2937;
 }
 
+.search_container {
+  margin-bottom: 20px;
+}
+
+form {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 .state-msg {
   color: #4b5563;
   font-size: 0.95rem;
