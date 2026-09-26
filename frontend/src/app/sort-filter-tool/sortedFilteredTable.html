@@ -7,95 +7,169 @@
 <!-- as well as the code in sortedFilteredTable.ts will need to be copy and pasted to -->
 <!-- the real table component. Or, this component could be addded to. -->
 
-<table>
-    <caption>
-        This is a placeholder table used to implement sorting and filtering.
-    </caption>
-    <thead>
-        <tr>
-            <th scope="col">Conversation ID</th>
-            <th scope="col">Phone number</th>
-            <th scope="col">Topic</th>
-            <th scope="col">Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (record of displayed_records; track record.id) {
-        <tr>
-            <th scope="row">{{record.id}}</th>
-            <td>{{record.phone_number}}</td>
-            <td>{{record.request_type}}</td>
-            <td>{{record.date}}</td>
-        </tr>
-        }
-    </tbody>
-</table>
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Request Logs</title>
 
-<!-- =========================================================================== -->
-<!-- html for form with sort/filter options. -->
-<!-- =========================================================================== -->
+    <style>
+      h1 {
+        color: #000000;
+      }
 
-<form (submit)="onSubmit($event)">
-    <fieldset id="sort-date-fieldset">
-        <legend style="font-weight:bold">Sort by date</legend>
-        <div>
-            <label>
-                <input type="radio" [formField]="sortFilterForm.sortDate" value="newest" />
-                Date - newest</label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" [formField]="sortFilterForm.sortDate" value="oldest" />
-                Date - oldest</label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" [formField]="sortFilterForm.sortDate" value="" />
-                Don't sort by date</label>
-        </div>
-    </fieldset>
+      .search_container {
+        margin-bottom: 20px;
+        width: 45%;
+      }
 
-    <fieldset id="filter-date-fieldset">
-        <legend>Filter by date</legend>
-        <div>
-            <label>After date
-                <input type="date" [formField]="sortFilterForm.filterStartDate" />
-            </label>
-        </div>
-        <div>
-            <label>Before date
-                <input type="date" [formField]="sortFilterForm.filterEndDate" />
-            </label>
-        </div>
-    </fieldset>
+      label {
+        font-weight: bold;
+      }
 
-    <fieldset>
-        <legend>Filter by topic</legend>
-        <div>
-            <label>
-                <input type="radio" value="ticket" [formField]="sortFilterForm.filterTopic" />
-                Topic - ticket </label>
+      table {
+        width: 70%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: #ffffff;
+      }
+
+      th, td {
+        border: 1px solid #333;
+        padding: 5px 5px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #ffffff;
+        font-weight: bold;
+        font-size: 1.25em;
+        width: 20%;
+      }
+
+      tr:nth-child(odd) {
+        background-color: #d0d0d0;
+      }
+      
+      input[type="text"] {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+        border: 2px solid #333333; /* Width, style, color */
+        border-radius: 5px; /* Rounded boarders */
+        width: 100%;
+        padding: 10px; /* All four sides */
+        box-sizing: border-box;
+      }
+    </style>
+
+  </head>
+  <body>
+    <h1>Request Logs</h1>
+
+    <!-- =========================================================================== -->
+    <!-- html for form with sort/filter options. -->
+    <!-- =========================================================================== -->
+
+    <form (submit)="onSubmit($event)">
+        <div class="search_container">
+            <label for="search">Search:</label>
+            <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search Table Values...">
         </div>
-        <div>
-            <label>
-                <input type="radio" value="general" [formField]="sortFilterForm.filterTopic" />
-                Topic - general question </label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" value="both" [formField]="sortFilterForm.filterTopic" />
-                Topic - both (ticket and general question) </label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" value="none" [formField]="sortFilterForm.filterTopic" />
-                Topic - none </label>
-        </div>
-        <div>
-            <label>
-                <input type="radio" value="" [formField]="sortFilterForm.filterTopic" />
-                Don't filter by topic </label>
-        </div>
-    </fieldset>
-    <button type="submit">Apply</button>
-</form>
+        <fieldset id="sort-date-fieldset">
+            <legend style="font-weight:bold">Sort by date</legend>
+            <div>
+                <label>
+                    <input type="radio" [formField]="sortFilterForm.sortDate" value="newest" />
+                    Date - newest</label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" [formField]="sortFilterForm.sortDate" value="oldest" />
+                    Date - oldest</label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" [formField]="sortFilterForm.sortDate" value="" />
+                    Don't sort by date</label>
+            </div>
+        </fieldset>
+
+        <fieldset id="filter-date-fieldset">
+            <legend>Filter by date</legend>
+            <div>
+                <label>After date
+                    <input type="date" [formField]="sortFilterForm.filterStartDate" />
+                </label>
+            </div>
+            <div>
+                <label>Before date
+                    <input type="date" [formField]="sortFilterForm.filterEndDate" />
+                </label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Filter by topic</legend>
+            <div>
+                <label>
+                    <input type="radio" value="ticket" [formField]="sortFilterForm.filterTopic" />
+                    Topic - ticket </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" value="general" [formField]="sortFilterForm.filterTopic" />
+                    Topic - general question </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" value="both" [formField]="sortFilterForm.filterTopic" />
+                    Topic - both (ticket and general question) </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" value="none" [formField]="sortFilterForm.filterTopic" />
+                    Topic - none </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" value="" [formField]="sortFilterForm.filterTopic" />
+                    Don't filter by topic </label>
+            </div>
+        </fieldset>
+        <button type="submit">Apply</button>
+    </form>
+
+    <!-- =========================================================================== -->
+    <!-- html for search bar -->
+    <!-- =========================================================================== -->
+
+    <table>
+        <caption>
+            This is a placeholder table used to implement sorting and filtering.
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col">Conversation ID</th>
+                <th scope="col">Phone number</th>
+                <th scope="col">Topic</th>
+                <th scope="col">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (record of displayed_records; track record.id) {
+            <tr>
+                <td scope="row">{{record.id}}</td>
+                <td>{{record.phone_number}}</td>
+                <td>{{record.request_type}}</td>
+                <td>{{record.date}}</td>
+            </tr>
+            } @empty {
+                <tr>
+                    <td colspan="5" style="text-align: center;">No results found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+  </body>
+</html>

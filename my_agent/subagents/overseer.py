@@ -6,6 +6,7 @@ from .ticketstatus import ticketstatus_agent
 from .greeting_agent import greeting_agent
 from .end_conversation import end_conversation
 from .pothole_reporting import pothole_report_draft_agent
+from .parkmeter_reporting import parkmeter_agent
 from .tools.user_request_tracking import update_num_invalid_requests
 from .tools.validateinput import validateInput
 
@@ -14,7 +15,7 @@ overseer_agent = LlmAgent(
     name="OverseerAgent",
     description="Routes user requests to the correct specialist and returns a single final response.",
     instruction=OVERSEER_INSTRUCTION,
-    sub_agents=[qa_agent, ticketstatus_agent, end_conversation, pothole_report_draft_agent],
+    sub_agents=[qa_agent, ticketstatus_agent, end_conversation, pothole_report_draft_agent, parkmeter_agent],
     tools=[
         AgentTool(agent=greeting_agent),
         validateInput,

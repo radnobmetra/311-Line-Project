@@ -95,3 +95,10 @@ li a:hover {
     border-radius: 50%;
 }
 
+.notifications_container {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}

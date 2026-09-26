@@ -1,20 +1,60 @@
 <div class="analytics-container">
   <h1 class="analytics-title">Events</h1>
 
+    <!-- search bar -->
+    <div class="search_container">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" [(ngModel)]="searchInput"
+        placeholder="Search by User ID, Status, or Outcome...">
+    </div>
+
+    <!-- table -->
     <table>
       <tr>
           <th>Status</th>
           <th>User ID</th>
           <th>Outcome</th>
+          <th>Export</th>
       </tr>
-      @for (message of messages(); track message.id) {
+      @for (message of displayedMessages(); track $index) {
       <tr>
           <td>{{ message.status }}</td>
           <td>{{ message.user_id }}</td>
-        <td>{{ message.outcome }}</td>
+          <td>{{ message.outcome }}</td>
+          <td><input type="checkbox" (click) = "toggleSelectedMsg(message.id, false)"/></td>
       </tr>
       }
     </table>
+
+  <!-- options -->
+  <form>
+    <fieldset>
+      <legend>Options</legend>
+      <div>
+        <label>
+          <input type="radio" value="open" [formField]="sortFilterForm.filterStatus" />
+          Filter by status = open </label>
+      </div>
+      <div>
+        <label>
+          <input type="radio" value="closed" [formField]="sortFilterForm.filterStatus" />
+          Filter by status = closed </label>
+      </div>
+      <div>
+        <label>
+          <input type="radio" value="" [formField]="sortFilterForm.filterStatus" />
+          Don't filter by status </label>
+      </div>
+  
+      <label>Sort by outcome:
+        <select [formField]="sortFilterForm.filterOutcome">
+          <option value="">Don't filter by outcome</option>
+          <option value="resolved">resolved</option>
+          <option value="not resolved">not resolved</option>
+        </select>
+      </label>
+    </fieldset>
+  </form>
 
   <button
     type="button"
