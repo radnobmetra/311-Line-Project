@@ -17,6 +17,14 @@ def save_search_result(tool, args, tool_context: ToolContext, tool_response):
     return None
 
 def save_user_question(callback_context: CallbackContext,llm_request: LlmRequest,) -> Optional[LlmResponse]:
+    
+    # Defaults in case the search tool is not called.
+    callback_context.state.setdefault("lookup_query", "")
+    callback_context.state.setdefault(
+        "search_results",
+        "No search was performed."
+    )
+    
     # Walk backward through request contents to find the latest user text part
     user_question = ""
     if llm_request.contents:
@@ -62,6 +70,11 @@ qa_reviewer_agent = LlmAgent(
 
         Draft answer:
         {qa}
+
+        Note:
+        If "No search was performed." appears above, evaluate whether the
+        situation can be classified without document retrieval, such as an
+        emergency or an obviously ambiguous request.
 
         Classify the draft answer into exactly one of these labels:
 
