@@ -14,4 +14,9 @@ export class ConversationsService {
         const conversationsData =  this.http.get<Conversation[]>(`${this.apiUrl}`);
         return conversationsData;
     }
+
+    getConversationsPerContact(contactId: string): Observable<Conversation[]> {
+        const conversationsData =  this.http.get<Conversation[]>(`${this.apiUrl}?_where={"contactId":{"eq":"${contactId}"}}`);
+        return conversationsData;
+    }
 }

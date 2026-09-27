@@ -85,6 +85,13 @@
             "status": "ACTIVE",
             "startedAt": "2026-09-23T08:20:00Z",
             "lastMessageAt": "2026-09-23T08:28:00Z"
+        },
+        {
+            "id": "5",
+            "contactId": "1",
+            "status": "ACTIVE",
+            "startedAt": "2026-09-23T08:20:00Z",
+            "lastMessageAt": "2026-09-23T08:28:00Z"
         }
     ],
     "messages": [
