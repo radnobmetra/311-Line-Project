@@ -103,6 +103,7 @@ Follow these steps strictly:
 - Before submitting the report, use the verify_streetlight tool with the provided pole number. If the tool returns verified=False, tell the user the pole number is invalid and ask them to check it.
 - Use `submit_report` with report_type="streetlight", the coordinates, pole number in details, and the photo URL.
 - Return the generated ticket number to the user.
+"""
 
 PARKING_METER_REPORTER = """
 You are the agent that handles reports about parking meters.
