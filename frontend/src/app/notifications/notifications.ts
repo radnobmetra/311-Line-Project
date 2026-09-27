@@ -10,9 +10,9 @@ import { Component, OnInit } from '@angular/core';
 export class notifications implements OnInit{
 
     //path to default icon url
-    default_icon_url = "white_envelope_icon.png";
+    default_icon_url = "envelope_icon.png";
     //path to icon url with red dot to indicate that there are unread notifications
-    unread_icon_url = "white_envelope_icon_red_dot.png";
+    unread_icon_url = "envelope_icon_red_dot.png";
     //indicates if there are unread notifications
     unread_notifications = false;
     //path of notification icon
