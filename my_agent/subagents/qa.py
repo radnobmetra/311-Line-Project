@@ -1,4 +1,4 @@
-from google.adk.agents import LlmAgent, BaseAgent, SequentialAgent, InvocationContext
+from google.adk.agents import LlmAgent, BaseAgent, InvocationContext
 from google.adk.events import Event
 from google.adk.tools.tool_context import ToolContext
 from google.genai.types import Content, Part
@@ -7,6 +7,7 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
 from ..config import MODEL, QA_INSTRUCTION
 from .tools.lookup import search_knowledge_tool
+from google.adk import Workflow
 
 
 def save_search_result(tool, args, tool_context: ToolContext, tool_response):
@@ -184,7 +185,8 @@ class ValidateQA(BaseAgent):
 
         yield Event(
             author=self.name,
-            content=Content(parts=[Part(text=final_answer)])
+            content=Content(parts=[Part(text=final_answer)]),
+            output=final_answer,
         )
 
 
@@ -194,11 +196,11 @@ validate_qa_agent = ValidateQA(
     description="Returns the QA answer only if it passed review.",
 )
     
-qa_agent = SequentialAgent(
+qa_agent = Workflow(
     name="QAWorkflowAgent",
-    sub_agents=[
-        qa_draft_agent,
-        qa_reviewer_agent,
-        validate_qa_agent,
+    description="Answers general Sacramento city-service questions using available city documents.",
+    input_schema=str,
+    edges=[
+        ("START", qa_draft_agent, qa_reviewer_agent, validate_qa_agent),
     ],
 )

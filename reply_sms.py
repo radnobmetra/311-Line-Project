@@ -1,24 +1,19 @@
 from dotenv import load_dotenv
-import os
 
 from google.adk.runners import Runner
 from google.genai.types import Content, Part
 
-from google.adk.apps.app import App
 from timertracker import update_user_status
 
 from flask import Flask, request, Response
 from twilio.twiml.messaging_response import MessagingResponse
 
-load_dotenv() # Probably not needed, I'm tired
+load_dotenv()
 
 from session_manager import app_name, session_service
+from my_agent import app as adk_app
 
 app = Flask(__name__)
-
-from my_agent import root_agent
-# ADK app points to the root_agent to process the user's input.
-adk_app = App(name=app_name, root_agent=root_agent)
 
 @app.route("/reply_sms", methods=['POST'])
 async def reply_sms():
