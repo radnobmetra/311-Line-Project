@@ -1,0 +1,390 @@
+{
+    "users": [
+        {
+            "id": "1",
+            "name": "Admin User",
+            "username": "admin",
+            "email": "admin@311dashboard.com"
+        },
+        {
+            "id": "2",
+            "name": "Sarah Johnson",
+            "username": "sjohnson",
+            "email": "sarah@311dashboard.com"
+        }
+    ],
+    "contacts": [
+        {
+            "id": "1",
+            "phoneNumber": "+19165550101",
+            "createdAt": "2026-09-20T14:15:00Z"
+        },
+        {
+            "id": "2",
+            "phoneNumber": "+19165550102",
+            "createdAt": "2026-09-21T11:30:00Z"
+        },
+        {
+            "id": "3",
+            "phoneNumber": "+19165550103",
+            "createdAt": "2026-09-22T16:45:00Z"
+        },
+        {
+            "id": "4",
+            "phoneNumber": "+19165550104",
+            "createdAt": "2026-09-23T10:45:00Z"
+        }
+    ],
+    "categories": [
+        {
+            "id": "1",
+            "name": "QA",
+            "description": "General Q&A"
+        },
+        {
+            "id": "2",
+            "name": "Pothole",
+            "description": "Potholes and damaged road surfaces"
+        },
+        {
+            "id": "3",
+            "name": "Streetlight",
+            "description": "Broken or malfunctioning streetlights"
+        },
+        {
+            "id": "4",
+            "name": "Other",
+            "description": "Requests that do not fit another category"
+        }
+    ],
+    "conversations": [
+        {
+            "id": "1",
+            "contactId": "1",
+            "status": "ACTIVE",
+            "startedAt": "2026-09-20T14:15:00Z",
+            "lastMessageAt": "2026-09-20T14:22:00Z"
+        },
+        {
+            "id": "2",
+            "contactId": "2",
+            "status": "CLOSED",
+            "startedAt": "2026-09-21T11:30:00Z",
+            "lastMessageAt": "2026-09-21T13:15:00Z"
+        },
+        {
+            "id": "3",
+            "contactId": "3",
+            "status": "ACTIVE",
+            "startedAt": "2026-09-22T16:45:00Z",
+            "lastMessageAt": "2026-09-22T16:55:00Z"
+        },
+        {
+            "id": "4",
+            "contactId": "4",
+            "status": "ACTIVE",
+            "startedAt": "2026-09-23T08:20:00Z",
+            "lastMessageAt": "2026-09-23T08:28:00Z"
+        }
+    ],
+    "messages": [
+        {
+            "id": "1",
+            "conversationId": "1",
+            "requestId": "1",
+            "twilioMessageSid": "SM0000000001",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550101",
+            "body": "There is a large pothole at 5th Street and J Street.",
+            "sentAt": "2026-09-20T14:15:00Z"
+        },
+        {
+            "id": "2",
+            "conversationId": "1",
+            "requestId": "1",
+            "twilioMessageSid": "SM0000000002",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "Thank you. Your pothole report has been received.",
+            "sentAt": "2026-09-20T14:17:00Z"
+        },
+        {
+            "id": "3",
+            "conversationId": "1",
+            "requestId": "1",
+            "twilioMessageSid": "SM0000000003",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550101",
+            "body": "It is in the right lane heading north.",
+            "sentAt": "2026-09-20T14:22:00Z"
+        },
+        {
+            "id": "4",
+            "conversationId": "2",
+            "requestId": "2",
+            "twilioMessageSid": "SM0000000004",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550102",
+            "body": "The streetlight outside 700 Oak Avenue has been out for three nights.",
+            "sentAt": "2026-09-21T11:30:00Z"
+        },
+        {
+            "id": "5",
+            "conversationId": "2",
+            "requestId": "2",
+            "twilioMessageSid": "SM0000000005",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "Your streetlight report has been received. Thank you.",
+            "sentAt": "2026-09-21T11:35:00Z"
+        },
+        {
+            "id": "6",
+            "conversationId": "2",
+            "requestId": "2",
+            "twilioMessageSid": "SM0000000006",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "The reported streetlight issue has been resolved.",
+            "sentAt": "2026-09-21T13:15:00Z"
+        },
+        {
+            "id": "7",
+            "conversationId": "3",
+            "requestId": "3",
+            "twilioMessageSid": "SM0000000007",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550103",
+            "body": "My trash was not collected this morning.",
+            "sentAt": "2026-09-22T16:45:00Z"
+        },
+        {
+            "id": "8",
+            "conversationId": "3",
+            "requestId": "3",
+            "twilioMessageSid": "SM0000000008",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "Please provide the address where the missed pickup occurred.",
+            "sentAt": "2026-09-22T16:48:00Z"
+        },
+        {
+            "id": "9",
+            "conversationId": "3",
+            "requestId": "3",
+            "twilioMessageSid": "SM0000000009",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550103",
+            "body": "1420 Pine Street.",
+            "sentAt": "2026-09-22T16:55:00Z"
+        },
+        {
+            "id": "10",
+            "conversationId": "4",
+            "requestId": "4",
+            "twilioMessageSid": "SM0000000010",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550104",
+            "body": "There is graffiti covering the wall near Central Park.",
+            "sentAt": "2026-09-23T08:20:00Z"
+        },
+        {
+            "id": "11",
+            "conversationId": "4",
+            "requestId": "4",
+            "twilioMessageSid": "SM0000000011",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "Thank you. Your graffiti report has been submitted.",
+            "sentAt": "2026-09-23T08:28:00Z"
+        }
+    ],
+    "serviceRequests": [
+        {
+            "id": "1",
+            "conversationId": "1",
+            "categoryId": "2",
+            "title": "Large pothole at 5th and J",
+            "description": "Resident reported a large pothole in the right northbound lane.",
+            "status": "IN_PROGRESS",
+            "priority": "HIGH",
+            "address": "5th Street and J Street",
+            "latitude": 38.5805,
+            "longitude": -121.5005,
+            "createdAt": "2026-09-20T14:15:00Z",
+            "updatedAt": "2026-09-20T15:00:00Z",
+            "resolvedAt": null,
+            "closedAt": null
+        },
+        {
+            "id": "2",
+            "conversationId": "2",
+            "categoryId": "3",
+            "title": "Streetlight outage on Oak Avenue",
+            "description": "Streetlight outside 700 Oak Avenue has been out for several nights.",
+            "status": "CLOSED",
+            "priority": "NORMAL",
+            "address": "700 Oak Avenue",
+            "latitude": 38.5745,
+            "longitude": -121.4872,
+            "createdAt": "2026-09-21T11:30:00Z",
+            "updatedAt": "2026-09-21T13:15:00Z",
+            "resolvedAt": "2026-09-21T13:00:00Z",
+            "closedAt": "2026-09-21T13:15:00Z"
+        },
+        {
+            "id": "3",
+            "conversationId": "3",
+            "categoryId": "4",
+            "title": "Missed trash collection",
+            "description": "Resident reported that trash was not collected as scheduled.",
+            "status": "OPEN",
+            "priority": "NORMAL",
+            "address": "1420 Pine Street",
+            "latitude": 38.5891,
+            "longitude": -121.4821,
+            "createdAt": "2026-09-22T16:45:00Z",
+            "updatedAt": "2026-09-22T16:55:00Z",
+            "resolvedAt": null,
+            "closedAt": null
+        },
+        {
+            "id": "4",
+            "conversationId": "4",
+            "categoryId": "4",
+            "title": "Water Quality Report",
+            "description": "Where can I find the latest water quality report?",
+            "status": "NEW",
+            "priority": "LOW",
+            "address": "Central Park",
+            "latitude": 38.5782,
+            "longitude": -121.4936,
+            "createdAt": "2026-09-23T08:20:00Z",
+            "updatedAt": "2026-09-23T08:20:00Z",
+            "resolvedAt": null,
+            "closedAt": null
+        }
+    ],
+    "requestNotes": [
+        {
+            "id": "1",
+            "requestId": "1",
+            "userId": "1",
+            "note": "Resident confirmed that the pothole is in the right northbound lane.",
+            "createdAt": "2026-09-20T14:30:00Z"
+        },
+        {
+            "id": "2",
+            "requestId": "1",
+            "userId": "2",
+            "note": "Location information was reviewed and appears accurate.",
+            "createdAt": "2026-09-20T15:15:00Z"
+        },
+        {
+            "id": "3",
+            "requestId": "2",
+            "userId": "2",
+            "note": "Streetlight issue was confirmed.",
+            "createdAt": "2026-09-21T12:00:00Z"
+        },
+        {
+            "id": "4",
+            "requestId": "3",
+            "userId": "1",
+            "note": "Resident provided the missing pickup address.",
+            "createdAt": "2026-09-22T17:00:00Z"
+        }
+    ],
+    "requestHistory": [
+        {
+            "id": "1",
+            "requestId": "1",
+            "userId": null,
+            "action": "REQUEST_CREATED",
+            "oldValue": null,
+            "newValue": "NEW",
+            "createdAt": "2026-09-20T14:15:00Z"
+        },
+        {
+            "id": "2",
+            "requestId": "1",
+            "userId": "1",
+            "action": "STATUS_CHANGED",
+            "oldValue": "NEW",
+            "newValue": "IN_PROGRESS",
+            "createdAt": "2026-09-20T15:00:00Z"
+        },
+        {
+            "id": "3",
+            "requestId": "1",
+            "userId": "1",
+            "action": "PRIORITY_CHANGED",
+            "oldValue": "NORMAL",
+            "newValue": "HIGH",
+            "createdAt": "2026-09-20T15:01:00Z"
+        },
+        {
+            "id": "4",
+            "requestId": "2",
+            "userId": null,
+            "action": "REQUEST_CREATED",
+            "oldValue": null,
+            "newValue": "NEW",
+            "createdAt": "2026-09-21T11:30:00Z"
+        },
+        {
+            "id": "5",
+            "requestId": "2",
+            "userId": "2",
+            "action": "STATUS_CHANGED",
+            "oldValue": "NEW",
+            "newValue": "IN_PROGRESS",
+            "createdAt": "2026-09-21T11:45:00Z"
+        },
+        {
+            "id": "6",
+            "requestId": "2",
+            "userId": "2",
+            "action": "STATUS_CHANGED",
+            "oldValue": "IN_PROGRESS",
+            "newValue": "RESOLVED",
+            "createdAt": "2026-09-21T13:00:00Z"
+        },
+        {
+            "id": "7",
+            "requestId": "2",
+            "userId": "2",
+            "action": "STATUS_CHANGED",
+            "oldValue": "RESOLVED",
+            "newValue": "CLOSED",
+            "createdAt": "2026-09-21T13:15:00Z"
+        },
+        {
+            "id": "8",
+            "requestId": "3",
+            "userId": null,
+            "action": "REQUEST_CREATED",
+            "oldValue": null,
+            "newValue": "NEW",
+            "createdAt": "2026-09-22T16:45:00Z"
+        },
+        {
+            "id": "9",
+            "requestId": "3",
+            "userId": "1",
+            "action": "STATUS_CHANGED",
+            "oldValue": "NEW",
+            "newValue": "OPEN",
+            "createdAt": "2026-09-22T16:55:00Z"
+        },
+        {
+            "id": "10",
+            "requestId": "4",
+            "userId": null,
+            "action": "REQUEST_CREATED",
+            "oldValue": null,
+            "newValue": "NEW",
+            "createdAt": "2026-09-23T08:20:00Z"
+        }
+    ]
+}

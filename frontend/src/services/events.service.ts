@@ -1,3 +1,4 @@
+// Deleting this service in next commit. This has been replaced with request history.  
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, timer, switchMap, EMPTY, catchError } from 'rxjs';
