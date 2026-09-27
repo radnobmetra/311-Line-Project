@@ -9,7 +9,7 @@ from google.adk.tools.base_tool import BaseTool
 from typing import Dict, Any
 from google.adk.models import LlmRequest, LlmResponse
 from ..config import MODEL, POTHOLE_REPORTER
-from .tools.submit_pothole_report import submit_report
+from .tools.submit_report import submit_report
 import google.genai.types as types
 from typing import List
 
@@ -17,14 +17,17 @@ from typing import List
 async def is_image_uploaded(
     callback_context: CallbackContext, llm_request: LlmRequest
 ) -> LlmRequest | None:
-    for content in llm_request.contents:
-        if not content.parts:
-            continue
+    if not llm_request.contents:
+        return
 
-        images = []
-        for idx, part in enumerate(content.parts):
-            if part.inline_data:
-                await image_into_artifact(part, callback_context)
+    #bug fix- checks last message for image instead of whole chat
+    last_message = llm_request.contents[-1] 
+    if not last_message.parts:
+        return
+
+    for part in last_message.parts:
+        if part.inline_data:
+            await image_into_artifact(part, callback_context)
 
 async def image_into_artifact(
         part: Part, callback_content: CallbackContext

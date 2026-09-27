@@ -9,6 +9,7 @@ from .pothole_reporting import pothole_report_draft_agent
 from .parkmeter_reporting import parkmeter_agent
 from .tools.user_request_tracking import update_num_invalid_requests
 from .tools.validateinput import validateInput
+from .streetlight_reporting import streetlight_reporting_agent
 
 overseer_agent = LlmAgent(
     model=MODEL,
@@ -19,7 +20,8 @@ overseer_agent = LlmAgent(
         ticketstatus_agent, 
         end_conversation, 
         pothole_report_draft_agent, 
-        parkmeter_agent
+        parkmeter_agent,
+        streetlight_reporting_agent,
     ],
     tools=[
         qa_agent, 
@@ -28,5 +30,3 @@ overseer_agent = LlmAgent(
         update_num_invalid_requests,
     ],
 )
-
-
