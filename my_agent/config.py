@@ -1,4 +1,4 @@
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.7-flash"
 
 GREETING_INSTRUCTION = """
     You are a greeter.
