@@ -1,0 +1,34 @@
+# Runtime dependencies for the 311 Line Project (Google ADK agents + Twilio SMS webhook).
+# Versions are pinned to the ones the project was developed and tested against.
+#
+# Install with:  pip install -r requirements.txt
+
+# --- Google ADK / Gemini agent stack (my_agent/, modelarmor_agent/) ----------
+google-adk==1.28.1
+google-genai==1.70.0
+google-cloud-aiplatform==1.145.0
+google-cloud-discoveryengine==0.13.12
+google-cloud-modelarmor==0.7.1
+google-auth==2.49.1
+google-api-core==2.30.2
+# Provides the `proto` module used by my_agent/subagents/tools/lookup.py
+proto-plus==1.27.2
+
+# --- SMS webhook (reply_sms.py) ---------------------------------------------
+# "async" extra pulls in asgiref, required for Flask's async views.
+flask[async]==3.1.3
+gunicorn==26.2.0
+twilio==9.11.1
+
+# --- Knowledge / data retrieval tools ---------------------------------------
+elasticsearch==8.17.2
+requests==2.33.1
+
+# --- Geo tools used by the address verification tool ------------------------
+geopandas==1.1.4
+shapely==2.1.2
+pyogrio==0.13.0
+geopy==2.5.0
+
+# --- Configuration ----------------------------------------------------------
+python-dotenv==1.2.2

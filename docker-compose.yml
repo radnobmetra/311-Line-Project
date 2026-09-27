@@ -1,0 +1,71 @@
+# Runs the 311 Line webhook/agent image with the project's secrets injected.
+# Requires a local `.env` (GOOGLE_* / ELASTIC_* / TWILIO_* values) and `sa-key.json`.
+#
+#   docker compose up --build
+#   curl -X POST http://localhost:3000/reply_sms -d "From=%2B15551234567&Body=hello"
+name: 311-line-project
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 311-line-project:latest
+    container_name: 311-line-api
+    env_file:
+      - .env
+    environment:
+      # Overrides the Windows path in .env with the mounted secret below.
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/sa-key.json
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    volumes:
+      # Service-account key is a secret and is therefore never copied into the image.
+      - ./sa-key.json:/secrets/sa-key.json:ro
+    restart: unless-stopped
+
+  # ADK dev UI / web playground (same image, different command).
+  #   docker compose --profile dev up adk-web   ->  http://localhost:8000
+  #
+  # `--host 0.0.0.0` is required: `adk web` binds 127.0.0.1 by default, which is
+  # not reachable through Docker's published ports.
+  adk-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 311-line-project:latest
+    container_name: 311-line-adk-web
+    profiles:
+      - dev
+    working_dir: /app
+    command:
+      - adk
+      - web
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --allow_origins
+      - "*"
+    env_file:
+      - .env
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/sa-key.json
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./sa-key.json:/secrets/sa-key.json:ro
+    # The image healthcheck probes the webhook on port 3000, which this
+    # service does not run, so it is overridden to check the dev UI instead.
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import socket, sys; s = socket.socket(); s.settimeout(3); sys.exit(0 if s.connect_ex(('127.0.0.1', 8000)) == 0 else 1)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
