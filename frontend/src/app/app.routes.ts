@@ -8,6 +8,7 @@ import { guardian } from './guardian';
 import { Profile } from './profile/profile';
 import { Messages } from './messages/messages';
 import { Events } from './events/events';
+import { Contacts } from './contacts/contacts';
 
 export const routes: Routes = [
     // Disabled authentication temporarily until we are done creating all pages.
@@ -19,6 +20,7 @@ export const routes: Routes = [
      { path: 'requests', component: Requests, canActivate: [guardian] },
      { path: 'messages', component: Messages, canActivate: [guardian] },
      { path: 'profile', component: Profile, canActivate: [guardian] },
+     { path: 'contacts', component: Contacts, canActivate: [guardian] },
      { path: '', redirectTo: '/login', pathMatch: 'full' } //redirct
 /*
     { path: 'login', component: Login }, //login page

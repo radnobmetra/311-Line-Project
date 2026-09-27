@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { UserProfile } from '../../interfaces/user-profile.interface';
-import { AccountService } from '../../services/account.service';
+import { UserProfileService } from '../../services/users.service';
 
 @Component({
   imports: [],
@@ -10,14 +10,14 @@ import { AccountService } from '../../services/account.service';
 })
 export class Profile {
   // Must inject the account service so it can be used for fetching the profile data. 
-  accountService: AccountService = inject(AccountService);
+  userProfileService: UserProfileService = inject(UserProfileService);
   // Profile details will be stored here as a signal value.
   profileDetails = signal<UserProfile|null>(null);
   
   
   constructor() {
     // Fetch current profile data from account service.
-    this.accountService.getCurrentProfile().subscribe({
+    this.userProfileService.getCurrentProfile().subscribe({
       next: (profileData) => this.profileDetails.set(profileData),
       error: (err) => console.error("Error fetching data:", err)
     });
