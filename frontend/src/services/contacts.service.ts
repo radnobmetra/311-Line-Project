@@ -16,7 +16,7 @@ export class ContactsService {
     }
 
     // A fetch function that calls the endpoint to get a specific contact by ID. 
-    getContactById(id: number): Observable<Contact> {
+    getContactById(id: string): Observable<Contact> {
         const contactData =  this.http.get<Contact>(`${this.apiUrl}/${id}`);
         return contactData;
     }

@@ -1,0 +1,22 @@
+<section class="conversations-page">
+    <h1>Conversations for {{ phoneNumber() | phone }}</h1>
+    @if(conversations().length > 0)
+    {
+    <table>
+        <tr>
+            <th>Status</th>
+            <th>Started At</th>
+            <th>Last Message At</th>
+        </tr>
+        @for (conversation of conversations(); track conversation.id) {
+        <tr [routerLink]="['/conversation-details', conversation.id]" class="clickable-row">
+            <td>{{ conversation.status}}</td>
+            <td>{{ conversation.startedAt | date:'short' }}</td>
+            <td>{{ conversation.lastMessageAt| date:'short' }}</td>
+        </tr>
+        }
+    </table>
+    } @else {
+    <p class="empty-state">No conversation is found.</p>
+    }
+</section>

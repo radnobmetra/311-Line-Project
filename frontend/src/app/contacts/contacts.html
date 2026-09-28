@@ -1,2 +1,20 @@
-<p>contacts works!</p>
-<div>{{contacts()[0]}}</div>
+<section class="contacts-page">
+    <h1>Contacts</h1>
+    @if(contacts().length > 0)
+    {
+    <table>
+        <tr>
+            <th>Phone Number</th>
+            <th>Created At</th>
+        </tr>
+        @for (contact of contacts(); track contact.id) {
+        <tr [routerLink]="['/conversations', contact.id]" class="clickable-row">
+            <td>{{ contact.phoneNumber | phone}}</td>
+            <td>{{ contact.createdAt | date:'short' }}</td>
+        </tr>
+        }
+    </table>
+    } @else {
+    <p class="empty-state">No contacts is found.</p>
+    }
+</section>
