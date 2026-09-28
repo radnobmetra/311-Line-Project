@@ -53,17 +53,6 @@ async def image_into_artifact(
         
 
 
-
-
-
-
-
-
-
-
-
-
-
 pothole_report_draft_agent = LlmAgent(
         model = MODEL,
         name ="PotholeReportingAgent",
@@ -72,6 +61,3 @@ pothole_report_draft_agent = LlmAgent(
         before_model_callback=is_image_uploaded,
         tools=[submit_report],
     )
-
-
-
