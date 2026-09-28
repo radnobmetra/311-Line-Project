@@ -125,6 +125,13 @@ eval_dataset = pd.DataFrame(
             "Can you check the status of my ticket 241025-2719636?",
             "Hey there, any updates on my ticket?",
             "What is the status of ticket 260919-4010377 and 241025-2719636?",
+            "What is the status of ticket 4010377?",
+            "What is the status of ticket ABx346?",
+            "I would like to report a pothole",
+            "260919-4010377",
+            "Is there an update on my ticket about the broken parking meter?",
+            "What is the report on my parking ticket 12345CH?",
+            "How do I get an update on my ticket?",
         ],
 
         "reference": [
@@ -139,6 +146,33 @@ eval_dataset = pd.DataFrame(
             (
                 "The user is told that only information of one ticket can be provided at a time"
                 "and is prompted to choose one of the following ticket numbers first. "
+            ),
+            (
+                "The user is prompted to resubmit a request for a ticket in the proper format: "
+                "YYMMDD-TicketID."
+            ),
+            (
+                "The user is told that the ticket is invalid and explains the proper number format "
+                "in order to provide an update on their ticket with YYMMDD-TicketID."
+            ),
+            (
+                "The agent switches to the pothole agent as the request is out of scope."
+            ),
+            (
+                "The agent should recognize the format of the numbers and look up the ticket status,"
+                "if invalid, tell the user it is invalid or tell user that the ticket regards parking enforcement, "
+                "was created on 9/19/26, and is now closed if the number is valid"
+            ),
+            (
+                "The user is prompted to submit a corresponding ticket number "
+                "in order to provide an update on their ticket. "
+            ),
+            (
+                "The user is told that they cannot provide information about parking tickets."
+            ),
+            (
+                "The user is prompted to submit a corresponding ticket number "
+                "in order to provide an update on their ticket with the format YYMMDD-TicketID."
             ),
         ],
     }
