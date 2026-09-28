@@ -4,23 +4,28 @@
     <!-- search bar -->
     <div class="search_container">
       <label for="search">Search:</label>
-      <input type="text" id="search" name="search" [(ngModel)]="searchInput"
-        placeholder="Search by User ID, Status, or Outcome...">
+      <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search">
     </div>
 
     <!-- table -->
-    <table>
+    <table class="events-table">
       <tr>
-          <th>Status</th>
+          <th>Request ID</th>
           <th>User ID</th>
-          <th>Outcome</th>
+          <th>Action</th>
+          <th>Old value</th>
+          <th>New value</th>
+          <th>Created at</th>
           <th>Export</th>
       </tr>
       @for (message of displayedMessages(); track $index) {
       <tr>
-          <td>{{ message.status }}</td>
-          <td>{{ message.user_id }}</td>
-          <td>{{ message.outcome }}</td>
+          <td>{{ message.requestId }}</td>
+          <td>{{ message.userId }}</td>
+          <td>{{ message.action }}</td>
+          <td>{{ message.oldValue }}</td>
+          <td>{{ message.newValue }}</td>
+          <td>{{ message.createdAt }}</td>
           <td><input type="checkbox" (click) = "toggleSelectedMsg(message.id, false)"/></td>
       </tr>
       }
@@ -31,28 +36,46 @@
     <fieldset>
       <legend>Options</legend>
       <div>
-        <label>
-          <input type="radio" value="open" [formField]="sortFilterForm.filterStatus" />
-          Filter by status = open </label>
-      </div>
-      <div>
-        <label>
-          <input type="radio" value="closed" [formField]="sortFilterForm.filterStatus" />
-          Filter by status = closed </label>
-      </div>
-      <div>
-        <label>
-          <input type="radio" value="" [formField]="sortFilterForm.filterStatus" />
-          Don't filter by status </label>
-      </div>
-  
-      <label>Sort by outcome:
-        <select [formField]="sortFilterForm.filterOutcome">
-          <option value="">Don't filter by outcome</option>
-          <option value="resolved">resolved</option>
-          <option value="not resolved">not resolved</option>
+      <label>Filter by action:
+        <select [formField]="sortFilterForm.filterAction">
+          <option value="">Don't filter by action</option>
+          <option value="REQUEST_CREATED">REQUEST_CREATED</option>
+          <option value="STATUS_CHANGED">STATUS_CHANGED</option>
+          <option value="PRIORITY_CHANGED">PRIORITY_CHANGED</option>
         </select>
       </label>
+      </div>
+
+      <div>
+      <label>Filter by old value:
+        <select [formField]="sortFilterForm.filterOldValue">
+          <option value="">Don't filter by old value</option>
+          <option value="null">null</option>
+          <option value="NEW">NEW</option>
+          <option value="NORMAL">NORMAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="CLOSED">CLOSED</option>
+        </select>
+      </label>
+      </div>
+
+      <div>
+      <label>Filter by new value:
+        <select [formField]="sortFilterForm.filterNewValue">
+          <option value="">Don't filter by new value</option>
+          <option value="null">null</option>
+          <option value="NEW">NEW</option>
+          <option value="NORMAL">NORMAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="CLOSED">CLOSED</option>
+        </select>
+      </label>
+      </div>
+
     </fieldset>
   </form>
 

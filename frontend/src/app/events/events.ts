@@ -4,22 +4,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService } from './../../services/events.service';
 import { form, FormField } from '@angular/forms/signals';
 import { FormsModule } from '@angular/forms';
-
-// A custom data type for each row.
-// interface Logs {
-//   phoneNum: string;
-//   id: string;
-//   requestType: string;
-// }
+import { RequestHistory } from './../../interfaces/request-history';
+import { RequestHistoryService } from '../../services/request-history.service';
 
 //needed for getting data from filter/sort options form
 interface sortFilterInput {
-  //sortDate: string;
-  //filterStartDate: string;
-  //filterEndDate: string;
-  //filterTopic: string;
-  filterStatus: string;
-  filterOutcome: string;
+  filterAction: string;
+  filterOldValue: string;
+  filterNewValue: string;
 }
 
 @Component({
@@ -31,18 +23,15 @@ interface sortFilterInput {
 
 export class Events {
   // Inject the messages service so we can consume the messages polling service.
-  eventsService = inject(EventService);
+  eventsService = inject(RequestHistoryService);
   // Array that holds all messages.
-  messages = signal<EventMessage[]>([]);
+  messages = signal<RequestHistory[]>([]);
 
   //needed for getting data from filter/sort options form
   sortFilterModel = signal<sortFilterInput>({
-    //sortDate: "",
-    //filterStartDate: "",
-    //filterEndDate: "",
-    //filterTopic: "",
-    filterStatus: "", 
-    filterOutcome: "",
+    filterAction: "", 
+    filterOldValue: "",
+    filterNewValue: "",
   });
   sortFilterForm = form(this.sortFilterModel);
     
@@ -50,7 +39,7 @@ export class Events {
     // New messages will be fetched here.
     // Must register takeUntilDestroyed() to unsubscribe when the component is destroyed to avoid
     // background memory leaks.
-    this.eventsService.pollNewEvents().pipe(takeUntilDestroyed()).subscribe({
+    this.eventsService.getAllServiceRequests().pipe(takeUntilDestroyed()).subscribe({
       next: (messages) => this.messages.set(messages),
       error: (err) => console.error("Messages polling error:", err)
     });
@@ -64,6 +53,7 @@ export class Events {
   //==============================================
 
   onExport(): void {
+    //let rows = this.displayedMessages();
     let rows = this.displayedMessages();
 
     //if messages have been selected, only export the messages that have
@@ -147,7 +137,42 @@ export class Events {
 
   displayedMessages = computed(() => {
     //sortMessages() applies searching and filtering to messages.
-    return this.sortMessages();     
+    let tempArr = this.sortMessages();    
+    
+    tempArr.forEach((record) => {
+      if (record.oldValue == null) record.oldValue = "null";
+      if (record.newValue == null) record.newValue = "null";
+      if (record.action == null) record.action = "null";
+      if (record.id == null) record.id = "null";
+      if (record.userId == null) record.userId = "null";
+      if (record.requestId == null) record.requestId = "null";
+      if (record.createdAt == null) record.createdAt = "null";
+    });
+
+    let searchTerm = null;
+    if (this.searchInput().length >= 1) {
+      searchTerm = this.searchInput().toLowerCase();
+    }
+    
+    if (searchTerm) {
+      tempArr = tempArr.filter(
+        (record) => {
+          if (!(record.oldValue.toLowerCase().includes(searchTerm) ||
+            record.id.toLowerCase().includes(searchTerm) ||
+            record.userId.toLowerCase().includes(searchTerm) ||
+            record.requestId.toLowerCase().includes(searchTerm) ||
+            record.newValue.toLowerCase().includes(searchTerm) ||
+            record.createdAt.toLowerCase().includes(searchTerm) ||
+            record.action.toLowerCase().includes(searchTerm))) {
+            //if record is filtered out, deselect it to avoid errors
+            this.toggleSelectedMsg(record.id, true);
+            return false;
+          }
+          else return true;
+        });
+    }
+
+    return tempArr;
   });
 
   //==============================================
@@ -163,11 +188,11 @@ export class Events {
   private sortMessages(): any[] {
     let tempArr = this.messages();
 
-    //filter by status
-    if (this.sortFilterForm.filterStatus().value()) {
+    //filter by action
+    if (this.sortFilterForm.filterAction().value()) {
       tempArr = tempArr.filter(
         (record) => {
-          if (!(record.status == this.sortFilterForm.filterStatus().value())) {
+          if (!(record.action == this.sortFilterForm.filterAction().value())) {
             //if record is filtered out, deselect it to avoid errors
             this.toggleSelectedMsg(record.id, true);
             return false;
@@ -176,11 +201,11 @@ export class Events {
         });
     }
 
-    //filter by outcome
-    if (this.sortFilterForm.filterOutcome().value()) {
+    //filter by new value
+    if (this.sortFilterForm.filterNewValue().value()) {
       tempArr = tempArr.filter(
         (record) => {
-          if (!(record.outcome == this.sortFilterForm.filterOutcome().value())) {
+          if (!(record.newValue == this.sortFilterForm.filterNewValue().value())) {
             //if record is filtered out, deselect it to avoid errors
             this.toggleSelectedMsg(record.id, true);
             return false;
@@ -189,15 +214,11 @@ export class Events {
         });
     }
 
-    const searchTerm = this.searchInput().toLowerCase();
-
-    //search bar
-    if (searchTerm) {
+    //filter by old value
+    if (this.sortFilterForm.filterOldValue().value()) {
       tempArr = tempArr.filter(
         (record) => {
-          if (!(record.status.toLowerCase().includes(searchTerm) ||
-            record.user_id.toLowerCase().includes(searchTerm) ||
-            record.outcome.toLowerCase().includes(searchTerm))) {
+          if (!(record.oldValue == this.sortFilterForm.filterOldValue().value())) {
             //if record is filtered out, deselect it to avoid errors
             this.toggleSelectedMsg(record.id, true);
             return false;
