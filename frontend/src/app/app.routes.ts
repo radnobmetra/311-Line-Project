@@ -18,6 +18,7 @@ export const routes: Routes = [
      { path: 'settings', component: Settings, canActivate: [guardian] },
      { path: 'analytics', component: Analytics, canActivate: [guardian] },
      { path: 'requests', component: Requests, canActivate: [guardian] },
+     { path: 'events', component: Events, canActivate: [guardian] },
      { path: 'messages', component: Messages, canActivate: [guardian] },
      { path: 'profile', component: Profile, canActivate: [guardian] },
      { path: 'contacts', component: Contacts, canActivate: [guardian] },
