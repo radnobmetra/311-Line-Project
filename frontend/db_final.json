@@ -393,5 +393,77 @@
             "newValue": "NEW",
             "createdAt": "2026-09-23T08:20:00Z"
         }
+    ],
+    "notifications": [
+        {
+            "id": "1", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 3)",
+            "createdAt": "2027-04-28T11:15:00Z",
+            "read": "false"
+        },
+        {
+            "id": "2", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 30)",
+            "createdAt": "2026-11-23T14:00:00Z",
+            "read": "false"
+        }, 
+        {
+            "id": "3", 
+            "title": "Twilio error",
+            "body": "A Twilio error has occurred. (conversationId = 37)",
+            "createdAt": "2026-07-21T22:40:10Z",
+            "read": "false"
+        },
+        {
+            "id": "4", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 140)",
+            "createdAt": "2026-08-22T11:00:00Z",
+            "read": "false"
+        }, 
+        {
+            "id": "5", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (ConversationId = 200)",
+            "createdAt": "2026-09-21T11:45:00Z",
+            "read": "true"
+        },
+        {
+            "id": "6", 
+            "title": "Twilio error",
+            "body": "A Twilio error has occurred. (ConversationId = 201)",
+            "createdAt": "2026-09-22T16:55:00Z",
+            "read": "false"
+        },
+        {
+            "id": "7", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (ConversationId = 202)",
+            "createdAt": "2026-10-05T11:45:00Z",
+            "read": "false"
+        },
+        {
+            "id": "8", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 205)",
+            "createdAt": "2026-11-14T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "9", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 274)",
+            "createdAt": "2026-12-01T11:45:00Z",
+            "read": "false"
+        },
+        {
+            "id": "10", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (conversationId = 280)",
+            "createdAt": "2026-12-22T16:55:00Z",
+            "read": "true"
+        }
     ]
 }
