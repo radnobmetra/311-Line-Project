@@ -222,3 +222,5 @@ sa-key.json
 
 # DS_Store
 .DS_Store
+runtime_id.txt
+pytest.ini
