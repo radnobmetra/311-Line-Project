@@ -1,4 +1,18 @@
-MODEL = "gemini-3.7-flash"
+import os
+from google.adk.models import Gemini
+
+MODEL_NAME = "gemini-3.7-flash"
+MODEL_LOCATION = os.getenv(
+    "MODEL_LOCATION",
+    "us",
+)
+MODEL = Gemini(
+    model=MODEL_NAME,
+    client_kwargs={
+        "enterprise": True,
+        "location": MODEL_LOCATION,
+    },
+)
 
 GREETING_INSTRUCTION = """
     You are a greeter.
