@@ -8,13 +8,16 @@ from google.adk.tools.tool_context import ToolContext
 from google.adk.tools.base_tool import BaseTool
 from typing import Dict, Any
 from google.adk.models import LlmRequest, LlmResponse
+
+from my_agent.subagents.tools import parking_meter_type
 from ..config import MODEL, PARKING_METER_REPORTER
 from .tools.submit_parkmeter_report import submit_report
+from .tools.parking_meter_type import process_parking_meter_type
 
 parkmeter_agent = LlmAgent (
     model = MODEL,
     name="ParkingMeterAgent",
-    description= "Gets location and identifier for a parking meter, verifies it is within city limits, and reports it.",
+    description= "Receives the status of a parking meter, gets location and identifier for a parking meter, verifies it is within city limits, and reports it.",
     instruction=PARKING_METER_REPORTER,
-    tools=[submit_report],
+    tools=[submit_report, process_parking_meter_type],
 )
