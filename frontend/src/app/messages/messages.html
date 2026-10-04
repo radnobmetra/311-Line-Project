@@ -5,14 +5,16 @@
     <table>
         <tr>
             <th>From</th>
+            <th>Direction</th>
             <th>Message Body</th>
             <th>Timestamp</th>
         </tr>
         @for (message of messages(); track message.id) {
         <tr>
             <td>{{ message.fromNumber }}</td>
+            <td>{{ message.direction }}</td>
             <td>{{ message.body }}</td>
-            <td>{{ message.sentAt }}</td>
+            <td>{{ message.sentAt | date:'short' }}</td>
         </tr>
         }
     </table>

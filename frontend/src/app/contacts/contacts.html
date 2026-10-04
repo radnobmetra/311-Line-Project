@@ -8,7 +8,7 @@
             <th>Created At</th>
         </tr>
         @for (contact of contacts(); track contact.id) {
-        <tr [routerLink]="['/conversations', contact.id]" class="clickable-row">
+        <tr [routerLink]="['/sessions', contact.id]" class="clickable-row">
             <td>{{ contact.phoneNumber | phone}}</td>
             <td>{{ contact.createdAt | date:'short' }}</td>
         </tr>
