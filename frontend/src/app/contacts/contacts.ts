@@ -6,7 +6,7 @@ import { Contact } from '../../interfaces/contact.interface';
 import { ContactsService } from '../../services/contacts.service';
 
 @Component({
-  imports: [DatePipe, RouterLink, PhonePipe],
+  imports: [RouterLink, DatePipe, PhonePipe],
   selector: 'app-contacts',
   styleUrl: './contacts.css',
   templateUrl: './contacts.html',
