@@ -22,4 +22,15 @@ export class ServiceRequestsService {
         const requestsData =  this.http.get<ServiceRequest[]>(`${this.apiUrl}`);
         return requestsData;
     }
+
+    getRequestById(requestId: string): Observable<ServiceRequest> {
+        const requestData =  this.http.get<ServiceRequest>(`${this.apiUrl}/${requestId}`);
+        return requestData;
+    }
+
+    // Fetch service requests for the session.
+    getAllServiceRequestsBySessionId(sessionId: string): Observable<ServiceRequest[]> {
+        const requestsData =  this.http.get<ServiceRequest[]>(`${this.apiUrl}?_where={"sessionId":{"eq":"${sessionId}"}}`);
+        return requestsData;
+    }
 }

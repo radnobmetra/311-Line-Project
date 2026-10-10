@@ -290,6 +290,22 @@
             "updatedAt": "2026-09-23T08:20:00Z",
             "resolvedAt": null,
             "closedAt": null
+        },
+        {
+            "id": "5",
+            "sessionId": "5",
+            "categoryId": "1",
+            "title": "Water Quality Report",
+            "description": "Where can I find the latest water quality report?",
+            "status": "CLOSED",
+            "priority": "LOW",
+            "address": "Central Park",
+            "latitude": 38.5782,
+            "longitude": -121.4936,
+            "createdAt": "2026-10-04T09:15:00Z",
+            "updatedAt": "2026-10-04T09:15:00Z",
+            "resolvedAt": null,
+            "closedAt": null
         }
     ],
     "requestNotes": [

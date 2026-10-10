@@ -1,6 +1,6 @@
 export interface ServiceRequest {
     id: string;
-    conversationId: string;
+    sessionId: string;
     categoryId: string;
     title: string;
     description: string;
