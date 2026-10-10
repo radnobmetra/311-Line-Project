@@ -3,20 +3,21 @@ import os
 from dotenv import load_dotenv
 import time
 
+# load root .env first, then fallback to subfolder path
+load_dotenv()
 load_dotenv('./my_agent/.env')
 
-## Handles issues with cloud account shenanigans
-PROJECT_ID = os.environ["GCP_PROJECT_ID"]
-LOCATION = os.environ["AGENT_RUNTIME_LOCATION"]
+# handles EVEN MORE issues with cloud account shenanigans
+PROJECT_ID = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
+LOCATION = os.environ.get("AGENT_RUNTIME_LOCATION") or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-west1")
 
-PROJECT_DIR = Path(__file__).resolve()
-# GOOGLE_CREDENTAILS IN "./sa-key.json" - ENV File
+PROJECT_DIR = Path(__file__).resolve().parent
 
-raw_credentials = Path(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
+raw_credentials = Path(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "./sa-key.json"))
 CREDENTIALS_FILE = (
 	raw_credentials.resolve()
 	if raw_credentials.is_absolute()
-	else (PROJECT_DIR/raw_credentials.resolve())
+	else (PROJECT_DIR / raw_credentials).resolve()
 )
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(CREDENTIALS_FILE)
 
