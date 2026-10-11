@@ -63,12 +63,20 @@ export class Requests {
         // Search Bar functionality
         const query = this.searchInput().toLowerCase().trim();
         if (query !== '') {
-            processed_records = processed_records.filter(record =>
+            processed_records = processed_records.filter(record => {
+                if (
                 record.requestId.toString().includes(query) ||
                 record.phoneNumber.toLowerCase().includes(query) ||
                 record.topic.toLowerCase().includes(query) ||
                 record.createdAt.toLowerCase().includes(query)
-            );
+                ) {
+                    return true;
+                } 
+                else {
+                    this.toggleSelectedMsg(record.id, true);
+                    return false;
+                }
+            });
         }
 
         // Filter by topic
