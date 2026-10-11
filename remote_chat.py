@@ -1,9 +1,7 @@
-import asyncio
-import os
-from pathlib import Path
-from uuid import uuid4
 
-import agentplatform
+import asyncio
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 
@@ -11,38 +9,36 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 
 load_dotenv(PROJECT_ROOT / ".env")
 
-PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
-LOCATION = os.environ.get(
-    "AGENT_RUNTIME_LOCATION",
-    "us",
+from session_handling import (
+    client,
+    create_update_agent_session,
+    list_events,
 )
+from user_feedback_handling import (
+    find_response_event_id,
+    find_existing_feedback,
+    feedback_type_from_rating,
+    save_feedback,
+    get_feedback,
+    update_feedback,
+)
+from evaluation_handling import evaluate_completed_session
+
 
 RUNTIME_FILE = PROJECT_ROOT / "runtime_id.txt"
 
 
-def get_client_and_remote_agent():
+def get_remote_agent():
+    """
+    Retrieve the deployed agent using the client
+    already initialized in session_handling.py.
+    """
     runtime_name = RUNTIME_FILE.read_text(
         encoding="utf-8"
     ).strip()
 
-    client = agentplatform.Client(
-        project=PROJECT_ID,
-        location=LOCATION,
-    )
+    return client.runtimes.get(name=runtime_name)
 
-    if (
-        hasattr(client, "runtimes")
-        and hasattr(client.runtimes, "get")
-    ):
-        remote_agent = client.runtimes.get(
-            name=runtime_name
-        )
-    else:
-        remote_agent = client.agent_engines.get(
-            name=runtime_name
-        )
-
-    return client, remote_agent
 
 def get_text(event):
     if not isinstance(event, dict):
@@ -84,152 +80,218 @@ def _short(value, limit=600):
 
 
 def print_event_trace(event):
+    """
+    Print a compact trace of agent execution.
+
+    Shows tool calls, responses, reviewer results,
+    and agent transfers.
+    """
     if not isinstance(event, dict):
         return
 
-    author = event.get("author")
-    branch = event.get("branch")
-    invocation_id = _first(
-        event,
-        "invocationId",
-        "invocation_id",
-    )
-
+    author = event.get("author", "Unknown")
     content = event.get("content") or {}
     parts = content.get("parts") or []
 
-    # AGENT / EVENT HEADER
-    if author:
-        print(f"\n  [{author}]")
-
-    if branch:
-        print(f"    branch: {branch}")
-
-    if invocation_id:
-        print(f"    invocation: {invocation_id}")
-
-    # CONTENT
     for part in parts:
         if not isinstance(part, dict):
             continue
 
-        # Support both camelCase and snake_case because SDK serialization can differ
         function_call = _first(
-            part,
-            "functionCall",
-            "function_call",
+            part, "functionCall", "function_call",
+            "toolCall", "tool_call"
         )
 
         function_response = _first(
-            part,
-            "functionResponse",
-            "function_response",
-        )
-
-        tool_call = _first(
-            part,
-            "toolCall",
-            "tool_call",
-        )
-
-        tool_response = _first(
-            part,
-            "toolResponse",
-            "tool_response",
+            part, "functionResponse", "function_response",
+            "toolResponse", "tool_response"
         )
 
         text = part.get("text")
 
+        # Tool or agent call
         if function_call:
-            name = function_call.get("name")
-            args = function_call.get("args")
+            if isinstance(function_call, dict):
+                name = function_call.get("name", "unknown")
+                args = function_call.get("args")
 
-            print(f"    CALL: {name}")
-            print(f"      args: {_short(args)}")
+                print(f"  [{author}] CALL: {name}")
 
-        if function_response:
-            name = function_response.get("name")
-            response = function_response.get("response")
+                if args:
+                    print(f"    Args: {_short(args, 200)}")
+            else:
+                print(f"  [{author}] CALL: {_short(function_call, 200)}")
 
-            print(f"    RESPONSE: {name}")
-            print(
-                f"      result: {_short(response)}"
-            )
+        # Tool or agent response
+        elif function_response:
+            if isinstance(function_response, dict):
+                name = function_response.get("name", "unknown")
+                result = function_response.get("response")
 
-        if tool_call:
-            print(
-                "    TOOL CALL:",
-                _short(tool_call),
-            )
+                if name == "validateInput":
+                    print(
+                        f"  [{author}] RESPONSE: {name}"
+                        f" -> {_short(result, 100)}"
+                    )
+                elif isinstance(result, dict) and (
+                    "error" in result or "exception" in result
+                ):
+                    print(
+                        f"  [{author}] RESPONSE: {name}"
+                        f" -> {_short(result, 200)}"
+                    )
+                else:
+                    print(
+                        f"  [{author}] RESPONSE: {name}"
+                        " (details hidden)"
+                    )
+            else:
+                print(
+                    f"  [{author}] RESPONSE:"
+                    f" {_short(function_response, 200)}"
+                )
 
-        if tool_response:
-            print(
-                "    TOOL RESPONSE:",
-                _short(tool_response),
-            )
+        # Reviewer results are useful, unlike
+        # repeated intermediate answer text.
+        elif text and author == "QAReviewerAgent":
+            print(f"  [{author}] REVIEW: {_short(text, 100)}")
 
-        if text:
-            print(
-                "    text:",
-                _short(text),
-            )
-
-    # STATE CHANGES
+    # Agent transfers
     actions = event.get("actions") or {}
 
-    state_delta = _first(
-        actions,
-        "stateDelta",
-        "state_delta",
-    )
-
-    if state_delta:
-        print("    STATE:")
-
-        for key, value in state_delta.items():
-            print(
-                f"      {key}: {_short(value)}"
-            )
-
-    # AGENT TRANSFER
     transfer = _first(
         actions,
         "transferToAgent",
-        "transfer_to_agent",
+        "transfer_to_agent"
     )
 
     if transfer:
-        print(
-            f"    TRANSFER -> {transfer}"
+        print(f"  [{author}] TRANSFER -> {transfer}")
+
+
+
+def restore_last_response(session_id):
+    """
+    Restore the response from the most recent
+    user request using the same selection logic
+    as the live chat.
+    """
+    events = list_events(session_id)
+
+    # Find the most recent user request.
+    last_user_event = next(
+        (
+            event for event in reversed(events)
+            if event.author == "user"
+        ),
+        None,
+    )
+
+    if last_user_event is None:
+        return None, None
+
+    invocation_id = last_user_event.invocation_id
+
+    first_response = None
+    overseer_response = None
+
+    for event in events:
+        # Only consider events from the last request.
+        if (
+            event.invocation_id != invocation_id
+            or event.author == "user"
+        ):
+            continue
+
+        content = getattr(event, "content", None)
+        parts = getattr(content, "parts", None) or []
+
+        text = next(
+            (
+                part.text
+                for part in parts
+                if getattr(part, "text", None)
+            ),
+            None,
         )
 
+        raw_event = getattr(event, "raw_event", None)
+
+        if not (
+            text
+            and isinstance(raw_event, dict)
+            and raw_event.get("id")
+        ):
+            continue
+
+        response = (
+            {
+                "author": event.author,
+                "invocationId": event.invocation_id,
+                "id": raw_event["id"],
+            },
+            text,
+        )
+
+        # Equivalent to the live chat's fallback.
+        if first_response is None:
+            first_response = response
+
+        # Prefer the latest Overseer answer.
+        if event.author == "OverseerAgent":
+            overseer_response = response
+
+    return overseer_response or first_response or (None, None)
+
+
+
 async def main():
-    client, remote_agent = get_client_and_remote_agent()
+    remote_agent = get_remote_agent()
 
-    user_id = (
-        "remote-chat-"
-        + uuid4().hex[:8]
+    user_number = "remote-chat-test"
+    source = "terminal"
+    user_id = f"{user_number}-{source}"
+
+    # Create or reuse a session.
+    session_id = create_update_agent_session(
+        user_Number=user_number,
+        ttl=1800,
+        source=source,
     )
 
-    session = await remote_agent.async_create_session(
-        user_id=user_id
+    session = await remote_agent.async_get_session(
+        user_id=user_id,
+        session_id=session_id,
     )
 
-    if isinstance(session, dict):
-        session_id = session["id"]
-    else:
-        session_id = session.id
+    if session is None:
+        raise RuntimeError(
+            "Could not retrieve session from deployed agent."
+        )
 
     debug = False
+
+    # Most recent user-visible response.
+    last_response_event, last_response_text = (
+        restore_last_response(session_id)
+    )
+
     print()
     print("Connected to deployed 311 Agent Runtime")
     print("User:", user_id)
     print("Session:", session_id)
     print()
     print("Commands:")
-    print("  /session   show current session ID")
-    print("  /debug     toggle agent/tool tracing")
-    print("  /quit      exit")
+    print("  /session       show current session ID")
+    print("  /events        show saved session events")
+    print("  /evaluate      evaluate the current session")
+    print("  /debug         toggle agent/tool tracing")
+    print("  /up            rate last response helpful")
+    print("  /down          rate last response not helpful")
+    print("  /feedback      retrieve current response feedback")
+    print("  /quit          exit")
+    print()
+    print("You can also enter /up or /down followed by a comment.")
     print()
 
     while True:
@@ -244,15 +306,203 @@ async def main():
         if message == "/session":
             print("Session:", session_id)
             continue
+
         if message == "/debug":
             debug = not debug
-            print(
-                "Debug tracing:",
-                "ON" if debug else "OFF",
-            )
+            print("Debug tracing:", "ON" if debug else "OFF")
             continue
 
+        if message == "/events":
+            try:
+                events = list_events(session_id)
+
+                print(f"\nSaved events: {len(events)}")
+
+                for event in events:
+                    print(
+                        f"  {event.author} | "
+                        f"{event.invocation_id}"
+                    )
+
+            except Exception as error:
+                print("Could not retrieve events:", error)
+
+            print()
+            continue
+
+        if message == "/evaluate":
+            print("\nEvaluating session...")
+            print("This may take a while.\n")
+
+            try:
+                result = await asyncio.to_thread(
+                    evaluate_completed_session,
+                    session_id,
+                )
+
+                if result is None:
+                    print(
+                        "Evaluation returned no result. "
+                        "Check the error output from the evaluation module."
+                    )
+                else:
+                    print("\n=== SESSION EVALUATION ===")
+                    print("Session:", result["session_id"])
+                    print("Metric:", result["metric_version"])
+                    print("Score:", result["score"])
+
+                    print("\nRubric verdicts:")
+                    from pprint import pprint
+                    pprint(result["rubric_verdicts"])
+
+                    print("==========================\n")
+
+            except Exception as error:
+                print("Evaluation failed:", error)
+            continue
+
+        # FEEDBACK COMMANDS
+        command, _, comment = message.partition(" ")
+
+        if command in ("/up", "/down"):
+            if last_response_event is None:
+                print("No agent response available to rate.")
+                continue
+
+            rating = command[1:]
+
+            try:
+                event_id = find_response_event_id(
+                    session_id,
+                    last_response_event,
+                    last_response_text,
+                )
+
+                previous = find_existing_feedback(
+                    session_id=session_id,
+                    event_id=event_id,
+                    user_id=user_id,
+                )
+
+                if previous:
+
+                    # Check that we're updating the right entry.
+                    if (
+                        str(previous.session_id) != str(session_id)
+                        or str(previous.event_id) != str(event_id)
+                    ):
+                        raise RuntimeError(
+                            "Existing feedback targets a "
+                            "different response."
+                        )
+
+                    if (
+                        previous.feedback_type
+                        == feedback_type_from_rating(rating)
+                        and not comment
+                    ):
+                        feedback = previous
+                    else:
+                        feedback = update_feedback(
+                            feedback_name=previous.name,
+                            rating=rating,
+                            comment=comment,
+                        )
+                else:
+                    feedback = save_feedback(
+                        session_id=session_id,
+                        event_id=event_id,
+                        rating=rating,
+                        user_id=user_id,
+                        comment=comment,
+                    )
+
+                if feedback is None or not feedback.name:
+                    raise RuntimeError(
+                        "Google did not return a feedback name."
+                    )
+
+                # Read the feedback back from Google.
+                verified = get_feedback(feedback.name)
+
+                if (
+                    str(verified.session_id) != str(session_id)
+                    or str(verified.event_id) != str(event_id)
+                    or verified.feedback_type
+                    != feedback_type_from_rating(rating)
+                ):
+                    raise RuntimeError(
+                        "Saved feedback did not match "
+                        "the requested response and rating."
+                    )
+
+                print()
+                print("Feedback saved and verified!")
+                print("Rating:", verified.feedback_type)
+                print("Session:", verified.session_id)
+                print("Event:", verified.event_id)
+                print("Feedback name:", verified.name)
+                print()
+
+            except Exception as error:
+                print(
+                    "Feedback operation or verification "
+                    f"failed: {error}"
+                )
+                print("You can retry. The chat is unaffected.")
+
+            continue
+
+        if message == "/feedback":
+            if last_response_event is None:
+                print("No agent response available.")
+                continue
+
+            try:
+                event_id = find_response_event_id(
+                    session_id,
+                    last_response_event,
+                    last_response_text,
+                )
+
+                existing = find_existing_feedback(
+                    session_id=session_id,
+                    event_id=event_id,
+                    user_id=user_id,
+                )
+
+                if existing is None:
+                    print("No saved feedback for this response.")
+                    continue
+
+                feedback = get_feedback(existing.name)
+
+                if (
+                    str(feedback.session_id) != str(session_id)
+                    or str(feedback.event_id) != str(event_id)
+                ):
+                    raise RuntimeError(
+                        "Retrieved feedback does not match "
+                        "the current response."
+                    )
+
+                print()
+                print("Saved feedback:")
+                print("Rating:", feedback.feedback_type)
+                print("Comment:", feedback.feedback_text or "[No comment]")
+                print("Session:", feedback.session_id)
+                print("Event:", feedback.event_id)
+                print("Feedback name:", feedback.name)
+                print()
+
+            except Exception as error:
+                print("Could not retrieve feedback:", error)
+
+            continue
+
+        # AGENT CHAT
         final_text = None
+        final_event = None
 
         async for event in remote_agent.async_stream_query(
             user_id=user_id,
@@ -267,21 +517,32 @@ async def main():
             if not text:
                 continue
 
-            # Prefer the final response produced by your Overseer.
+            # Prefer the user-visible Overseer response.
             if event.get("author") == "OverseerAgent":
                 final_text = text
+                final_event = event
 
-            # Fallback in case another execution path returns text.
+            # Fallback if no Overseer answer is available.
             elif final_text is None:
                 final_text = text
+                final_event = event
 
         print()
         print(
             "Agent:",
-            final_text or "[No text response returned]",
+            final_text or "[No text response returned]"
         )
         print()
+
+        # Remember the exact event selected for display.
+        last_response_event = final_event
+        last_response_text = final_text
+
+        if final_event is not None:
+            print("Rate this response with /up or /down.")
+            print()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+
