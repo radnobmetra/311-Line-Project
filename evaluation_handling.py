@@ -1,0 +1,97 @@
+import logging
+from collections import defaultdict
+from agentplatform import types
+import session_handling 
+
+# must match the agent_id in your config
+AGENT_ID = "sacramento_311_agent"
+
+def evaluate_completed_session(session_id: int):
+    """
+    pulls a completed session, converts its history, and runs google's evaluation.
+    """
+    try:
+        #get all events using partner's list_events function
+        events = session_handling.list_events(session_id)
+        
+        if not events:
+            return None
+            
+        #sort events
+        ordered_events = sorted(events, key=lambda event: event.timestamp)
+        
+        # group by invocation_id to link user requests with agent responses
+        groups = defaultdict(list)
+        first_timestamp = {}
+        
+        for event in ordered_events:
+            groups[event.invocation_id].append(event)
+            first_timestamp.setdefault(event.invocation_id, event.timestamp)
+            
+        #  build the turns required by google's evaluator
+        turns = []
+        for turn_index, invocation_id in enumerate(sorted(groups, key=first_timestamp.get)):
+            eval_events = []
+            for event in sorted(groups[invocation_id], key=lambda e: e.timestamp):                
+                eval_author = AGENT_ID if event.author == "agent" else event.author
+                eval_events.append(
+                    types.evals.AgentEvent(
+                        author=eval_author,
+                        content=event.content,
+                    )
+                )
+                
+            turns.append(
+                types.evals.ConversationTurn(
+                    turn_index=turn_index,
+                    turn_id=invocation_id,
+                    events=eval_events,
+                )
+            )
+            
+        # create the agent data payload
+        agent_data = types.evals.AgentData(
+            agents={
+                AGENT_ID: types.evals.AgentConfig(
+                    agent_id=AGENT_ID,
+                    instruction="sacramento 311 helpful assistant" 
+                )
+            },
+            turns=turns,
+        )
+        
+       # create a dedicated evaluation client using a supported region
+        import agentplatform
+        eval_client = agentplatform.Client(
+            project=session_handling.PROJECT_ID, 
+            location="us-west1"
+        )
+        
+        result = eval_client.evals.evaluate(
+            dataset=types.EvaluationDataset(
+                eval_cases=[
+                    types.EvalCase(
+                        eval_case_id=str(session_id),
+                        agent_data=agent_data,
+                    )
+                ]
+            ),
+            metrics=[types.RubricMetric.MULTI_TURN_TASK_SUCCESS],
+        )
+        
+        # extract the score and reasoning
+        case_result = result.eval_case_results[0]
+        metric_result = case_result.response_candidate_results[0].metric_results["multi_turn_task_success_v1"]
+        
+        evaluation_record = {
+            "score": metric_result.score,
+            "rubric_verdicts": metric_result.rubric_verdicts,
+            "metric_version": metric_result.metric_name,
+            "session_id": session_id
+        }
+        
+        return evaluation_record
+        
+    except Exception as e:
+        logging.error(f"evaluation failed for session {session_id}: {e}")
+        return None
