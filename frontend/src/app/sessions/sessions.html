@@ -1,0 +1,44 @@
+<section class="sessions-page">
+    @if (contactID)
+    {
+    <h1>Sessions for {{ (sessionMap().values().next().value?.phoneNumber ?? '') | phone }}</h1>
+    }
+    @else
+    {
+    <h1>All Sessions</h1>
+    }
+
+    <p class="table-hint">
+        Click a record in the table to view additional details.
+    </p>
+
+    @if(sessionMap().size > 0)
+    {
+    <table>
+        <tr>
+            <th>Session ID</th>
+            @if (!contactID)
+            {
+            <th>Phone Number</th>
+            }
+            <th>Status</th>
+            <th>Started At</th>
+            <th>Last Message At</th>
+        </tr>
+        @for (sessionDetails of sortedSessions; track sessionDetails.session.id) {
+        <tr [routerLink]="['/session-details', sessionDetails.session.id]" class="clickable-row">
+            <td>{{ sessionDetails.session.id }}</td>
+            @if (!contactID)
+            {
+            <td>{{ sessionDetails.phoneNumber | phone }}</td>
+            }
+            <td>{{ sessionDetails.session.status}}</td>
+            <td>{{ sessionDetails.session.startedAt | date:'short' }}</td>
+            <td>{{ sessionDetails.session.lastMessageAt| date:'short' }}</td>
+        </tr>
+        }
+    </table>
+    } @else {
+    <p class="empty-state">No session is found.</p>
+    }
+</section>

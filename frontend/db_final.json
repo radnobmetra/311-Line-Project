@@ -57,7 +57,7 @@
             "description": "Requests that do not fit another category"
         }
     ],
-    "conversations": [
+    "sessions": [
         {
             "id": "1",
             "contactId": "1",
@@ -89,15 +89,15 @@
         {
             "id": "5",
             "contactId": "1",
-            "status": "ACTIVE",
-            "startedAt": "2026-09-23T08:20:00Z",
-            "lastMessageAt": "2026-09-23T08:28:00Z"
+            "status": "CLOSED",
+            "startedAt": "2026-10-04T09:15:00Z",
+            "lastMessageAt": "2026-10-04T09:20:00Z"
         }
     ],
     "messages": [
         {
             "id": "1",
-            "conversationId": "1",
+            "sessionId": "1",
             "requestId": "1",
             "twilioMessageSid": "SM0000000001",
             "direction": "INBOUND",
@@ -107,7 +107,7 @@
         },
         {
             "id": "2",
-            "conversationId": "1",
+            "sessionId": "1",
             "requestId": "1",
             "twilioMessageSid": "SM0000000002",
             "direction": "OUTBOUND",
@@ -117,7 +117,7 @@
         },
         {
             "id": "3",
-            "conversationId": "1",
+            "sessionId": "1",
             "requestId": "1",
             "twilioMessageSid": "SM0000000003",
             "direction": "INBOUND",
@@ -127,7 +127,7 @@
         },
         {
             "id": "4",
-            "conversationId": "2",
+            "sessionId": "2",
             "requestId": "2",
             "twilioMessageSid": "SM0000000004",
             "direction": "INBOUND",
@@ -137,7 +137,7 @@
         },
         {
             "id": "5",
-            "conversationId": "2",
+            "sessionId": "2",
             "requestId": "2",
             "twilioMessageSid": "SM0000000005",
             "direction": "OUTBOUND",
@@ -147,7 +147,7 @@
         },
         {
             "id": "6",
-            "conversationId": "2",
+            "sessionId": "2",
             "requestId": "2",
             "twilioMessageSid": "SM0000000006",
             "direction": "OUTBOUND",
@@ -157,7 +157,7 @@
         },
         {
             "id": "7",
-            "conversationId": "3",
+            "sessionId": "3",
             "requestId": "3",
             "twilioMessageSid": "SM0000000007",
             "direction": "INBOUND",
@@ -167,7 +167,7 @@
         },
         {
             "id": "8",
-            "conversationId": "3",
+            "sessionId": "3",
             "requestId": "3",
             "twilioMessageSid": "SM0000000008",
             "direction": "OUTBOUND",
@@ -177,7 +177,7 @@
         },
         {
             "id": "9",
-            "conversationId": "3",
+            "sessionId": "3",
             "requestId": "3",
             "twilioMessageSid": "SM0000000009",
             "direction": "INBOUND",
@@ -187,7 +187,7 @@
         },
         {
             "id": "10",
-            "conversationId": "4",
+            "sessionId": "4",
             "requestId": "4",
             "twilioMessageSid": "SM0000000010",
             "direction": "INBOUND",
@@ -197,19 +197,39 @@
         },
         {
             "id": "11",
-            "conversationId": "4",
+            "sessionId": "4",
             "requestId": "4",
             "twilioMessageSid": "SM0000000011",
             "direction": "OUTBOUND",
             "fromNumber": "311",
             "body": "Thank you. Your graffiti report has been submitted.",
             "sentAt": "2026-09-23T08:28:00Z"
+        },
+        {
+            "id": "12",
+            "sessionId": "5",
+            "requestId": "5",
+            "twilioMessageSid": "SM0000000012",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550101",
+            "body": "Where can I find the latest water quality report?",
+            "sentAt": "2026-10-04T09:15:00Z"
+        },
+        {
+            "id": "13",
+            "sessionId": "5",
+            "requestId": "5",
+            "twilioMessageSid": "SM0000000013",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "The latest water quality report can be found on our website at www.311dashboard.com/water-quality.",
+            "sentAt": "2026-10-04T09:20:00Z"
         }
     ],
     "serviceRequests": [
         {
             "id": "1",
-            "conversationId": "1",
+            "sessionId": "1",
             "categoryId": "2",
             "title": "Large pothole at 5th and J",
             "description": "Resident reported a large pothole in the right northbound lane.",
@@ -225,7 +245,7 @@
         },
         {
             "id": "2",
-            "conversationId": "2",
+            "sessionId": "2",
             "categoryId": "3",
             "title": "Streetlight outage on Oak Avenue",
             "description": "Streetlight outside 700 Oak Avenue has been out for several nights.",
@@ -241,7 +261,7 @@
         },
         {
             "id": "3",
-            "conversationId": "3",
+            "sessionId": "3",
             "categoryId": "4",
             "title": "Missed trash collection",
             "description": "Resident reported that trash was not collected as scheduled.",
@@ -257,7 +277,7 @@
         },
         {
             "id": "4",
-            "conversationId": "4",
+            "sessionId": "4",
             "categoryId": "4",
             "title": "Water Quality Report",
             "description": "Where can I find the latest water quality report?",
@@ -268,6 +288,22 @@
             "longitude": -121.4936,
             "createdAt": "2026-09-23T08:20:00Z",
             "updatedAt": "2026-09-23T08:20:00Z",
+            "resolvedAt": null,
+            "closedAt": null
+        },
+        {
+            "id": "5",
+            "sessionId": "5",
+            "categoryId": "1",
+            "title": "Water Quality Report",
+            "description": "Where can I find the latest water quality report?",
+            "status": "CLOSED",
+            "priority": "LOW",
+            "address": "Central Park",
+            "latitude": 38.5782,
+            "longitude": -121.4936,
+            "createdAt": "2026-10-04T09:15:00Z",
+            "updatedAt": "2026-10-04T09:15:00Z",
             "resolvedAt": null,
             "closedAt": null
         }
