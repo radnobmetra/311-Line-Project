@@ -7,7 +7,6 @@ import { Login } from './login/login';
 import { guardian } from './guardian';
 import { Profile } from './profile/profile';
 import { Messages } from './messages/messages';
-import { Events } from './events/events';
 import { Contacts } from './contacts/contacts';
 import { Sessions } from './sessions/sessions';
 import { SessionDetails } from './session-details/session-details';
@@ -22,6 +21,7 @@ export const routes: Routes = [
      { path: 'settings', component: Settings, canActivate: [guardian] },
      { path: 'analytics', component: Analytics, canActivate: [guardian] },
      { path: 'requests', component: Requests, canActivate: [guardian] },
+     { path: 'messages', component: Messages, canActivate: [guardian] },
      { path: 'events', component: Events, canActivate: [guardian] },
      { path: 'profile', component: Profile, canActivate: [guardian] },
      { path: 'contacts', component: Contacts, canActivate: [guardian] },
