@@ -12,6 +12,7 @@ import { Sessions } from './sessions/sessions';
 import { SessionDetails } from './session-details/session-details';
 import { ServiceRequests } from './service-requests/service-requests';
 import { RequestDetails } from './request-details/request-details';
+import { FlaggedConvo } from './flagged-convo/flagged-convo';
 
 export const routes: Routes = [
     // Disabled authentication temporarily until we are done creating all pages.
@@ -36,6 +37,7 @@ export const routes: Routes = [
         canActivate: [guardian] },
     { path: 'service-requests', component: ServiceRequests, canActivate: [guardian] },
     { path: 'request-details/:id', component: RequestDetails, canActivate: [guardian] },
+    { path: 'flagged-convo', component: FlaggedConvo, canActivate: [guardian]},
     { path: '', redirectTo: '/login', pathMatch: 'full' } //redirct
 /*
     { path: 'login', component: Login }, //login page

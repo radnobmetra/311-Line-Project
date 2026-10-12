@@ -73,7 +73,7 @@ export class Overview {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true
@@ -94,7 +94,7 @@ export class Overview {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true
