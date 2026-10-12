@@ -1,0 +1,95 @@
+<section class="request-details-page">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Service Request</p>
+            <h1>{{ request()?.title }}</h1>
+        </div>
+
+        <span class="status-badge">
+            {{ request()?.status }}
+        </span>
+    </div>
+
+    @if (request(); as item) {
+    <div class="details-card">
+        <div class="details-grid">
+            <div class="field">
+                <span class="label">Request ID</span>
+                <span class="value">{{ item.id }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Session ID</span>
+                <span class="value">{{ item.sessionId }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Category ID</span>
+                <span class="value">{{ item.categoryId }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Status</span>
+                <span class="value">{{ item.status }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Priority</span>
+                <span class="value">{{ item.priority }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Address</span>
+                <span class="value">{{ item.address || 'Not provided' }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Latitude</span>
+                <span class="value">{{ item.latitude ?? 'Not available' }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Longitude</span>
+                <span class="value">{{ item.longitude ?? 'Not available' }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Created At</span>
+                <span class="value">
+                    {{ item.createdAt | date:'medium' }}
+                </span>
+            </div>
+
+            <div class="field">
+                <span class="label">Updated At</span>
+                <span class="value">
+                    {{ item.updatedAt | date:'medium' }}
+                </span>
+            </div>
+
+            <div class="field">
+                <span class="label">Resolved At</span>
+                <span class="value">
+                    {{ item.resolvedAt ? (item.resolvedAt | date:'medium') : 'Not resolved' }}
+                </span>
+            </div>
+
+            <div class="field">
+                <span class="label">Closed At</span>
+                <span class="value">
+                    {{ item.closedAt ? (item.closedAt | date:'medium') : 'Not closed' }}
+                </span>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="text-section">
+            <span class="label">Description</span>
+            <p>{{ item.description }}</p>
+        </div>
+    </div>
+    } @else {
+    <p class="empty-state">Request details could not be loaded.</p>
+    }
+</section>

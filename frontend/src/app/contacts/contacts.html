@@ -1,5 +1,8 @@
 <section class="contacts-page">
     <h1>Contacts</h1>
+    <p class="table-hint">
+        Click a record in the table to view additional details.
+    </p>
     @if(contacts().length > 0)
     {
     <table>
@@ -8,7 +11,7 @@
             <th>Created At</th>
         </tr>
         @for (contact of contacts(); track contact.id) {
-        <tr [routerLink]="['/conversations', contact.id]" class="clickable-row">
+        <tr [routerLink]="['/sessions', contact.id]" class="clickable-row">
             <td>{{ contact.phoneNumber | phone}}</td>
             <td>{{ contact.createdAt | date:'short' }}</td>
         </tr>

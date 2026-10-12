@@ -1,0 +1,35 @@
+<section class="service-requests-page">
+    @if (sessionID)
+    {
+    <h1>Service Requests</h1>
+    }
+    @else
+    {
+    <h1>All Service Requests</h1>
+    }
+
+    <p class="table-hint">
+        Click a record in the table to view additional details.
+    </p>
+    @if(serviceRequests().length > 0)
+    {
+    <table>
+        <tr>
+            <th>Service Request ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created At</th>
+        </tr>
+        @for (serviceRequest of serviceRequests(); track serviceRequest.id) {
+        <tr [routerLink]="['/request-details', serviceRequest.id]" class="clickable-row">
+            <td>{{ serviceRequest.id}}</td>
+            <td>{{ serviceRequest.title}}</td>
+            <td>{{ serviceRequest.status}}</td>
+            <td>{{ serviceRequest.createdAt | date:'short' }}</td>
+        </tr>
+        }
+    </table>
+    } @else {
+    <p class="empty-state">No service requests are found.</p>
+    }
+</section>

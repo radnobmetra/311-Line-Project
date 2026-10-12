@@ -57,7 +57,7 @@
             "description": "Requests that do not fit another category"
         }
     ],
-    "conversations": [
+    "sessions": [
         {
             "id": "1",
             "contactId": "1",
@@ -89,15 +89,15 @@
         {
             "id": "5",
             "contactId": "1",
-            "status": "ACTIVE",
-            "startedAt": "2026-09-23T08:20:00Z",
-            "lastMessageAt": "2026-09-23T08:28:00Z"
+            "status": "CLOSED",
+            "startedAt": "2026-10-04T09:15:00Z",
+            "lastMessageAt": "2026-10-04T09:20:00Z"
         }
     ],
     "messages": [
         {
             "id": "1",
-            "conversationId": "1",
+            "sessionId": "1",
             "requestId": "1",
             "twilioMessageSid": "SM0000000001",
             "direction": "INBOUND",
@@ -107,7 +107,7 @@
         },
         {
             "id": "2",
-            "conversationId": "1",
+            "sessionId": "1",
             "requestId": "1",
             "twilioMessageSid": "SM0000000002",
             "direction": "OUTBOUND",
@@ -117,7 +117,7 @@
         },
         {
             "id": "3",
-            "conversationId": "1",
+            "sessionId": "1",
             "requestId": "1",
             "twilioMessageSid": "SM0000000003",
             "direction": "INBOUND",
@@ -127,7 +127,7 @@
         },
         {
             "id": "4",
-            "conversationId": "2",
+            "sessionId": "2",
             "requestId": "2",
             "twilioMessageSid": "SM0000000004",
             "direction": "INBOUND",
@@ -137,7 +137,7 @@
         },
         {
             "id": "5",
-            "conversationId": "2",
+            "sessionId": "2",
             "requestId": "2",
             "twilioMessageSid": "SM0000000005",
             "direction": "OUTBOUND",
@@ -147,7 +147,7 @@
         },
         {
             "id": "6",
-            "conversationId": "2",
+            "sessionId": "2",
             "requestId": "2",
             "twilioMessageSid": "SM0000000006",
             "direction": "OUTBOUND",
@@ -157,7 +157,7 @@
         },
         {
             "id": "7",
-            "conversationId": "3",
+            "sessionId": "3",
             "requestId": "3",
             "twilioMessageSid": "SM0000000007",
             "direction": "INBOUND",
@@ -167,7 +167,7 @@
         },
         {
             "id": "8",
-            "conversationId": "3",
+            "sessionId": "3",
             "requestId": "3",
             "twilioMessageSid": "SM0000000008",
             "direction": "OUTBOUND",
@@ -177,7 +177,7 @@
         },
         {
             "id": "9",
-            "conversationId": "3",
+            "sessionId": "3",
             "requestId": "3",
             "twilioMessageSid": "SM0000000009",
             "direction": "INBOUND",
@@ -187,7 +187,7 @@
         },
         {
             "id": "10",
-            "conversationId": "4",
+            "sessionId": "4",
             "requestId": "4",
             "twilioMessageSid": "SM0000000010",
             "direction": "INBOUND",
@@ -197,19 +197,39 @@
         },
         {
             "id": "11",
-            "conversationId": "4",
+            "sessionId": "4",
             "requestId": "4",
             "twilioMessageSid": "SM0000000011",
             "direction": "OUTBOUND",
             "fromNumber": "311",
             "body": "Thank you. Your graffiti report has been submitted.",
             "sentAt": "2026-09-23T08:28:00Z"
+        },
+        {
+            "id": "12",
+            "sessionId": "5",
+            "requestId": "5",
+            "twilioMessageSid": "SM0000000012",
+            "direction": "INBOUND",
+            "fromNumber": "+19165550101",
+            "body": "Where can I find the latest water quality report?",
+            "sentAt": "2026-10-04T09:15:00Z"
+        },
+        {
+            "id": "13",
+            "sessionId": "5",
+            "requestId": "5",
+            "twilioMessageSid": "SM0000000013",
+            "direction": "OUTBOUND",
+            "fromNumber": "311",
+            "body": "The latest water quality report can be found on our website at www.311dashboard.com/water-quality.",
+            "sentAt": "2026-10-04T09:20:00Z"
         }
     ],
     "serviceRequests": [
         {
             "id": "1",
-            "conversationId": "1",
+            "sessionId": "1",
             "categoryId": "2",
             "title": "Large pothole at 5th and J",
             "description": "Resident reported a large pothole in the right northbound lane.",
@@ -225,7 +245,7 @@
         },
         {
             "id": "2",
-            "conversationId": "2",
+            "sessionId": "2",
             "categoryId": "3",
             "title": "Streetlight outage on Oak Avenue",
             "description": "Streetlight outside 700 Oak Avenue has been out for several nights.",
@@ -241,7 +261,7 @@
         },
         {
             "id": "3",
-            "conversationId": "3",
+            "sessionId": "3",
             "categoryId": "4",
             "title": "Missed trash collection",
             "description": "Resident reported that trash was not collected as scheduled.",
@@ -257,7 +277,7 @@
         },
         {
             "id": "4",
-            "conversationId": "4",
+            "sessionId": "4",
             "categoryId": "4",
             "title": "Water Quality Report",
             "description": "Where can I find the latest water quality report?",
@@ -268,6 +288,22 @@
             "longitude": -121.4936,
             "createdAt": "2026-09-23T08:20:00Z",
             "updatedAt": "2026-09-23T08:20:00Z",
+            "resolvedAt": null,
+            "closedAt": null
+        },
+        {
+            "id": "5",
+            "sessionId": "5",
+            "categoryId": "1",
+            "title": "Water Quality Report",
+            "description": "Where can I find the latest water quality report?",
+            "status": "CLOSED",
+            "priority": "LOW",
+            "address": "Central Park",
+            "latitude": 38.5782,
+            "longitude": -121.4936,
+            "createdAt": "2026-10-04T09:15:00Z",
+            "updatedAt": "2026-10-04T09:15:00Z",
             "resolvedAt": null,
             "closedAt": null
         }
@@ -392,6 +428,150 @@
             "oldValue": null,
             "newValue": "NEW",
             "createdAt": "2026-09-23T08:20:00Z"
+        }
+    ],
+    "notifications": [
+        {
+            "id": "1", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 3)",
+            "createdAt": "2027-04-28T11:15:00Z",
+            "read": "false"
+        },
+        {
+            "id": "2", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 30)",
+            "createdAt": "2026-11-23T14:00:00Z",
+            "read": "true"
+        }, 
+        {
+            "id": "11",
+            "title": "Welcome to the 311 text line admin dashboard!",
+            "body": "Welcome to the 311 text line admin dashboard! For tips on how to navigate this dashboard, check out the help page.",
+            "createdAt": "2025-01-01T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "12",
+            "title": "Attention! Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+            "body": "...sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "createdAt": "1966-01-01T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "3", 
+            "title": "Twilio error",
+            "body": "A Twilio error has occurred. (conversationId = 37)",
+            "createdAt": "2026-07-21T22:40:10Z",
+            "read": "true"
+        },
+        {
+            "id": "4", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 140)",
+            "createdAt": "2026-08-22T11:00:00Z",
+            "read": "true"
+        }, 
+        {
+            "id": "5", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (ConversationId = 200)",
+            "createdAt": "2026-09-21T11:45:00Z",
+            "read": "false"
+        },
+        {
+            "id": "6", 
+            "title": "Twilio error",
+            "body": "A Twilio error has occurred. (ConversationId = 201)",
+            "createdAt": "2026-09-22T16:55:00Z",
+            "read": "true"
+        },
+        {
+            "id": "7", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (ConversationId = 202)",
+            "createdAt": "2026-10-05T11:45:00Z",
+            "read": "true"
+        },
+        {
+            "id": "8", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 205)",
+            "createdAt": "2026-11-14T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "9", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 274)",
+            "createdAt": "2026-12-01T11:45:00Z",
+            "read": "true"
+        },
+        {
+            "id": "10", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (conversationId = 280)",
+            "createdAt": "2026-12-22T16:55:00Z",
+            "read": "true"
+        }
+    ],
+    "requestLog": [
+        {
+            "id": "1",
+            "requestId": "123",
+            "phoneNumber": "1234567890",
+            "topic": "ticket",
+            "createdAt": "2019-09-08T00:00:00Z"
+        },
+        {
+            "id": "2",
+            "requestId": "2367",
+            "phoneNumber": "9161234567",
+            "topic": "general",
+            "createdAt": "2021-12-03T15:00:00Z"
+        },
+        {
+            "id": "3",
+            "requestId": "624",
+            "phoneNumber": "2345678901",
+            "topic": "ticket",
+            "createdAt": "2026-01-22T15:01:00Z"
+        },
+        {
+            "id": "4",
+            "requestId": "574",
+            "phoneNumber": "2345678901",
+            "topic": "none",
+            "createdAt": "2020-03-12T15:01:00Z"
+        },
+        {
+            "id": "5",
+            "requestId": "4632",
+            "phoneNumber": "1234567890",
+            "topic": "general",
+            "createdAt": "2019-09-08T15:01:00Z"
+        },
+        {
+            "id": "6",
+            "requestId": "1234",
+            "phoneNumber": "9161234567",
+            "topic": "none",
+            "createdAt": "2021-12-03T15:01:00Z"
+        },
+        {
+            "id": "7",
+            "requestId": "890",
+            "phoneNumber": "2345678901",
+            "topic": "both",
+            "createdAt": "2026-06-06T15:01:00Z"
+        },
+        {
+            "id": "8",
+            "requestId": "212",
+            "phoneNumber": "2345678901",
+            "topic": "both",
+            "createdAt": "2013-11-01T15:01:00Z"
         }
     ]
 }

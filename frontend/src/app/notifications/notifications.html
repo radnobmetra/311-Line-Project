@@ -21,17 +21,25 @@
         </div>
 
         <!-- Display all notifications (for now, placeholder notifications) -->
-
-        @for (notification of displayed_notifs; track notification.id) {
-            <div class="notif_header">
-                <p>{{notification.date}}: {{notification.title}}</p>
-                <input type="image" alt="delete" src="trash_icon_black.png"
-                (click)="deleteNotification(notification.id)"/>
+        <div class="notif_list">
+            @for (notification of displayed_notifs(); track notification.id) {
+            <div (mouseleave)="markAsRead(notification.id)">
+                <div class="notif_header">
+                    <div>
+                        <h1>{{notification.title}}</h1>
+                        <h2>{{notification.createdAt}} &bullet; {{notification.read}}</h2>
+                    </div>
+                    <input type="image" alt="delete" src="trash_icon_black.png"
+                    (click)="deleteNotification(notification.id)" />
+                </div>
+                <div class="notif_body">
+                    {{notification.body}}
+                </div>
             </div>
-            <p>{{notification.content}}</p>
-        } 
-        @empty {
+            }
+            @empty {
             <p>No notifications.</p>
-        }
+            }
+        </div>
     </div>
 </div>

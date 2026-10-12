@@ -5,6 +5,7 @@
 .popup_container {
     position: absolute;
     width: 400px;
+    max-height: 70vh;
     float: right;
     top: 75px;
     z-index: 20;
@@ -23,6 +24,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    border-top: none;
+    border-bottom: grey 1px solid;
+    border-left: none;
+    border-right: none;
 }
 
 input[type="button"] {
@@ -34,14 +39,40 @@ input[type="button"] {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-top: grey 1px solid;
+    border-top: none;
     border-bottom: grey 1px dotted;
     border-left: none;
     border-right: none;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
-.notif_header > p {
+.notif_body {
+    border-top: none;
+    border-bottom: grey 1px solid;
+    border-left: none;
+    border-right: none;
+    padding: 1em;
+}
+
+.notif_header > div {
+    margin: 0em;
+    padding: 0em;
+    flex-grow: 2;
+}
+
+.notif_header > div > h1 {
+    font-size: 1rem;
     font-weight: bold;
+    color: black;
+}
+
+.notif_header > div > h2 {
+    font-size: 1rem;
+    font-weight: normal;
+    color: rgb(89, 89, 89);
 }
 
 [hidden] { display: none !important; }
@@ -67,4 +98,9 @@ input[type="image"] {
 
 .popup_header > input[type="image"]:hover {
     border: 1px grey solid;
+}
+
+.notif_list {
+    overflow-y: scroll;
+    overflow-x: hidden;
 }

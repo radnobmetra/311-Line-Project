@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { Contact } from '../interfaces/contact.interface';
 
 @Service()
@@ -16,8 +16,19 @@ export class ContactsService {
     }
 
     // A fetch function that calls the endpoint to get a specific contact by ID. 
-    getContactById(id: string): Observable<Contact> {
-        const contactData =  this.http.get<Contact>(`${this.apiUrl}/${id}`);
+    getContactById(contactId: string): Observable<Contact> {
+        const contactData =  this.http.get<Contact>(`${this.apiUrl}/${contactId}`);
         return contactData;
+    }
+
+    getPhoneNumberByContactId(contactId: string): Observable<string> {
+        return this.getContactById(contactId).pipe(switchMap((contact: Contact) => {
+                const phoneNumber = contact.phoneNumber;
+                return new Observable<string>((observer) => {
+                    observer.next(phoneNumber);
+                    observer.complete();
+                });
+            }
+        ));
     }
 }
