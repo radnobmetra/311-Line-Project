@@ -7,10 +7,11 @@ import { Login } from './login/login';
 import { guardian } from './guardian';
 import { Profile } from './profile/profile';
 import { Messages } from './messages/messages';
-import { Events } from './events/events';
 import { Contacts } from './contacts/contacts';
-import { Conversations } from './conversations/conversations';
-import { ConversationDetails } from './conversation-details/conversation-details';
+import { Sessions } from './sessions/sessions';
+import { SessionDetails } from './session-details/session-details';
+import { ServiceRequests } from './service-requests/service-requests';
+import { RequestDetails } from './request-details/request-details';
 
 export const routes: Routes = [
     // Disabled authentication temporarily until we are done creating all pages.
@@ -20,13 +21,22 @@ export const routes: Routes = [
      { path: 'settings', component: Settings, canActivate: [guardian] },
      { path: 'analytics', component: Analytics, canActivate: [guardian] },
      { path: 'requests', component: Requests, canActivate: [guardian] },
-     { path: 'events', component: Events, canActivate: [guardian] },
      { path: 'messages', component: Messages, canActivate: [guardian] },
+     { path: 'events', component: Events, canActivate: [guardian] },
      { path: 'profile', component: Profile, canActivate: [guardian] },
      { path: 'contacts', component: Contacts, canActivate: [guardian] },
-     { path: 'conversations/:id', component: Conversations, canActivate: [guardian] },
-     { path: 'conversation-details/:id', component: ConversationDetails, canActivate: [guardian] },
-     { path: '', redirectTo: '/login', pathMatch: 'full' } //redirct
+     { path: 'sessions', component: Sessions, canActivate: [guardian] },
+     { path: 'sessions/:id', component: Sessions, canActivate: [guardian] },
+     { path: 'session-details/:id', component: SessionDetails, 
+        children: [
+            { path: 'messages', component: Messages },
+            { path: 'service-requests', component: ServiceRequests },
+            { path: '', redirectTo: 'messages', pathMatch: 'full'}
+        ], 
+        canActivate: [guardian] },
+    { path: 'service-requests', component: ServiceRequests, canActivate: [guardian] },
+    { path: 'request-details/:id', component: RequestDetails, canActivate: [guardian] },
+    { path: '', redirectTo: '/login', pathMatch: 'full' } //redirct
 /*
     { path: 'login', component: Login }, //login page
     { path: 'overview', component: Overview,  }, //guadian ensures valid entry

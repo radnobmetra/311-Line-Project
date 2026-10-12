@@ -10,23 +10,7 @@ Build the image:
 docker build -t 311-line-project .
 ```
 
-Run it (the `.env` file provides the `GOOGLE_*`, `ELASTIC_*` and `TWILIO_*` values):
-
-```bash
-docker run --rm -p 3000:3000 --env-file .env 311-line-project
-```
-
-`sa-key.json` is a secret and is deliberately excluded from the image via `.dockerignore`.
-Mount it when the container needs Google Cloud credentials:
-
-```bash
-docker run --rm -p 3000:3000 --env-file .env \
-  -v "$PWD/sa-key.json:/secrets/sa-key.json:ro" \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa-key.json \
-  311-line-project
-```
-
-Or use Compose, which already wires up the `.env` file and the service-account key:
+Use Compose, which already wires up the `.env` file and the service-account key:
 
 ```bash
 docker compose up --build

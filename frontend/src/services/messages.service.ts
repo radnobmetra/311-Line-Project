@@ -41,9 +41,9 @@ export class MessagesService {
     //     ));
     // }
 
-    // Fetch messages per conversation.
-    getAllMessagesPerConversation(conversationID: number): Observable<Message[]> {
-        const contactData =  this.http.get<Message[]>(`${this.apiUrl}?_where={"conversationId":{"eq":"${conversationID}"}}`);
+    // Fetch messages for the session.
+    getAllMessagesBySessionId(sessionId: string): Observable<Message[]> {
+        const contactData =  this.http.get<Message[]>(`${this.apiUrl}?_where={"sessionId":{"eq":"${sessionId}"}}`);
         return contactData;
     }
 }
