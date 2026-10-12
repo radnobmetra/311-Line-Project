@@ -29,7 +29,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 
-
+os.environ["GOOGLE_GENAI_USE_ENTERPRISE"] = "TRUE"
 client = agentplatform.Client(
   project=PROJECT_ID,
   location=LOCATION
@@ -44,88 +44,68 @@ adc_credentials, _ = google.auth.default(
 print("ADC Service Account: ", getattr(adc_credentials, "Service account email", None))
 
 
-	
-def create_update_agent_session(user_Number:str, ttl:int, source:str):
-	"""
-	This function returns a session ID based upon the given user_number. 
-	If the most recent session is null or older than ttl, a new session is created.
 
-	Args:
-
-	Inputs: 
-		user_Number (int): usersPhone Number / Identifier
-		ttl (str): time to live in seconds, if the previous session is older than the ttl then a new one is created
+def create_update_agent_session(
+    user_Number: str,ttl: int,source: str) -> str:
+    """
+    Reuse the user's most recently updated session if it
+    has been active within ttl seconds.
+	Otherwise, create a new session.
+    
+    Inputs:
+		user_Number (str):  usersPhone Number / Identifier
+		ttl (int): Time-to-live in seconds
 		source (str): adding onto user id to mark identifier
+    
+    Returns:
+		str: Google-generated session ID
+    """
 
-	Returns:
-		session_id(str) ID of the session to use
-	"""
-	
+    possible_sessions = list_users_sessions(
+        user_Number=user_Number,
+        source=source
+    )
 
-	possible_sessions:list = list_users_sessions(user_Number=user_Number, source=source)
-	
+    if not possible_sessions:
+        return create_session(
+            user_Number=user_Number,
+            source=source
+        )
 
-	if len(possible_sessions) == 0:
-		## If no sessions exist for this user, make a new session since we can garuntee there isnt one.
-		new_session = create_session(user_Number=user_Number, source=source)
-	else:
-		latest_session = possible_sessions[0]
-		update_age = latest_session.update_time
-		update_time_str = str(update_age)
-		clipped_time_str = update_time_str[0:-13]
-		
-		#Y = 4 digit year, %m = zero padded month, %d = 0 padded day, %H = 0 padded hour, %M = 0 Padded minute, %S = 0 padded second
-		update_time_localized = datetime.strptime(clipped_time_str, "%Y-%m-%d %H:%M:%S")
-		now_time = datetime.now(tz=timezone.utc)
-		now_time_str = str(now_time)
+    def get_update_time(session):
+        updated = session.update_time
 
-		# Removing junk data
-		now_time_str = now_time_str[0:-13]
-		now_time_utc = datetime.strptime(now_time_str, "%Y-%m-%d %H:%M:%S")
+        if isinstance(updated, str):
+            updated = datetime.fromisoformat(
+                updated.replace("Z", "+00:00")
+            )
 
+        if updated.tzinfo is None:
+            updated = updated.replace(
+                tzinfo=timezone.utc
+            )
 
-		# Subtracting current time from localized since now time is higher value
-		time_gap = now_time_utc - update_time_localized
-		time_gap_seconds = time_gap.total_seconds()
-		if time_gap_seconds < ttl:
-			# Sesssion Name contains the ID as the last in the filepath
-			latest_session_id = str(latest_session.name).split("/")[-1]
-			return latest_session_id
-		else:
+        return updated
 
-			new_session = create_session(user_Number=user_Number, source=source)
-			return new_session
+    latest_session = max(
+        possible_sessions,
+        key=get_update_time
+    )
 
-		
+    last_updated = get_update_time(latest_session)
 
-def add_user_message(user_Message:str, session_ID:int):
-	"""
-		Appends a message as an event to the attached session as the user
+    elapsed = (
+        datetime.now(timezone.utc) - last_updated
+    ).total_seconds()
 
-	Args:
+    if elapsed < ttl:
+        return latest_session.name.rsplit("/", 1)[-1]
 
-	Inputs: 
-		user_Message (str): users message to be appended
-		session_ID (int): session to add the event true
-	Returns:
-		True if completed
-	"""
+    return create_session(
+        user_Number=user_Number,
+        source=source
+    )
 
-	### Appending the users message
-	client.sessions.events.append(
-		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"] + "/sessions/" + str(session_ID), 
-		invocation_id = str(uuid.uuid4()),
-		timestamp = datetime.now(tz=timezone.utc),
-		author="user",
-		config={
-			"content": {
-				"role": "user",
-				"parts": [{"text": user_Message}]
-
-			},
-		},
-	)
-	return True
 
 def add_custom_event(author:str, custom_data:dict, session_ID:int):
 		
@@ -159,28 +139,45 @@ def add_custom_event(author:str, custom_data:dict, session_ID:int):
 
 	
 
-def create_session(user_Number:str, source:str):
-	"""
-	Creates a session with the user id
 
-	Args:
+def create_session(user_Number: str, source: str) -> str:
+    """
+    Creates a session with the user ID.
+    
+    Inputs:
+		user_Number (str): Users ID, used in format <user_Number>-<source>
+		source (str): Source of session creation
 
-	Inputs: 
-		user_Number(str): Users ID, used in format <user_Number>-<source>
-		source(str): Source of session creation
-	Returns:
-		True if completed
-	"""
+    Returns:
+        str: Google-generated session ID
+    """
 
-	# Format is <Phone-Number>-<source>
-	user_ID = user_Number + "-" + source
-	session = client.sessions.create(
-		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
-		user_id = user_ID
-	)
-	# Sesssion Name contains the ID as the last in the filepath
-	session_ID = str(session.name).split("/")[-3]
-	return session_ID
+    user_ID = f"{user_Number}-{source}"
+
+    operation = client.sessions.create(
+        name=(
+            "reasoningEngines/"
+            + os.environ["SESSION_AGENT_ENGINE_ID"]
+        ),
+        user_id=user_ID,
+        config={"wait_for_completion": True}
+    )
+
+    # Get the actual session from the completed operation.
+    session = operation.response
+
+    if session is None or not session.name:
+        raise RuntimeError(
+            "Session creation did not return a completed session. "
+            f"Operation: {operation.name}, "
+            f"Error: {operation.error}"
+        )
+
+    # Extract the session ID, not the operation ID.
+    session_ID = session.name.rsplit("/", 1)[-1]
+
+    return session_ID
+
 
 
 def list_users_sessions(user_Number:str, source:str):
@@ -201,7 +198,7 @@ def list_users_sessions(user_Number:str, source:str):
 		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
 		config={"filter": filter_query}
 	)
-	return sessions
+	return list(sessions)
 	
 def list_events(session_ID:int):
 	"""
@@ -262,4 +259,169 @@ def delete_session(session_ID:int):
 		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"] + "/sessions/" + str(session_ID),
 	)
 	return True
+
+
+
+def _session_name(session_ID: str) -> str:
+    """Build the Google session resource name."""
+    return (
+        f"reasoningEngines/{os.environ['SESSION_AGENT_ENGINE_ID']}"
+        f"/sessions/{session_ID}"
+    )
+
+
+
+def add_user_message(
+    user_Message: str,
+    session_ID: str,
+    invocation_id: str | None = None,
+    return_invocation_id: bool = False
+) -> bool | str:
+    """
+    Append a user message to a session.
+    
+    Inputs:
+		user_Message (str): The message to append.
+		session_ID (str): The session to append the message to.
+		invocation_id (str | None): Optional invocation ID to link this message to a specific agent response.
+
+    Returns:
+		True by default if completed
+    	Optionally returns the invocation ID.
+    """
+
+    if invocation_id is None:
+        invocation_id = str(uuid.uuid4())
+
+    client.sessions.events.append(
+        name=_session_name(session_ID),
+        invocation_id=invocation_id,
+        timestamp=datetime.now(tz=timezone.utc),
+        author="user",
+        config={
+            "content": {
+                "role": "user",
+                "parts": [{"text": user_Message}]
+            }
+        }
+    )
+
+    if return_invocation_id:
+        return invocation_id
+
+    return True
+
+
+
+def list_events(session_ID: str):
+    """Return all session events in chronological order."""
+    events = list(
+        client.sessions.events.list(
+            name=_session_name(session_ID)
+        )
+    )
+
+    return sorted(events, key=lambda event: event.timestamp)
+
+
+def get_event_id(event) -> str | None:
+    """
+    Extract the ID of a saved session event.
+
+    ADK events may expose raw_event.id.
+    Regular saved events expose a resource name.
+    """
+    raw_event = getattr(event, "raw_event", None)
+
+    if isinstance(raw_event, dict) and raw_event.get("id"):
+        return str(raw_event["id"])
+
+    event_name = getattr(event, "name", None)
+
+    if event_name and "/events/" in event_name:
+        return event_name.rsplit("/", 1)[-1]
+
+    return None
+
+
+def get_agent_response_event(
+    session_ID: str,
+    event_ID: str
+):
+    """
+    Retrieve a particular saved agent response.
+    Returns None when no matching response exists.
+    """
+    for event in list_events(session_ID):
+        if (
+            event.author == "agent"
+            and get_event_id(event) == str(event_ID)
+        ):
+            return event
+
+    return None
+
+
+def add_agent_message(
+    agent_Message: str,
+    session_ID: str,
+    invocation_id: str
+) -> str:
+    """
+    Save an agent response and return its event ID.
+    The invocation ID must match the user message
+    that triggered this response.
+    """
+    client.sessions.events.append(
+        name=_session_name(session_ID),
+        invocation_id=invocation_id,
+        timestamp=datetime.now(tz=timezone.utc),
+        author="agent",
+        config={
+            "content": {
+                "role": "model",
+                "parts": [{"text": agent_Message}]
+            }
+        }
+    )
+
+    # append() does not directly return the saved event ID,
+    # so retrieve the event from the session afterward.
+    matches = []
+
+    for event in list_events(session_ID):
+        if event.author != "agent":
+            continue
+
+        if event.invocation_id != invocation_id:
+            continue
+
+        content = getattr(event, "content", None)
+        parts = getattr(content, "parts", None) or []
+
+        text = "".join(
+            part.text or ""
+            for part in parts
+            if getattr(part, "text", None) is not None
+        )
+
+        if text == agent_Message:
+            matches.append(event)
+
+    if not matches:
+        raise RuntimeError(
+            "Agent message was appended, but its event "
+            "could not be retrieved."
+        )
+
+    latest_event = matches[-1]
+    event_id = get_event_id(latest_event)
+
+    if not event_id:
+        raise RuntimeError(
+            "Saved agent event has no accessible event ID."
+        )
+
+    return event_id
+
 
