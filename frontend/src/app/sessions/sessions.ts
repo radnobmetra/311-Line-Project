@@ -23,6 +23,9 @@ export class Sessions {
 
   // Store session + related phone number.
   sessionMap = signal<Map<string, SessionDetails>>(new Map());
+  
+  // Track the current outcome filter state
+  currentFilter = signal<string>('ALL');
 
   constructor() {
     // If a contact ID was provided.
@@ -80,10 +83,48 @@ export class Sessions {
     }
   }
 
-  // returns the sessions sorted by their ID.
+  // Update the active filter when the dropdown changes
+  setFilter(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    this.currentFilter.set(selectElement.value);
+  }
+
+  // Helper method to safely extract the final_outcome from the system event
+  getFinalOutcome(session: any): string | null {
+    if (!session || !session.events) return null;
+    
+    const outcomeEvent = session.events.find((e: any) => 
+      e.author === 'system' && 
+      e.content?.parts?.[0]?.text?.includes('final_outcome')
+    );
+
+    if (outcomeEvent) {
+      try {
+        const data = JSON.parse(outcomeEvent.content.parts[0].text);
+        return data.final_outcome;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // Returns the sessions filtered by outcome, then sorted by ID
   get sortedSessions(): SessionDetails[] {
-    return Array.from(this.sessionMap().values()).sort(
+    const filter = this.currentFilter();
+    const allSessions = Array.from(this.sessionMap().values());
+    console.log("First session payload:", allSessions[0]?.session); 
+
+    const filteredSessions = allSessions.filter(item => {
+      if (filter === 'ALL') return true;
+      const outcome = this.getFinalOutcome(item.session);
+      return outcome?.toUpperCase() === filter.toUpperCase(); 
+    });
+
+    return filteredSessions.sort(
       (a, b) => Number(a.session.id) - Number(b.session.id)
     );
   }
+
+  
 }

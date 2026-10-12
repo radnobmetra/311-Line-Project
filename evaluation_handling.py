@@ -95,3 +95,21 @@ def evaluate_completed_session(session_id: int):
     except Exception as e:
         logging.error(f"evaluation failed for session {session_id}: {e}")
         return None
+
+def calculate_final_outcome(eval_score, user_feedback):
+    if not user_feedback:
+        return "UNCLEAR"
+        
+    feedback = user_feedback.lower()
+    
+    if (eval_score > 0.7 and feedback == "thumbs_down") or \
+       (eval_score < 0.4 and feedback == "thumbs_up"):
+        return "UNCLEAR"
+        
+    if eval_score > 0.7 and feedback == "thumbs_up":
+        return "HELPED"
+        
+    if eval_score < 0.4 or feedback == "thumbs_down":
+        return "NOT_HELPED"
+        
+    return "UNCLEAR"
