@@ -10,3 +10,10 @@ body {
   color: #666;
   margin-bottom: 10px;
 }
+
+
+/* 1. Ensure the root elements take up the full screen height */
+html, body {
+  height: 100%;
+  margin: 0;
+}
