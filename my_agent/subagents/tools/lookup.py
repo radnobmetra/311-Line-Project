@@ -6,6 +6,7 @@ from google.cloud import discoveryengine_v1 as discoveryengine
 
 from google.adk.tools import ToolContext
 import google.genai.types as types
+from google.api_core.exceptions import PermissionDenied
 
 
 def _get_gcp_project_id() -> str:
@@ -140,6 +141,36 @@ def _hybrid_search(query):
                 )
     return docs
 
+def _fallback_chunk_list(docs: list[dict],top_n: int = 10) -> list[dict[str, str]]:
+    #Fallback when Discovery Engine reranking is unavailable.
+    #Uses Elasticsearch's existing RRF-ranked order.
+
+    chunks = []
+    seen = set()
+
+    for doc in docs:
+        key = (
+            doc["index"],
+            doc["doc_id"],
+            doc["offset"],
+        )
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+
+        chunks.append({
+            "index": doc["index"],
+            "id": doc["doc_id"],
+            "offset": str(doc["offset"]),
+        })
+
+        if len(chunks) >= top_n:
+            break
+
+    return chunks
+
 def _rerank(query, docs: list[dict[str,str]]):
     records = [
         discoveryengine.RankingRecord(id=  f"{doc.get("index")}/" + doc["doc_id"] + f"/{doc.get("offset")}", title=doc.get("title", ""), content=doc.get("text", ""))
@@ -267,36 +298,74 @@ def _format_results(results: list[dict[str,str]]):
     return context
 
 # IMPORT THIS FUNCTION IN AGENT.PY AND ADD TO TOOL LIST
-async def search_knowledge_tool(query: str, tool_context: ToolContext) -> list[dict[str,str]]:
+async def search_knowledge_tool(
+    query: str,
+    tool_context: ToolContext
+) -> list[dict[str, str]]:
     """
-    This tool retrieves knowledge from the City of Sacramento.
+    Retrieves knowledge from the City of Sacramento.
 
-    Args:
-        question (list[str]): A single natural language query which will be used to search this data source to find answers. The query should be concise. The search tool does not support logical operators like 'OR', so don't try that. Reformulate the user's query if necessary.
-        Do not include the words "Sacramento" or "City of Sacramento" in your search queries. 
-
-    Returns:
-        results (list[dict[str,str]]): List of document objects. Each document object includes a source description, title, url, and text. An empty list means no results.
+    Uses Elasticsearch hybrid retrieval followed by Discovery Engine
+    reranking when available. If the Runtime identity lacks permission
+    to call the Discovery Engine reranker, falls back to Elasticsearch's
+    RRF-ranked results.
     """
+
     try:
         docs = _hybrid_search(query)
-        reranked_chunks = _rerank(query, docs)
 
-        if not reranked_chunks:
-            return []  
+        if not docs:
+            return []
 
-        chunk_list: list[dict[str,str]] = []
-        for doc in reranked_chunks:
-            index, id, offset = str(doc.get("id", "")).split("/", 2)
-            chunk_list.append({
-                "index": index,
-                "id": id,
-                "offset": offset
-            })
+        try:
+            reranked_chunks = _rerank(query, docs)
 
-        chunks_expanded: list[dict[str,str]] = _expand_chunks(chunk_list)
-        context = _format_results(chunks_expanded)
+            chunk_list: list[dict[str, str]] = []
+
+            for doc in reranked_chunks:
+                index, id, offset = str(
+                    doc.get("id", "")
+                ).split("/", 2)
+
+                chunk_list.append({
+                    "index": index,
+                    "id": id,
+                    "offset": offset,
+                })
+
+        except PermissionDenied:
+            logging.warning(
+                "Discovery Engine reranking permission denied. "
+                "Using Elasticsearch RRF ranking instead."
+            )
+
+            chunk_list = _fallback_chunk_list(
+                docs,
+                top_n=10,
+            )
+
+        if not chunk_list:
+            return []
+
+        chunks_expanded = _expand_chunks(
+            chunk_list
+        )
+
+        return _format_results(
+            chunks_expanded
+        )
+
     except Exception as e:
-        logging.error({"message": "Error occurred during search_knowledge_tool. Continuing with empty tool result.", "query": query, "error": str(e), "traceback": traceback.format_exc()})
+        logging.error(
+            {
+                "message": (
+                    "Error occurred during search_knowledge_tool. "
+                    "Continuing with empty tool result."
+                ),
+                "query": query,
+                "error": str(e),
+                "traceback": traceback.format_exc(),
+            }
+        )
+
         return []
-    return context

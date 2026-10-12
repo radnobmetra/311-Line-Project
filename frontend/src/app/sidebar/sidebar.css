@@ -1,14 +1,21 @@
+:host {
+  height: 100%;
+  width: 240px;
+  overflow: hidden; /* Prevents double scrollbars */
+}
+
 .sidebar {
   width: 200px;
-  height: 100vh;
+  height: 100%;
   background-color: rgb(39, 60, 121);
   color: white;
-  padding: 10px 20px;
+  padding: 10px 10px;
   transition: width 0.3s ease;
   display: flex;
   flex-direction: column;
   white-space: nowrap; 
-  overflow: hidden; 
+  overflow-y: auto;
+  /*box-sizing: border-box; */
 }
 .sidebar.collapsed {
   width: 80px;
@@ -26,7 +33,7 @@
 }
 .toggle-btn {
   margin-top: auto;
-  padding: 10px;
+  padding: 10px 0px;
   cursor: pointer;
 }
 .sidebar ul {
@@ -43,4 +50,12 @@
 }
 .sidebar a:hover {
   color: #ffffff;
+}
+
+h2, li, p {
+  padding-left: 10px;
+}
+
+button {
+  margin-bottom: 20px;
 }

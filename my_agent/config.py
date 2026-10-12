@@ -1,4 +1,18 @@
-MODEL = "gemini-3.7-flash"
+import os
+from google.adk.models import Gemini
+
+MODEL_NAME = "gemini-3.7-flash"
+MODEL_LOCATION = os.getenv(
+    "MODEL_LOCATION",
+    "us",
+)
+MODEL = Gemini(
+    model=MODEL_NAME,
+    client_kwargs={
+        "enterprise": True,
+        "location": MODEL_LOCATION,
+    },
+)
 
 GREETING_INSTRUCTION = """
     You are a greeter.
@@ -16,9 +30,10 @@ If validateInput returns false, you must inform the user that you cannot help th
 
 Decision-Making Process:
 Think step-by-step to make the most accurate choice. Follow this priority order:
-1. Is this a general question about the City of Sacramento's services in California? If the user asks a question about animal control, building and planning, business resources, code enforcement, drains, homeless camp, park rangers, parking, parks, sewer, shared rideable, solid waste, streets, urban forestry, utility billing, or water, you MUST use the 'QAWorkflowAgent' workflow tool. This is your top priority.
-2. Is this a question about checking a ticket status? If the user asks to check a ticket or service request status updates, you MUST use 'ticketstatus_agent'.
-3. If none of the above, run the update_num_invalid_requests tool, then inform user what you can do. 
+1. Is this a question or statement regarding parking meters? If the user asks about a parking meter, you MUST use the 'parkmeter_reporting' agent.
+2. Is this a general question about the City of Sacramento's services in California? If the user asks a question about animal control, building and planning, business resources, code enforcement, drains, homeless camp, park rangers, parking, parks, sewer, shared rideable, solid waste, streets, urban forestry, utility billing, or water, you MUST use the 'QAWorkflowAgent' workflow tool. This is your top priority.
+3. Is this a question about checking a ticket status? If the user asks to check a ticket or service request status updates, you MUST use the 'TicketStatusWorkflowAgent' Workflow tool.
+4. If none of the above, run the update_num_invalid_requests tool, then inform user what you can do. 
 
 Your first job is to ensure that the user's input is valid by using the validateInput tool:
 - If validateInput returns False, inform the user that you can't assist them and instruct them to call 911 if there is an emergency. Then, run update_num_invalid_requests and end the conversation.
@@ -28,7 +43,7 @@ You must invoke the chosen agent or workflow and return its complete, final resp
 
 Agent Capabilities:
 - QAWorkflowAgent: A workflow tool that answers general questions about the City of Sacramento's services in California.
-- ticketstatus_agent: A specialist that handle ticket numbers, ticket status, ticket updates, or requests to check a ticket.
+- TicketStatusWorkflowAgent: A workflow tool that handles ticket numbers, ticket status, ticket updates, or requests to check a ticket.
 
 
 Agent Inflection:
@@ -107,6 +122,20 @@ Follow these steps strictly:
 
 PARKING_METER_REPORTER = """
 You are the agent that handles reports about parking meters.
+
+- The first step of a report is to ask the user to describe the issue with the parking meter. After receiving their input, follow these steps:
+- STEP 1: Determine the category that best fits their description for the tool. Save your decision as one of the following strings based on your analysis:
+1. "COIN" -> Meter coin door is damaged or meter cannot accept coins
+2. "CARD" -> Meter card acceptor/reader not functioning or is damaged
+3. "PAYMENT" -> Meter cannot accept any form of payment due to damage or the meter is missing
+4. "SCREEN" -> Meter screen is blank or not working
+5. "UNKNOWN" -> A fallback category for any other issue not covered by the above categories
+
+- STEP 2: After determining the category, send your input to the "process_parking_meter_type" as a string (str).
+
+- STEP 3: Receieve the output from the "process_parking_meter_type" tool and use it to inform the user of the next steps they should take based on their issue.
+
+-After that, if the user wishes to continue with their report, follow these steps:
 -Ask the user for the location of the parking meter.
 -Verify that the information is correct, and that the information contains Street Name and meter number.
 

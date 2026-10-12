@@ -1,0 +1,25 @@
+<section class="flagged-convo-page">
+    <h1>Flagged Conversations</h1>
+    <p class="table-hint">
+        Click a record in the table to view additional details.
+    </p>
+    @if(flagged().length > 0) {
+    <table>
+        <tr>
+            <th>Phone Number</th>
+            <th>Flag Type</th>
+            <th>Created At</th>
+        </tr>
+        @for (flagged of flagged(); track flagged.id) {
+        <tr [routerLink]="['/session-details', flagged.id]" class="clickable-row">
+            <td>{{ flagged.phoneNumber | phone }}</td>
+            <td>{{ flagged.flagType}}</td>
+            <td>{{ flagged.createdAt | date:'short' }}</td>
+
+        </tr>
+        } 
+    </table>
+    }@else {
+        <p class="empty-state">No conversations are flagged.</p>
+        }
+</section>
