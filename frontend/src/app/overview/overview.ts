@@ -1,8 +1,11 @@
+import { Sessions } from './../sessions/sessions';
 import { Component, inject, signal} from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ServiceRequest } from '../../interfaces/service-request.interface';
 import { ServiceRequestsService } from '../../services/service-requests.service';
+import { Session } from '../../interfaces/session.interface';
+import { SessionsService } from '../../services/sessions.service';
 
 Chart.register(...registerables);
 
@@ -13,10 +16,14 @@ Chart.register(...registerables);
   templateUrl: './overview.html',
 })
 export class Overview {
-  // Inject the ServiceRequest service so we can consume it 
+  // Inject the ServiceRequest service so we can consume it
   serviceRequestsService = inject(ServiceRequestsService);
-  // Hashmap that will store requests' statuses and their respective count. 
+  // Hashmap that will store requests' statuses and their respective count.
   serviceRequestsCountMap = new Map<string, number>();
+
+  // Same thing but for sessions
+  sessionService = inject(SessionsService);
+  sessionMap = new Map<string, number>();
 
   constructor() {
     // New requests will be fetched here.
@@ -28,6 +35,15 @@ export class Overview {
       },
       error: (err) => console.error("Service Requests polling error:", err)
     });
+
+    // Same as above but for sessions
+    this.sessionService.getAllSessions().subscribe({
+      next: (sessions) => {
+        this.displayGraph(sessions);
+      },
+      error: (err) => console.error("Sessions polling error:", err)
+    });
+
   }
 
   // Function to get current requests statuses and their counts from service requests data.
@@ -44,15 +60,27 @@ export class Overview {
     });
 
     // Extract all labels and count values from the hashmap into arrays and pass them to showGraph()
-    this.showGraph([...this.serviceRequestsCountMap.keys()], [...this.serviceRequestsCountMap.values()]);
+    this.showTicketGraph([...this.serviceRequestsCountMap.keys()], [...this.serviceRequestsCountMap.values()]);
   }
-  
-  // Function to display graphs with service-request status labels, along with their respective count. 
-  showGraph(requestsStatusLabels: string[], statusCountData: number[])
-  {
+
+  // Getting session data
+  displayGraph(sessionsData: Session[]) {
+    this.sessionMap.clear();
+    sessionsData.forEach((session) => {
+      var currCount = this.sessionMap.get(session.startedAt) ?? 0;
+      this.sessionMap.set(session.startedAt, currCount+1);
+    });
+
+    // Extract all labels and count values from the hashmap into arrays and pass them to showGraph()
+    this.showSessionGraph([...this.sessionMap.keys()], [...this.sessionMap.values()]);
+  }
+
+  // Function to display graphs with service-request status labels, along with their respective count.
+  showTicketGraph(requestsStatusLabels: string[], statusCountData: number[]) {
     // Destroy existing charts
-    const existingChart = Chart.getChart("ticketChart"); 
-    const existingChart2 = Chart.getChart("ticketChart2"); 
+    const existingChart = Chart.getChart("ticketChart");
+    const existingChart2 = Chart.getChart("ticketChart2");
+
     if (existingChart) {
           existingChart.destroy();
     }
@@ -81,7 +109,7 @@ export class Overview {
         }
       }
     });
-  
+
     new Chart("ticketChart2", {
         type: 'bar',
         data: {
@@ -89,6 +117,35 @@ export class Overview {
           datasets: [{
             label: 'Ticket Count',  /*This is label of overall graph */
             data: statusCountData,
+            borderWidth: 1
+          }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+  }
+  showSessionGraph(sessionLabels: string[], sessionDate: number[]) {
+    // Destroy existing charts
+    const existingChart3 = Chart.getChart("sessionChart");
+    if (existingChart3) {
+          existingChart3.destroy();
+    }
+
+    new Chart("sessionChart", {
+        type: 'line',
+        data: {
+          labels: sessionLabels, /*This is label of each bar */
+          datasets: [{
+            label: 'Recent Sessions',  /*This is label of overall graph */
+            data: sessionDate,
             borderWidth: 1
           }]
       },
