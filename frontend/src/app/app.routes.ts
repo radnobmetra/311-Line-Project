@@ -13,6 +13,7 @@ import { SessionDetails } from './session-details/session-details';
 import { ServiceRequests } from './service-requests/service-requests';
 import { RequestDetails } from './request-details/request-details';
 import { FlaggedConvo } from './flagged-convo/flagged-convo';
+import { Events } from './events/events';
 
 export const routes: Routes = [
     // Disabled authentication temporarily until we are done creating all pages.

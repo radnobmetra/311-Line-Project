@@ -1,0 +1,89 @@
+<div class="analytics-container">
+  <h1 class="analytics-title">Events</h1>
+
+    <!-- search bar -->
+    <div class="search_container">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search">
+    </div>
+
+    <!-- table -->
+    <table class="events-table">
+      <tr>
+          <th>Request ID</th>
+          <th>User ID</th>
+          <th>Action</th>
+          <th>Old value</th>
+          <th>New value</th>
+          <th>Created at</th>
+          <th>Export</th>
+      </tr>
+      @for (message of displayedMessages(); track $index) {
+      <tr>
+          <td>{{ message.requestId }}</td>
+          <td>{{ message.userId }}</td>
+          <td>{{ message.action }}</td>
+          <td>{{ message.oldValue }}</td>
+          <td>{{ message.newValue }}</td>
+          <td>{{ message.createdAt }}</td>
+          <td><input type="checkbox" (click) = "toggleSelectedMsg(message.id, false)"/></td>
+      </tr>
+      }
+    </table>
+
+  <!-- options -->
+  <form>
+    <fieldset>
+      <legend>Options</legend>
+      <div>
+      <label>Filter by action:
+        <select [formField]="sortFilterForm.filterAction">
+          <option value="">Don't filter by action</option>
+          <option value="REQUEST_CREATED">REQUEST_CREATED</option>
+          <option value="STATUS_CHANGED">STATUS_CHANGED</option>
+          <option value="PRIORITY_CHANGED">PRIORITY_CHANGED</option>
+        </select>
+      </label>
+      </div>
+
+      <div>
+      <label>Filter by old value:
+        <select [formField]="sortFilterForm.filterOldValue">
+          <option value="">Don't filter by old value</option>
+          <option value="null">null</option>
+          <option value="NEW">NEW</option>
+          <option value="NORMAL">NORMAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="CLOSED">CLOSED</option>
+        </select>
+      </label>
+      </div>
+
+      <div>
+      <label>Filter by new value:
+        <select [formField]="sortFilterForm.filterNewValue">
+          <option value="">Don't filter by new value</option>
+          <option value="null">null</option>
+          <option value="NEW">NEW</option>
+          <option value="NORMAL">NORMAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="CLOSED">CLOSED</option>
+        </select>
+      </label>
+      </div>
+
+    </fieldset>
+  </form>
+
+  <button
+    type="button"
+    class="export-btn"
+    (click)="onExport()"
+    aria-label="Export analytics data">
+    Export
+  </button>
+</div>
