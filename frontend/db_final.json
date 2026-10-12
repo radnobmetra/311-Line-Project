@@ -468,6 +468,148 @@
             "flaggedBy": "END_CONVERSATION_AGENT",
             "reviewStatus": "PENDING",
             "createdAt": "2026-09-30T10:15:00Z"
+    "notifications": [
+        {
+            "id": "1", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 3)",
+            "createdAt": "2027-04-28T11:15:00Z",
+            "read": "false"
+        },
+        {
+            "id": "2", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 30)",
+            "createdAt": "2026-11-23T14:00:00Z",
+            "read": "true"
+        }, 
+        {
+            "id": "11",
+            "title": "Welcome to the 311 text line admin dashboard!",
+            "body": "Welcome to the 311 text line admin dashboard! For tips on how to navigate this dashboard, check out the help page.",
+            "createdAt": "2025-01-01T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "12",
+            "title": "Attention! Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+            "body": "...sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "createdAt": "1966-01-01T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "3", 
+            "title": "Twilio error",
+            "body": "A Twilio error has occurred. (conversationId = 37)",
+            "createdAt": "2026-07-21T22:40:10Z",
+            "read": "true"
+        },
+        {
+            "id": "4", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 140)",
+            "createdAt": "2026-08-22T11:00:00Z",
+            "read": "true"
+        }, 
+        {
+            "id": "5", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (ConversationId = 200)",
+            "createdAt": "2026-09-21T11:45:00Z",
+            "read": "false"
+        },
+        {
+            "id": "6", 
+            "title": "Twilio error",
+            "body": "A Twilio error has occurred. (ConversationId = 201)",
+            "createdAt": "2026-09-22T16:55:00Z",
+            "read": "true"
+        },
+        {
+            "id": "7", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (ConversationId = 202)",
+            "createdAt": "2026-10-05T11:45:00Z",
+            "read": "true"
+        },
+        {
+            "id": "8", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 205)",
+            "createdAt": "2026-11-14T12:00:00Z",
+            "read": "false"
+        },
+        {
+            "id": "9", 
+            "title": "Suspicious activity detected",
+            "body": "A conversation has been flagged for suspicious activity. (conversationId = 274)",
+            "createdAt": "2026-12-01T11:45:00Z",
+            "read": "true"
+        },
+        {
+            "id": "10", 
+            "title": "Google Gemini error",
+            "body": "A Google Gemini error has occurred. (conversationId = 280)",
+            "createdAt": "2026-12-22T16:55:00Z",
+            "read": "true"
+        }
+    ],
+    "requestLog": [
+        {
+            "id": "1",
+            "requestId": "123",
+            "phoneNumber": "1234567890",
+            "topic": "ticket",
+            "createdAt": "2019-09-08T00:00:00Z"
+        },
+        {
+            "id": "2",
+            "requestId": "2367",
+            "phoneNumber": "9161234567",
+            "topic": "general",
+            "createdAt": "2021-12-03T15:00:00Z"
+        },
+        {
+            "id": "3",
+            "requestId": "624",
+            "phoneNumber": "2345678901",
+            "topic": "ticket",
+            "createdAt": "2026-01-22T15:01:00Z"
+        },
+        {
+            "id": "4",
+            "requestId": "574",
+            "phoneNumber": "2345678901",
+            "topic": "none",
+            "createdAt": "2020-03-12T15:01:00Z"
+        },
+        {
+            "id": "5",
+            "requestId": "4632",
+            "phoneNumber": "1234567890",
+            "topic": "general",
+            "createdAt": "2019-09-08T15:01:00Z"
+        },
+        {
+            "id": "6",
+            "requestId": "1234",
+            "phoneNumber": "9161234567",
+            "topic": "none",
+            "createdAt": "2021-12-03T15:01:00Z"
+        },
+        {
+            "id": "7",
+            "requestId": "890",
+            "phoneNumber": "2345678901",
+            "topic": "both",
+            "createdAt": "2026-06-06T15:01:00Z"
+        },
+        {
+            "id": "8",
+            "requestId": "212",
+            "phoneNumber": "2345678901",
+            "topic": "both",
+            "createdAt": "2013-11-01T15:01:00Z"
         }
     ]
 }

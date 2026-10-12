@@ -70,9 +70,86 @@ This will be a series of agents that integrate into city services to allow for r
 
 To Be Completed
 
-## Deployment|
+## Deployment
 
-To Be Completed
+The agent runtime — the Google ADK multi-agent system plus the Flask + Twilio SMS webhook —
+is deployed as a Docker image built from the included [`Dockerfile`](Dockerfile) and run with
+Docker Compose. The image bundles every runtime dependency (agent stack, webhook,
+Elasticsearch/Vertex AI ranking tools and Geo tooling), so the exact same environment runs
+locally, in CI and on a server. For detailed operator instructions, see
+[`DOCKERINFO.md`](DOCKERINFO.md).
+
+### Files added & modified to make deployment possible
+
+The following files were added and are the only files
+required to build, run and publish the agent runtime (no existing source files had to change):
+
+| File | Purpose |
+| [`Dockerfile`](Dockerfile) | Runtime image (`python:3.14-slim`): pinned dependencies, application code, healthcheck, non-root user, starts Gunicorn on port 3000 (`reply_sms:app`) |
+| [`docker-compose.yml`](docker-compose.yml) | Orchestrates the `api` webhook service and the optional `adk-web` dev UI (profile `dev`); injects `.env` secrets and mounts `sa-key.json` |
+| [`requirements.txt`](requirements.txt) | Pinned Python dependencies (`google-adk`, `google-genai`, `flask`, `twilio`, `elasticsearch`, `geopandas`, ...) |
+| [`.dockerignore`](.dockerignore) | Keeps secrets (`.env`, `sa-key.json`), the Angular `frontend/`, `.venv` and runtime state out of the image |
+| [`.github/workflows/docker-ci.yml`](.github/workflows/docker-ci.yml) | GitHub Actions: builds and pushes the image to Docker Hub on every push to `main` |
+| [`DOCKERINFO.md`](DOCKERINFO.md) | Operator docs for building, running and verifying the image, including the `adk` CLI / web UI inside the container |
+
+### Prerequisites
+
+- Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
+- Install the [Google Cloud CLI](https://docs.cloud.google.com/sdk/docs/install-sdk#windows) and authenticate
+  (needed for Vertex AI application-default credentials):
+  ```bash
+  gcloud auth application-default login
+  ```
+- Create a `.env` file (git-ignored) with the credentials the runtime reads:
+  ```
+  GOOGLE_GENAI_USE_VERTEXAI=true
+  GOOGLE_CLOUD_PROJECT=<gcp-project-id>
+  GOOGLE_CLOUD_LOCATION=<region>
+  GOOGLE_APPLICATION_CREDENTIALS=sa-key.json
+  ELASTIC_API_ENDPOINT=<elastic-endpoint>
+  ELASTIC_API_KEY=<elastic-api-key>
+  TWILIO_SID=<twilio-account-sid>
+  TWILIO_TOKEN=<twilio-auth-token>
+  TWILIO_NUMBER=<twilio-phone-number>
+  PORT=3000
+  ```
+- Place the Google service-account key at `sa-key.json` (also git-ignored). It is injected at
+  runtime as a mounted volume (`:ro`), never baked into the image.
+
+### Steps to deploy
+
+1. Clone the repository and enter the project root:
+   ```bash
+   git clone https://github.com/radnobmetra/311-Line-Project.git
+   cd 311-Line-Project
+   ```
+2. Create `.env` and add `sa-key.json` as described in **Prerequisites**.
+3. Build the image and start the agent runtime in the background:
+   ```bash
+   docker compose up --build -d
+   ```
+4. Verify the webhook is up (healthcheck + smoke test):
+   ```bash
+   docker inspect --format "{{.State.Health.Status}}" 311-line-api
+   curl -X POST http://localhost:3000/reply_sms -d "From=%2B15551234567&Body=hello"
+   ```
+5. Point the Twilio phone number's **"A message comes in"** webhook at
+   `https://<host>/reply_sms` (served by Gunicorn on port `3000`).
+
+To pull up the ADK dev UI / web playground instead, start the optional `dev` profile service
+(`docker compose --profile dev up -d adk-web` → `http://localhost:8000`).
+
+### Files packaged together in the image
+
+`COPY . .` in the [`Dockerfile`] combines with the `.dockerignore` rules to bundle
+the following into the image:
+
+- **Agent runtime** – `my_agent/`, `modelarmor_agent/` (ADK multi-agent system)
+- **Webhook & session management** – `reply_sms.py`, `twilio_server/`, `session_manager.py`,
+  `timerloop.py`, `timertracker.py`
+- **Agent tools & data** – `my_agent/subagents/tools/`, `data.txt`, `emergency_cases.json`,
+  `tickets.json`
+
 
 ## Developer Instructions /
 
