@@ -1,11 +1,17 @@
 <section class="sessions-page">
     @if (contactID)
     {
-    <h1>Sessions for {{ (sessionMap().values().next().value?.phoneNumber ?? '') | phone }}</h1>
+    <div class="title-btn">
+        <h1>Sessions for {{ (sessionMap().values().next().value?.phoneNumber ?? '') | phone }}</h1>
+        <button type="button" class="export-btn" (click)="onExportContact()" aria-label="Export sessions data for contact">Export</button>
+    </div>
     }
     @else
     {
-    <h1>All Sessions</h1>
+    <div class="title-btn">
+        <h1>All Sessions</h1>
+        <button type="button" class="export-btn" (click)="onExport()" aria-label="Export sessions data">Export</button>
+    </div>
     }
 
     <p class="table-hint">
