@@ -6,14 +6,6 @@
     </div>
 </div>
 
-	<div class="overviewHeader">
-		<h1> Welcome, User</h1>
-		<div class ="stats">
-			<h3> 15 Users Helped Today</h3>
-			<h3> 6 Active Sessions</h3>
-		</div>
-	</div>
-
 <div class="body">
 
 
@@ -25,6 +17,11 @@
     <div class="graph">
         <h2 class="title">Latest Sessions</h2>
         <canvas id="sessionChart" priority></canvas>
+        <button (click)="periodToggle('hour')">Hour</button>
+        <button (click)="periodToggle('day')">Day</button>
+        <button (click)="periodToggle('month')">Month</button>
+        <button (click)="periodToggle('year')">Year</button>
+
     </div>
 
     <div class="graph">
