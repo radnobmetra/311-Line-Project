@@ -62,8 +62,8 @@
             "id": "1",
             "contactId": "1",
             "status": "ACTIVE",
-            "startedAt": "2026-09-20T14:15:00Z",
-            "lastMessageAt": "2026-09-20T14:22:00Z"
+            "startedAt": "2026-08-20T14:15:00Z",
+            "lastMessageAt": "2028-09-20T14:22:00Z"
         },
         {
             "id": "2",
@@ -76,8 +76,8 @@
             "id": "3",
             "contactId": "3",
             "status": "ACTIVE",
-            "startedAt": "2026-09-22T16:45:00Z",
-            "lastMessageAt": "2026-09-22T16:55:00Z"
+            "startedAt": "2026-02-22T16:45:00Z",
+            "lastMessageAt": "2026-02-22T16:55:00Z"
         },
         {
             "id": "4",

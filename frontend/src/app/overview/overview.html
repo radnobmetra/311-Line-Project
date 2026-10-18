@@ -22,6 +22,25 @@
         <button (click)="periodToggle('month')">Month</button>
         <button (click)="periodToggle('year')">Year</button>
 
+        <div class="slider-container" style="margin-top: 15px;">
+    <label>
+      Range: <strong>{{ rangeUnit() }}</strong> 
+      {{ periodRange() }}(s)
+    </label>
+    <br>
+    <input 
+      type="range" 
+      min="1" 
+      [max]="sliderMax" 
+      [value]="rangeUnit()" 
+      [disabled]="!isSliderAvailable"
+      (input)="onSliderChange($event)"
+    />
+    <span *tfIf="!isSliderAvailable" style="color: gray; font-size: 0.9em;">
+      (Slider unavailable for Hour/Year)
+    </span>
+  </div>
+
     </div>
 
     <div class="graph">
