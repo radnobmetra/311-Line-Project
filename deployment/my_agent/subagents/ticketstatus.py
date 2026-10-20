@@ -1,10 +1,12 @@
-from google.adk.agents import LlmAgent, BaseAgent, SequentialAgent, InvocationContext
+from google.adk.agents import LlmAgent, BaseAgent, InvocationContext
 from google.adk.events import Event
 from google.adk.tools.tool_context import ToolContext
 from google.genai.types import Content, Part
 from typing import AsyncGenerator, Optional  
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse 
+from google.adk import Workflow
+
 from ..config import MODEL, TICKETSTATUS_INSTRUCTION
 from .tools.ticket_query import get_ticket_details
 
@@ -21,6 +23,7 @@ def save_user_question(
 
     callback_context.state["user_question"] = user_question
     return None
+
 
 ticketstatus_draft_agent = LlmAgent(
     model=MODEL,
@@ -77,6 +80,7 @@ retrieval_error
     output_key="ticketstatus_review",
 )
 
+
 class ValidateTicketStatus(BaseAgent):
     async def _run_async_impl(
         self, ctx: InvocationContext
@@ -102,16 +106,22 @@ class ValidateTicketStatus(BaseAgent):
             content=Content(parts=[Part(text=final_answer)])
         )
 
+
 validate_ticketstatus_agent = ValidateTicketStatus(
     name="ValidateTicketStatusAgent",
     description="Returns the ticket answer only if it passed review.",
 )
 
-ticketstatus_agent = LlmAgent(
+
+ticketstatus_agent = Workflow(
     name="TicketStatusWorkflowAgent",
-    sub_agents=[
+    description="Answers questions about ticket numbers, ticket status, and ticket updates.",
+    input_schema=str,
+    edges=[
+        ("START",
         ticketstatus_draft_agent,
         ticketstatus_reviewer_agent,
-        validate_ticketstatus_agent,
+        validate_ticketstatus_agent
+        ),
     ],
 )
