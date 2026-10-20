@@ -1,0 +1,208 @@
+
+h1 {
+    font-size: 1.5rem;
+    margin-top: 0em;
+    margin-bottom: 0.5em;
+}
+
+/*================================
+     main sections
+================================*/
+
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    margin-right: 5em;
+    margin-left: 0em;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    padding: 1em;
+    border-style:solid;
+    border-color: rgb(174, 174, 174);
+    border-width: 1px;
+    border-radius: 0.5rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 40vh;
+    max-height: 40vh;
+}
+
+.userInputSection {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    margin-right: 5em;
+    margin-left: 0em;
+    margin-bottom: 0em;
+    margin-top: 0em;
+    padding: 0.5em;
+    padding-bottom: 0em;
+}
+
+/*================================
+     message bubble styling
+================================*/
+
+.user-msg-container {
+    align-self: end;
+    margin-top: 0em;
+    margin-bottom: 0;
+}
+
+.agent-msg-container, .error-msg-container {
+    align-self: start;
+    margin-top: 0em;
+    margin-bottom: 0;
+}
+
+.msg-contents {
+    max-width: 40vw;
+    border-radius: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    overflow-wrap: break-word;
+    margin: 0em;
+    border-style:solid;
+    border-color: rgb(174, 174, 174);
+    border-width: 1px;
+}
+
+.user-msg-container > .msg-contents {
+    background-color: rgb(239, 242, 255);
+}
+
+.agent-msg-container > .msg-contents {
+    background-color: rgb(240, 240, 240);
+}
+
+.error-msg-container > .msg-contents {
+    background-color: rgb(255, 206, 206);
+}
+
+.user-msg-container > p {
+    padding: 0em;
+    justify-self: right;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    color: rgb(70, 70, 70);
+}
+
+.agent-msg-container > p {
+    padding: 0em;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    color: rgb(70, 70, 70);
+}
+
+.error-msg-container > p {
+    padding: 0em;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    color: rgb(70, 70, 70);
+}
+
+/*================================
+    info and text input styling
+================================*/
+
+.info {
+    color: grey;
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+    margin-left: 0em;
+    margin-right: 0em;
+    padding: 0em;
+    font-size: 1rem;
+}
+
+textarea {
+    margin-left: 0em;
+    margin-right: 0em;
+    margin-bottom: 1em;
+    margin-top: 1em;
+    padding: 1em;
+    border-style:solid;
+    border-color: rgb(174, 174, 174);
+    border-width: 1px;
+    font-size: 1rem;
+    font-family: inherit;
+    border-radius: 1rem;
+}
+
+textarea:focus {
+    border-color: rgb(137, 137, 137);
+    border-width: 1px;
+}
+
+/*================================
+    button styling
+================================*/
+
+button {
+    align-self: start;
+    margin-left: 0em;
+    margin-right: 0.5em;
+    margin-bottom: 0em;
+    margin-top: 1em;
+    padding: 0.25em;
+    border-style:solid;
+    border-color: rgb(174, 174, 174);
+    background-color: #ffffff;
+    border-width: 1px;
+    font-size: 1rem;
+    font-family: inherit;
+    border-radius: 0.25rem;
+    color: rgb(70, 70, 70);
+    height: 2em;
+}
+
+button:hover {
+    background-color: #eeeeee;
+}
+
+button:active {
+    background-color: #FFFFFF;
+}
+
+.buttonsDiv {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 2.5em;
+    align-items: center;
+}
+
+.sendBtn, .thumbsUpBtn, .thumbsDownBtn {
+    background-color: #f1f1f1;
+}
+
+.thumbsUpBtn_selected, .thumbsUpBtn:hover {
+    background-color: #e7ffe8;
+    border-color: #84e487;
+}
+.thumbsUpBtn_selected:hover {
+    background-color: #c2ffc3;
+    border-color: #7ce77e;
+}
+
+.thumbsDownBtn_selected, .thumbsDownBtn:hover {
+    background-color: #ffe6e6;
+    border-color: #e48484;
+}
+.thumbsDownBtn_selected:hover {
+    background-color: #ffcac8;
+    border-color: #ff8f8f;
+}
