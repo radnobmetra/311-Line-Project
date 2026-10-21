@@ -1,4 +1,4 @@
-<h1>Agent Chat</h1>
+<h1>311 Agent Chat</h1>
 
 <div class="messages-container">
     @for (message of messages; track $index) {
@@ -65,19 +65,31 @@
     @if (inputType =="normal") {
     <p class="info">Messaging mode: you are messaging the agent. To leave feedback, select 'Thumbs Up' or 'Thumbs Down.'
     </p>
-    } @else {
+    } @if (inputType == "thumbs up" || inputType == "thumbs down") {
     <p class="info">Feedback mode: you are leaving feedback on the agent's latest message.</p>
+    } @if (inputType == "image") {
+        <p class="info">You are sending an image.</p>
     }
 
     <div class="buttonsDiv">
+        <!-- thumbs up, thumbs down buttons -->
         <div>
             <button type="button" (click)="thumbsUp()" [class]="thumbsUpBtnClass" aria-label="Like">
                 Thumbs Up</button>
             <button type="button" (click)="thumbsDown()" [class]="thumbsDownBtnClass" aria-label="Dislike">
                 Thumbs Down</button>
+
+            <!-- clear -->
+            <button type="button" (click)="clear()" aria-label="Clear">
+                Clear</button>
+
+            <!-- image uploading -->
+            <input type="file" accept="image/png, image/jpg, image/jpeg", 
+            (change)="uploadImage($event)", [value] = "imageFileName" />
         </div>
 
         <div>
+            <!-- send button -->
             @if (inputType == "up" || inputType == "down") {
             <button type="button" class="sendBtn" (click)="sendMessage()" aria-label="Submit feedback">
                 Send feedback</button>
@@ -87,7 +99,6 @@
                 Send message</button>
             }
         </div>
-
     </div>
 
     @if (inputType == "normal") {

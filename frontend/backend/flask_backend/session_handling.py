@@ -1,5 +1,5 @@
 """
-Copy of 311-line-project/session_handling.py.
+Modified copy of 311-line-project/session_handling.py.
 Needed for remote_chat_frontend.py. 
 """
 
@@ -7,6 +7,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import time
+from google.genai import types
 
 # load root .env first, then fallback to subfolder path
 load_dotenv()
@@ -142,7 +143,35 @@ def add_custom_event(author:str, custom_data:dict, session_ID:int):
 	)
 	return True
 
-	
+def add_image_event_to_session(author:str, imagePart:types.Part, session_ID:int):
+		
+	"""
+	Appends a message as an event to the attached session with custom author
+
+	Args:
+
+	Inputs: 
+		author (str): author of the message for tracking
+		custom_data (str): custom data to be appended 
+		session_ID (int): session to add the event true
+	Returns:
+		True if completed
+	"""
+
+	### Appending the users message
+	client.sessions.events.append(
+		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"] + "/sessions/" + str(session_ID), 
+		invocation_id = str(uuid.uuid4()),
+		timestamp = datetime.now(tz=timezone.utc),
+		author=author,
+		config={
+			"content": {
+				"role": "user",
+				"parts": [imagePart,]
+				},
+			},
+	)
+	return True
 
 
 def create_session(user_Number: str, source: str) -> str:

@@ -17,7 +17,7 @@ interface userInputInterface {
 
 export class agentChat {
   //The latest response from the server
-  latestMessage = signal<ChatMessage>({author:"", contents:""});  
+  latestMessage = signal<ChatMessage>({ author: "", contents: "" });
   agentChatService = inject(AgentChatService);
   //array of all messages except latestMessage
   messages: ChatMessage[];
@@ -28,6 +28,8 @@ export class agentChat {
   constructor() {
     this.messages = [];
     this.inputType = "normal";
+    this.imageFileName = "";
+
   }
 
   //needed to get text box input
@@ -36,8 +38,11 @@ export class agentChat {
   });
   userInputForm = form(this.userInputModel);
 
+  imageFileName: string;
+  imageFile: any;
+
   //============================================================
-  //       manage message type and its effects on the css
+  //          manage message type
   //============================================================
 
   //constant variables for class of buttons 
@@ -76,74 +81,106 @@ export class agentChat {
     }
   }
 
+  uploadImage(event: any) {
+    if ((event) && (event.target) && (event.target.files[0])) {
+      this.imageFile = event.target.files[0];
+      if (this.imageFile) {
+        this.imageFileName = this.imageFile.name;
+        console.log(this.imageFileName);
+        this.inputType = "image";
+      }
+    }
+  }
+
+  //============================================================
+  //                    clear user input
+  //============================================================
+
+  clear() {
+    //reset variables pertaining to user input
+    this.userInputForm().reset({ input: "" });
+    this.inputType = "normal";
+    this.thumbsDownBtnClass = this.thumbsDownBtnClass_Default;
+    this.thumbsUpBtnClass = this.thumbsUpBtnClass_Default;
+    this.imageFileName = ""
+    this.imageFile = null;
+  }
+
   //============================================================
   //                    send message
   //============================================================
 
   sendMessage() {
+    //for now, only send timages with no text component
+    if (this.inputType == "image") {
+      this.sendImage();
+      this.clear();
+      return;
+    }
+
     //get and format user's message
     let message = this.userInputForm.input().value();
     let formattedMessage = this.formatInput(message, this.inputType);
 
-    //user entered valid input:
+    //send message if user entered valid input
     if (formattedMessage != "invalid") {
       //store the agent's last message 
-      if (this.latestMessage().author != "" && this.latestMessage().contents != ""){
-        this.messages.push({author: this.latestMessage().author,
+      if (this.latestMessage().author != "" && this.latestMessage().contents != "") {
+        this.messages.push({
+          author: this.latestMessage().author,
           contents: this.latestMessage().contents
         });
       }
 
-      //store regular user message in messsage array
+      //store regular user message in message array
       if (this.inputType == "up") {
         if (message.length >= 2)
-          this.messages.push({author: "user", contents: "Sent thumbs up with comment: " + message})
+          this.messages.push({ author: "user", contents: "Sent thumbs up with comment: " + message })
         else
-          this.messages.push({author: "user", contents: "Sent thumbs up."})
+          this.messages.push({ author: "user", contents: "Sent thumbs up." })
       }
 
       //store user feedback message in message array
       else if (this.inputType == "down") {
         if (message.length >= 2)
-          this.messages.push({author: "user", contents: "Sent thumbs down with comment: " + message})
+          this.messages.push({ author: "user", contents: "Sent thumbs down with comment: " + message })
         else
-          this.messages.push({author: "user", contents: "Sent thumbs down."})
+          this.messages.push({ author: "user", contents: "Sent thumbs down." })
       }
       else {
-        this.messages.push({author: "user", contents: message})
+        this.messages.push({ author: "user", contents: message })
       }
 
       //reset latest message signal
-      this.latestMessage.set({author: " ", contents: "Waiting for response..."});
+      this.latestMessage.set({ author: " ", contents: "Waiting for response..." });
 
       //send message using flask backend and store response in latestMessage
       this.agentChatService.sendMessage(formattedMessage).subscribe({
         next: (msg) => this.latestMessage.set(msg),
-        error: (err) => this.latestMessage.set({author: "Error", contents: "A connection error occurred."})
+        error: (err) => this.latestMessage.set({ author: "Error", contents: "A connection error occurred." })
       });
 
-      //reset variables pertaining to user input
-      this.userInputForm().reset({ input: "" });
-      this.inputType = "normal";
-      this.thumbsDownBtnClass = this.thumbsDownBtnClass_Default;
-      this.thumbsUpBtnClass = this.thumbsUpBtnClass_Default;
-    } 
+      this.clear();
+    }
 
     //user entered invalid input:
     else {
       //store latest agent message
-      if (this.latestMessage().author != "" && this.latestMessage().contents != ""){
-        this.messages.push({author: this.latestMessage().author,
+      if (this.latestMessage().author != "" && this.latestMessage().contents != "") {
+        this.messages.push({
+          author: this.latestMessage().author,
           contents: this.latestMessage().contents
         });
       }
 
       //reset latestMessage
-      this.latestMessage.set({author: "", contents: ""});
+      this.latestMessage.set({ author: "", contents: "" });
 
       //add error message to list of messages
-      this.messages.push({author: "Error",
-        contents: "Messages must be between 2 and 160 characters."});
+      this.messages.push({
+        author: "Error",
+        contents: "Messages must be between 2 and 300 characters."
+      });
     }
   }
 
@@ -169,10 +206,27 @@ export class agentChat {
     }
 
     //don't accept messages over 160 chars
-    if (messageStr.length > 160) {
+    if (messageStr.length > 300) {
       messageStr = "invalid";
     }
 
     return messageStr;
+  }
+
+  //============================================================
+  //                    send image
+  //============================================================
+
+  sendImage() {
+    this.messages.push({ author: "user", contents: "Sent an image: " + this.imageFileName });
+
+    //reset latest message signal
+    this.latestMessage.set({ author: " ", contents: "Waiting for response..." });
+
+    //send message using flask backend and store response in latestMessage
+    this.agentChatService.sendImage(this.imageFile).subscribe({
+      next: (msg) => this.latestMessage.set(msg),
+      error: (err) => this.latestMessage.set({ author: "Error", contents: "A connection error occurred." })
+    });
   }
 }

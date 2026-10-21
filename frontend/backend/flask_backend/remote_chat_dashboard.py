@@ -8,6 +8,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import json
 import os
+from google.genai import types
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -18,6 +19,7 @@ from .session_handling import (
     client,
     create_update_agent_session,
     list_events,
+    add_image_event_to_session,
 )
 from .user_feedback_handling import (
     find_response_event_id,
@@ -255,7 +257,7 @@ def restore_last_response(session_id):
 
 """
 ======================================================================================
-                                    gui chat
+                        gui chat
 ======================================================================================
 """
 # not used for anything
@@ -273,19 +275,24 @@ async def gui_make_session() -> str:
     )
     return session_id
 
+"""
+======================================================================================
+                        send text message
+======================================================================================
+"""
 
-
-async def send_message_get_response(message: str) -> json:
+async def send_message_get_response(user_number: str, message: str) -> json:
 
     error_msg = {"author": "error", "contents": "An error occurred. Please try again later."}
 
     print()
+    print("user number: "+ user_number)
     print("User message: " + message)
     print("initializing variables...")
 
     #initialize variables
     remote_agent = get_remote_agent()
-    user_number = "remote-chat-test"
+    #user_number = "remote-chat-test"
     source = "terminal"
     user_id = f"{user_number}-{source}"
 
@@ -435,6 +442,132 @@ async def send_message_get_response(message: str) -> json:
     print("Agent:", final_text)
 
     return({"author":msg_author, "contents":final_text})
+
+"""
+======================================================================================
+                        send image
+======================================================================================
+"""
+
+async def send_image_get_response(imgFilePath: str, user_number: str) -> json:
+    error_msg = {"author": "error", "contents": "An error occurred. Please try again later."}
+
+    print()
+    print("User number: " + user_number)
+    print("User uploaded an image: " + imgFilePath)
+    print("initializing variables...")
+
+    #initialize variables
+    remote_agent = get_remote_agent()
+    #user_number = "remote-chat-test"
+    source = "terminal"
+    user_id = f"{user_number}-{source}"
+
+    # Create or reuse a session.
+    print("creating or updating a session...")
+    session_id = create_update_agent_session(
+        user_Number=user_number,
+        ttl=1800,
+        source=source,
+    )
+
+    session = await remote_agent.async_get_session(
+        user_id=user_id,
+        session_id=session_id,
+    )
+
+    if session is None:
+        print("error: could not retrieve session from deployed agent.")
+        return(error_msg)
+
+    debug = False
+
+    # Most recent user-visible response.
+    last_response_event, last_response_text = (
+        restore_last_response(session_id)
+    )
+
+    # ==================== message the agent ====================
+
+    # AGENT CHAT
+    final_text = None
+    msg_author = "Agent"
+
+    print("Getting agent response...")
+
+    #get image binary
+    with open(imgFilePath, "rb") as image:
+        image_binary = image.read()
+
+    #get mime type
+    mime_type = "image/" + imgFilePath.rsplit('.', 1)[1].lower()
+    print("file path: " + imgFilePath)
+    print("mime type: " + mime_type)
+
+    image_part = types.Part(
+        inline_data=types.Blob(
+            mime_type=mime_type,
+            data=image_binary,
+            )
+        )
+
+    #manually add event containing image to session because async_stream_query
+    #currently doesn't work for images, despite what the documentation might tell you
+
+    if add_image_event_to_session(user_id, image_part, session_id) is False:
+        print("Image not successfully added to events.")
+        return(error_msg)
+        
+    # make another query so that user can see whether the report was submitted
+    message = "What is the status of the report?"
+    print("Asking agent if it has submitted report...")
+    debug = False
+
+    async for event in remote_agent.async_stream_query(
+        user_id=user_id,
+        session_id=session_id,
+        message=message,
+    ):
+
+        if debug:
+            print_event_trace(event)
+
+        text = get_text(event)
+
+        if not text:
+            continue
+
+        event_author = event.get("author")
+
+        # Prefer the user-visible Overseer response.
+        if event_author == "OverseerAgent":
+            final_text = text
+
+        #If the session has ended, inform the user and ignore SessionReviewerAgent's output
+        elif event_author == "SessionReviewerAgent":
+            final_text = "This session has ended. You may need to wait a few minutes before starting a new conversation."
+
+        # Fallback if no Overseer answer is available.
+        elif final_text is None:
+            final_text = text
+
+    if not final_text:
+        final_text="[No text response returned]"
+
+    print("Agent:", final_text)
+    print()
+
+    #attempt to delete temporary image file
+    try:
+        os.remove(imgFilePath)
+        print("Temporary image file was deleted.")
+    except:
+        print("Temporary image file could not be deleted.")
+
+    print()
+
+    return({"author":msg_author, "contents":final_text})
+
 
 #==================================================================================
 

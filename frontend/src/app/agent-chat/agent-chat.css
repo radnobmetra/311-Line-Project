@@ -146,10 +146,10 @@ textarea:focus {
 }
 
 /*================================
-    button styling
+    button, image upload styling
 ================================*/
 
-button {
+button, input::file-selector-button {
     align-self: start;
     margin-left: 0em;
     margin-right: 0.5em;
@@ -158,20 +158,19 @@ button {
     padding: 0.25em;
     border-style:solid;
     border-color: rgb(174, 174, 174);
-    background-color: #ffffff;
+    background-color: #f1f1f1;
     border-width: 1px;
     font-size: 1rem;
     font-family: inherit;
     border-radius: 0.25rem;
     color: rgb(70, 70, 70);
-    height: 2em;
 }
 
-button:hover {
-    background-color: #eeeeee;
+button:hover, input::file-selector-button:hover {
+    background-color: #dfdfdf;
 }
 
-button:active {
+button:active, input::file-selector-button:active {
     background-color: #FFFFFF;
 }
 
@@ -181,7 +180,6 @@ button:active {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    height: 2.5em;
     align-items: center;
 }
 
