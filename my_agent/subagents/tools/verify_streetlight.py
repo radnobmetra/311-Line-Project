@@ -1,7 +1,8 @@
+from google.adk.tools.tool_context import ToolContext
 import requests
 import json
 
-def verify_streetlight(pole_number: str) -> str:
+def verify_streetlight(pole_number: str, tool_context: ToolContext) -> str:
     """
     queries sac ArcGIS database to verify if a specfied streetlight exists.
    
@@ -44,9 +45,12 @@ def verify_streetlight(pole_number: str) -> str:
         })
             
     except requests.exceptions.RequestException as e:
+        error_message = f"API connection error: {str(e)}"
         
-        # error handling
+        # set error state
+        tool_context.state["outcome_label"] = error_message
+        
         return json.dumps({
             "verified": False,
-            "message": f"API connection error: {str(e)}"
+            "message": error_message
         })
