@@ -72,3 +72,8 @@ def test_delete_sessions():
 	output = session_handling.delete_session(test_session)
 	assert output == True
 
+def test_marking_inactive_sessions():
+	ttl = 3.154e+7 # 1 Year in seconds
+
+	session_count = session_handling.mark_inactive_sessions(ttl)
+	assert session_count == 0

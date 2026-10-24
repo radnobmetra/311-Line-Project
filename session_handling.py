@@ -44,6 +44,20 @@ adc_credentials, _ = google.auth.default(
 print("ADC Service Account: ", getattr(adc_credentials, "Service account email", None))
 
 
+def get_update_time(session):
+    updated = session.update_time
+
+    if isinstance(updated, str):
+        updated = datetime.fromisoformat(
+            updated.replace("Z", "+00:00")
+        )
+
+    if updated.tzinfo is None:
+        updated = updated.replace(
+            tzinfo=timezone.utc
+        )
+
+    return updated
 
 def create_update_agent_session(
     user_Number: str,ttl: int,source: str) -> str:
@@ -72,20 +86,7 @@ def create_update_agent_session(
             source=source
         )
 
-    def get_update_time(session):
-        updated = session.update_time
 
-        if isinstance(updated, str):
-            updated = datetime.fromisoformat(
-                updated.replace("Z", "+00:00")
-            )
-
-        if updated.tzinfo is None:
-            updated = updated.replace(
-                tzinfo=timezone.utc
-            )
-
-        return updated
 
     latest_session = max(
         possible_sessions,
@@ -193,12 +194,10 @@ def list_users_sessions(user_Number:str, source:str):
 		sessions(sessions[]): List of sessions
 	"""
 	filter_query = "user_id=" + user_Number + "-" + source
+
+	return list_filtered_sessions(filter_query)
 	
-	sessions = client.sessions.list(
-		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
-		config={"filter": filter_query}
-	)
-	return list(sessions)
+
 	
 def list_events(session_ID:int):
 	"""
@@ -236,7 +235,7 @@ def list_sessions():
 	sessions = []
 	for session in client.sessions.list(
 		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
-		config={"filter": "user_id=managed-runtime-test-ad3df20d" }
+		#config={"filter": "user_id=managed-runtime-test-ad3df20d" }
 	):
 		sessions.append(session)
 	return sessions
@@ -424,4 +423,50 @@ def add_agent_message(
 
     return event_id
 
+
+def list_filtered_sessions(filter_query:str):
+    """
+     
+    """
+    sessions = client.sessions.list(
+	name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
+	config={"filter": filter_query}
+	)
+    return list(sessions)
+     
+
+def mark_inactive_sessions(
+    ttl:int
+):
+    """
+    Marks any sessions older than the given ttl as finished with the state of incomplete.
+
+    Input:
+    ttl (int): Interval in seconds that sessions older than this should be marked
+    
+    Returns:
+    inactive_sessions (int): number of sessions marked as inactive
+    """
+    sessions = list(list_sessions())
+   # print(sessions[-3])
+    inactive_sessions = 0
+
+    
+    for session in sessions:
+        update_time = get_update_time(session)
+        inactive_time = datetime.now(timezone.utc) - update_time
+        inactive_time = inactive_time.total_seconds()
+
+        if inactive_time > ttl:
+            #Pull last event data
+            events = list_events(session.name.rsplit("/", 1)[-1])
+            if len(events) != 0:
+                last_event = events[-1]
+                last_event_author = last_event.author
+
+                end_states = ["eval_author", "session_timeout"]
+                if last_event_author not in end_states:
+                    inactive_sessions += 1
+                    add_custom_event("session_timeout", "closed: timeout", session.name.rsplit("/", 1)[-1])       
+    return inactive_sessions     	 
 
