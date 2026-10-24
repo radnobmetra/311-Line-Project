@@ -216,7 +216,10 @@ export class Overview {
         maintainAspectRatio: true,
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            ticks: {
+              precision: 0, //makes tick values whole numbers
+            }
           }
         }
       }

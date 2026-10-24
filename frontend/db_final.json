@@ -76,8 +76,8 @@
             "id": "3",
             "contactId": "3",
             "status": "ACTIVE",
-            "startedAt": "2026-02-22T16:45:00Z",
-            "lastMessageAt": "2026-02-22T16:55:00Z"
+            "startedAt": "2026-10-23T16:45:00Z",
+            "lastMessageAt": "2026-10-23T16:55:00Z"
         },
         {
             "id": "4",
@@ -90,15 +90,15 @@
             "id": "5",
             "contactId": "1",
             "status": "CLOSED",
-            "startedAt": "2026-10-04T09:15:00Z",
-            "lastMessageAt": "2026-10-04T09:20:00Z"
+            "startedAt": "2026-10-23T11:15:00Z",
+            "lastMessageAt": "2026-10-23T11:20:00Z"
         },
         {
             "id": "6",
             "contactId": "1",
             "status": "CLOSED",
-            "startedAt": "2026-10-04T09:15:00Z",
-            "lastMessageAt": "2026-10-04T09:20:00Z"
+            "startedAt": "2026-10-20T09:15:00Z",
+            "lastMessageAt": "2026-10-20T09:20:00Z"
         }
     ],
     "messages": [
