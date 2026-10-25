@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 from agentplatform import types
 import session_handling 
+from datetime import datetime, timedelta, timezone
 
 # must match the agent_id in your config
 AGENT_ID = "sacramento_311_agent"
@@ -113,3 +114,35 @@ def calculate_final_outcome(eval_score, user_feedback):
         return "NOT_HELPED"
         
     return "UNCLEAR"
+
+def evaluate_given_sessions(author_names :list):
+    """
+    Evaluates all sessions with an end state that is the given author names.
+    Note: eval_author means session has been evaluated already. Does not evaluate sessions with no events.
+
+    
+    Inputs:
+        author_names (list): list of author names to filter by
+
+    Returns:
+        sessions_evaluated (int): Number of sessions evaluated.
+    """
+     
+    sessions_evaluated = 0
+    sessions = session_handling.list_sessions()
+    for session in sessions:
+        update_time = session_handling.get_update_time(session)
+        inactive_time = datetime.now(timezone.utc) - update_time
+        inactive_time = inactive_time.total_seconds()
+        session_name = session.name.rsplit("/", 1)[-1]
+
+
+        events = session_handling.list_events(session_name)
+        if len(events) != 0:
+            last_event = events[-1]
+            last_event_author = last_event.author
+            if last_event_author in author_names:
+                sessions_evaluated += 1
+                evaluate_completed_session(session_name)
+    return sessions_evaluated     	 
+

@@ -7,6 +7,7 @@ import time
 load_dotenv()
 load_dotenv('./my_agent/.env')
 
+
 # handles EVEN MORE issues with cloud account shenanigans
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.environ.get("AGENT_RUNTIME_LOCATION") or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-west1")
@@ -27,6 +28,9 @@ import agentplatform
 import google.auth
 import uuid
 from datetime import datetime, timedelta, timezone
+
+
+
 
 
 os.environ["GOOGLE_GENAI_USE_ENTERPRISE"] = "TRUE"
@@ -469,4 +473,5 @@ def mark_inactive_sessions(
                     inactive_sessions += 1
                     add_custom_event("session_timeout", "closed: timeout", session.name.rsplit("/", 1)[-1])       
     return inactive_sessions     	 
+
 
