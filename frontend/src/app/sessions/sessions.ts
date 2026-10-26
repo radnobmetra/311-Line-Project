@@ -25,10 +25,19 @@ export class Sessions {
   // Session data.
   sessionMap = signal<Map<string, SessionDetails>>(new Map());
 
+  // Evaluation outcomes, indexed by session ID.
+  outcomes = signal<Record<string, string | null>>({});
 
-  // Session loading and error states.
+  // Selected outcome filter.
+  currentFilter = signal<string>('ALL');
+
+  // Loading states.
   loading = signal<boolean>(true);
+  loadingOutcomes = signal<boolean>(false);
+
+  // Error states.
   errorMessage = signal<string>('');
+  outcomeError = signal<boolean>(false);
 
   constructor() {
     this.loadSessions();
@@ -39,6 +48,8 @@ export class Sessions {
 
     this.loading.set(true);
     this.errorMessage.set('');
+    this.outcomeError.set(false);
+    this.outcomes.set({});
 
     const request = this.contactID
       ? this.sessionsService.getSessionsPerContact(this.contactID)
@@ -61,6 +72,10 @@ export class Sessions {
         this.sessionMap.set(map);
         this.loading.set(false);
 
+        // Only request outcomes if sessions exist.
+        if (sessionsData.length > 0) {
+          this.loadOutcomes();
+        }
       },
 
       error: (err: unknown) => {
@@ -77,14 +92,68 @@ export class Sessions {
     });
   }
 
-  // Sort sessions by ID.
+  // STEP 2: Retrieve outcomes without blocking the table.
+  loadOutcomes(): void {
+
+    this.loadingOutcomes.set(true);
+    this.outcomeError.set(false);
+
+    this.sessionsService.getSessionOutcomes(
+      this.contactID || undefined
+    ).subscribe({
+
+      next: (outcomeData: Record<string, string | null>) => {
+
+        this.outcomes.set(outcomeData);
+        this.loadingOutcomes.set(false);
+      },
+
+      error: (err: unknown) => {
+
+        console.error('Error loading evaluation outcomes:', err);
+
+        this.outcomeError.set(true);
+        this.loadingOutcomes.set(false);
+      }
+
+    });
+  }
+
+  // Update the selected outcome filter.
+  setFilter(event: Event): void {
+
+    const selectElement = event.target as HTMLSelectElement;
+
+    this.currentFilter.set(selectElement.value);
+  }
+
+  // Get the saved outcome for a particular session.
+  getFinalOutcome(session: Session): string | null {
+
+    return this.outcomes()[session.id] ?? null;
+  }
+
+  // Filter and sort the session table.
   get sortedSessions(): SessionDetails[] {
+
+    const filter = this.currentFilter();
 
     const allSessions = Array.from(
       this.sessionMap().values()
     );
 
-    return allSessions.sort(
+    const filteredSessions = allSessions.filter(item => {
+
+      if (filter === 'ALL') {
+        return true;
+      }
+
+      const outcome = this.getFinalOutcome(item.session);
+
+      return outcome?.toUpperCase() === filter.toUpperCase();
+    });
+
+    return filteredSessions.sort(
       (a, b) => a.session.id.localeCompare(
         b.session.id,
         undefined,

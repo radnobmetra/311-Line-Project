@@ -11,6 +11,22 @@
     Click a record in the table to view additional details.
   </p>
 
+  <div class="filter-controls">
+    <label for="outcome-filter">
+      <strong>Filter by Outcome:</strong>
+    </label>
+
+    <select
+      id="outcome-filter"
+      (change)="setFilter($event)"
+      [disabled]="loading() || loadingOutcomes() || outcomeError()"
+    >
+      <option value="ALL">All Sessions</option>
+      <option value="HELPED">Helped</option>
+      <option value="NOT_HELPED">Not Helped</option>
+      <option value="UNCLEAR">Unclear</option>
+    </select>
+  </div>
 
   <!-- Initial session loading state -->
   @if (loading()) {
@@ -28,6 +44,23 @@
 
   } @else {
 
+    <!-- Outcomes continue loading after the table appears -->
+    @if (loadingOutcomes()) {
+
+      <div class="loading-state" role="status">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span>Sessions loaded. Loading evaluation outcomes...</span>
+      </div>
+
+    }
+
+    @if (outcomeError()) {
+
+      <p class="outcome-error" role="alert">
+        Sessions loaded, but evaluation outcomes could not be retrieved.
+      </p>
+
+    }
 
     @if (sessionMap().size > 0) {
 
@@ -41,6 +74,7 @@
             }
 
             <th>Status</th>
+            <th>Outcome</th>
             <th>Started At</th>
             <th>Last Message At</th>
           </tr>
@@ -62,6 +96,41 @@
               <td>{{ sessionDetails.session.status }}</td>
 
               <td>
+                @if (loadingOutcomes()) {
+
+                  <span class="outcome-loading">Loading...</span>
+
+                } @else {
+
+                  @switch (getFinalOutcome(sessionDetails.session)) {
+
+                    @case ('HELPED') {
+                      <span class="badge outcome-helped">
+                        HELPED
+                      </span>
+                    }
+
+                    @case ('NOT_HELPED') {
+                      <span class="badge outcome-not-helped">
+                        NOT HELPED
+                      </span>
+                    }
+
+                    @case ('UNCLEAR') {
+                      <span class="badge outcome-unclear">
+                        UNCLEAR
+                      </span>
+                    }
+
+                    @default {
+                      <span class="outcome-empty">--</span>
+                    }
+
+                  }
+                }
+              </td>
+
+              <td>
                 {{ sessionDetails.session.startedAt | date:'short' }}
               </td>
 
@@ -73,6 +142,12 @@
           }
         </tbody>
       </table>
+
+      @if (sortedSessions.length === 0) {
+        <p class="empty-state">
+          No sessions match the selected outcome filter.
+        </p>
+      }
 
     } @else {
 

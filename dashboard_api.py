@@ -1,7 +1,9 @@
 import os
+import json
 import time
 
 from threading import Lock
+from concurrent.futures import ThreadPoolExecutor
 from flask import Flask, jsonify, request
 
 import session_handling
@@ -10,12 +12,16 @@ app = Flask(__name__)
 
 # Cache settings, in seconds.
 SESSION_CACHE_SECONDS = 60
+OUTCOME_CACHE_SECONDS = 120
 
 session_cache = {
     "expires": 0,
     "sessions": []
 }
 session_cache_lock = Lock()
+
+outcome_cache = {}
+outcome_cache_lock = Lock()
 
 
 @app.after_request
@@ -95,6 +101,67 @@ def format_session(session, include_events=False):
     return result
 
 
+def get_session_outcome(session):
+    """
+    Retrieve a session's saved final_outcome.
+    Use a cache to avoid repeatedly downloading
+    the same event history.
+    """
+    session_id = session.name.rsplit("/", 1)[-1]
+    update_time = format_timestamp(session.update_time)
+    now = time.monotonic()
+
+    with outcome_cache_lock:
+        cached = outcome_cache.get(session_id)
+
+        if (
+            cached is not None
+            and cached["update_time"] == update_time
+            and now - cached["fetched_at"] < OUTCOME_CACHE_SECONDS
+        ):
+            return session_id, cached["outcome"]
+
+    events = session_handling.list_events(session_id)
+    outcome = None
+
+    # Events are returned in chronological order.
+    # Keep the most recent valid final outcome.
+    for event in events:
+        if event.author != "system":
+            continue
+
+        content = getattr(event, "content", None)
+        parts = getattr(content, "parts", None) or []
+
+        for part in parts:
+            text = getattr(part, "text", None)
+
+            if not text or "final_outcome" not in text:
+                continue
+
+            try:
+                data = json.loads(text)
+
+                if isinstance(data, dict):
+                    value = data.get("final_outcome")
+
+                    if isinstance(value, str):
+                        value = value.strip().upper()
+
+                        if value in ("HELPED", "NOT_HELPED", "UNCLEAR"):
+                            outcome = value
+
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+    with outcome_cache_lock:
+        outcome_cache[session_id] = {
+            "outcome": outcome,
+            "update_time": update_time,
+            "fetched_at": time.monotonic()
+        }
+
+    return session_id, outcome
 
 
 
@@ -118,6 +185,28 @@ def get_sessions():
 
     return jsonify(sessions)
 
+
+
+# SLOWER: Load outcomes separately, using cached values.
+@app.get("/sessions/outcomes")
+def get_outcomes():
+    google_sessions = get_google_sessions()
+
+    contact_id = request.args.get("contactId")
+
+    if contact_id:
+        google_sessions = [
+            session for session in google_sessions
+            if session.user_id == contact_id
+        ]
+
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        results = list(executor.map(
+            get_session_outcome,
+            google_sessions
+        ))
+
+    return jsonify(dict(results))
 
 
 # Get one session with its full event history.

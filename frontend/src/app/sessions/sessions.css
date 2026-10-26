@@ -46,6 +46,8 @@ th {
 .clickable-row:hover {
   background-color: #777777;
 }
+
+
 /* Session loading indicator */
 .loading-state {
     display: flex;
@@ -76,3 +78,62 @@ th {
         animation: none;
     }
 }
+
+/* Outcome filter dropdown */
+.filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-controls select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filter-controls select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Evaluation outcome badges */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85em;
+}
+
+.outcome-helped {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.outcome-not-helped {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.outcome-unclear {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+/* Evaluation loading and empty states */
+.outcome-loading,
+.outcome-empty {
+    color: gray;
+}
+
+/* Evaluation loading error */
+.outcome-error {
+    padding: 12px;
+    margin-bottom: 16px;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-radius: 6px;
+}
+

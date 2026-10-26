@@ -38,6 +38,17 @@ export class SessionsService {
     );
   }
 
+  // Retrieve evaluation outcomes separately.
+  getSessionOutcomes(
+    contactId?: string
+  ): Observable<Record<string, string | null>> {
+    return this.http.get<Record<string, string | null>>(
+      `${this.apiUrl}/outcomes`,
+      {
+        params: contactId ? { contactId } : {}
+      }
+    );
+  }
 
   // Retrieve the contact associated with a session.
   getContactBySessionId(sessionId: string): Observable<Contact> {
