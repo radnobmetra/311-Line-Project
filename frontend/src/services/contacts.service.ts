@@ -7,7 +7,8 @@ import { Contact } from '../interfaces/contact.interface';
 export class ContactsService {
     http = inject(HttpClient);
     // Contacts API endpoint.
-    apiUrl = 'http://localhost:3000/contacts';
+    apiUrl = 'http://localhost:5000/contacts';
+
 
     // A fetch function that calls the endpoint to get all contacts. 
     getAllContacts(): Observable<Contact[]> {
