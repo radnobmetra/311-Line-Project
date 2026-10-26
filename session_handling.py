@@ -98,8 +98,12 @@ def create_update_agent_session(
         datetime.now(timezone.utc) - last_updated
     ).total_seconds()
 
+    old_session_id = latest_session.name.rsplit("/", 1)[-1]
+
     if elapsed < ttl:
-        return latest_session.name.rsplit("/", 1)[-1]
+        return old_session_id
+
+    mark_session_resolved(old_session_id)
 
     return create_session(
         user_Number=user_Number,
@@ -424,4 +428,34 @@ def add_agent_message(
 
     return event_id
 
+def mark_session_resolved(session_ID: str) -> bool:
+    """
+    Appends a state update event to mark a time over session as resolved.
+    """
+    client.sessions.events.append(
+        name=_session_name(session_ID),
+        invocation_id=str(uuid.uuid4()),
+        timestamp=datetime.now(tz=timezone.utc),
+        author="system",
+        config={
+            "actions": {
+                "state_delta": {
+                    "status": "resolved",
+                    "outcome_label": "session timeout",
+                }
+            },
+            "content": {
+                "role": "model",
+                "parts": [{"text": "Session resolved due to timeout."}]
+            }
+        }
+    )
+    return True
+
+
+def get_session(session_ID: str):
+    """Retrieve a session resource by its ID."""
+    return client.sessions.get(
+        name=_session_name(session_ID)
+    )
 
