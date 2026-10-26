@@ -1,3 +1,71 @@
+<!-- <form (submit)="$event.preventDefault()">
+    <div class="search_container">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search Table Values...">
+    </div> -->
+    <!-- <fieldset id="sort-date-fieldset">
+        <legend style="font-weight:bold">Sort by date</legend>
+        <div>
+            <label>
+                <input type="radio" [formField]="sortFilterForm.sortDate" value="newest" />
+                Date - newest</label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" [formField]="sortFilterForm.sortDate" value="oldest" />
+                Date - oldest</label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" [formField]="sortFilterForm.sortDate" value="" />
+                Don't sort by date</label>
+        </div>
+    </fieldset> -->
+
+    <!-- <fieldset id="filter-date-fieldset">
+        <legend>Filter by date</legend>
+        <div>
+            <label>After date
+                <input type="date" [formField]="sortFilterForm.filterStartDate" />
+            </label>
+        </div>
+        <div>
+            <label>Before date
+                <input type="date" [formField]="sortFilterForm.filterEndDate" />
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Filter by topic</legend>
+        <div>
+            <label>
+                <input type="radio" value="ticket" [formField]="sortFilterForm.filterTopic" />
+                Topic - ticket </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="general" [formField]="sortFilterForm.filterTopic" />
+                Topic - general question </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="both" [formField]="sortFilterForm.filterTopic" />
+                Topic - both (ticket and general question) </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="none" [formField]="sortFilterForm.filterTopic" />
+                Topic - none </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" value="" [formField]="sortFilterForm.filterTopic" />
+                Don't filter by topic </label>
+        </div>
+    </fieldset> -->
+<!-- </form> -->
+
 <section class="sessions-page">
     @if (contactID)
     {
@@ -8,12 +76,18 @@
     <h1>All Sessions</h1>
     }
 
+    <form (submit)="$event.preventDefault()">
+      <div class="search_container">
+          <label for="search">Search: </label>
+          <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search Table Values...">
+      </div></form>
+
     <p class="table-hint">
         Click a record in the table to view additional details.
     </p>
 
     <div class="filter-controls" style="margin-bottom: 1rem;">
-        <label for="outcome-filter"><strong>Filter by Outcome:</strong> </label>
+        <label for="outcome-filter"><strong>Filter by Outcome: </strong> </label>
         <select id="outcome-filter" (change)="setFilter($event)">
             <option value="ALL">All Sessions</option>
             <option value="HELPED">Helped</option>
@@ -22,8 +96,7 @@
         </select>
     </div>
 
-    @if(sessionMap().size > 0)
-    {
+    @if(sessionMap().size > 0) {
     <table>
         <tr>
             <th>Session ID</th>
@@ -44,7 +117,7 @@
             <td>{{ sessionDetails.phoneNumber | phone }}</td>
             }
             <td>{{ sessionDetails.session.status}}</td>
-            
+
             <td>
                 @switch(getFinalOutcome(sessionDetails.session)) {
                     @case ('HELPED') {
@@ -61,7 +134,7 @@
                     }
                 }
             </td>
-            
+
             <td>{{ sessionDetails.session.startedAt | date:'short' }}</td>
             <td>{{ sessionDetails.session.lastMessageAt| date:'short' }}</td>
         </tr>

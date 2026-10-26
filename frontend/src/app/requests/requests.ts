@@ -71,7 +71,7 @@ export class Requests {
                 record.createdAt.toLowerCase().includes(query)
                 ) {
                     return true;
-                } 
+                }
                 else {
                     this.toggleSelectedMsg(record.id, true);
                     return false;
@@ -101,7 +101,7 @@ export class Requests {
             processed_records = processed_records.filter(
                 (record) => Date.parse(record.createdAt) > start_date);
         }
-        
+
         // Sort by date
         const sortDateOption = this.sortFilterForm.sortDate().value();
         if (sortDateOption) {
@@ -172,7 +172,7 @@ export class Requests {
     private flatten(obj: any, prefix = '', out: Record<string, any> = {}): Record<string, any> {
         for (const [key, value] of Object.entries(obj)) {
             const k = prefix ? `${prefix}.${key}` : key;
-        
+
             const isPlainObject = value !== null &&
             typeof value === 'object' &&
             !Array.isArray(value) &&
@@ -209,7 +209,7 @@ export class Requests {
         const seen = new Set<string>();
         for (const row of flat) {
             for (const k of Object.keys(row)) {
-                if (!seen.has(k)) { 
+                if (!seen.has(k)) {
                     seen.add(k); headers.push(k);
                 }
             }
@@ -221,23 +221,23 @@ export class Requests {
         }
         return lines.join('\r\n') + '\r\n';
     }
-    
+
     // This array will hold the IDs of the messages that the user has selected to export.
-    selectedMessages: string[];    
+    selectedMessages: string[];
 
     toggleSelectedMsg(message_id: any, onlyRemoveMessage: boolean) {
-    //this function updates the selectedMessages array when the user 
+    //this function updates the selectedMessages array when the user
     //selects or unselects a message's checkbox.
-    //if onlyRemoveMessage = true, the function will deselect the message 
+    //if onlyRemoveMessage = true, the function will deselect the message
     //if it's selected, and it will not select the message if it's not selected.
 
         if (this.selectedMessages.length > 0) {
             let msg_id_index = this.selectedMessages.indexOf(message_id);
-            //if message_id is in array of selected elements, remove it 
+            //if message_id is in array of selected elements, remove it
             // from array to unselect it
             if (msg_id_index != -1) {
                 this.selectedMessages.splice(msg_id_index, 1);
-            } 
+            }
             //if ID isn't in array of selected elements, add it to array
             else if (onlyRemoveMessage == false) {
                 this.selectedMessages.push(message_id);
