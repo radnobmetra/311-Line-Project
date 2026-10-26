@@ -1,4 +1,5 @@
 <nav class="sidebar" [class.collapsed]="isCollapsed">
+  <button class="toggle-btn" (click)="sidebarToggle()">{{ isCollapsed ?'»':'«' }}</button>
   <h2>Menu</h2>
   <ul>
     <li><a routerLink="/overview">Overview</a></li>
@@ -15,6 +16,4 @@
     <li><a routerLink="/settings">Settings</a></li>
     <p>---------</p>
   </ul>
-  <button class="toggle-btn" (click)="sidebarToggle()">{{ isCollapsed ?'»':'«' }}</button>
-  <!-- maybe we can add symbols for when the bar is collasped in future-->
 </nav>
