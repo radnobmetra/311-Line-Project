@@ -101,11 +101,10 @@ def format_session(session, include_events=False):
     return result
 
 
-def get_session_outcome(session):
+def get_session_evaluation(session):
     """
-    Retrieve a session's saved final_outcome.
-    Use a cache to avoid repeatedly downloading
-    the same event history.
+    Retrieve a session's saved evaluation results,
+    including the AI score, feedback, and final outcome.
     """
     session_id = session.name.rsplit("/", 1)[-1]
     update_time = format_timestamp(session.update_time)
@@ -119,15 +118,21 @@ def get_session_outcome(session):
             and cached["update_time"] == update_time
             and now - cached["fetched_at"] < OUTCOME_CACHE_SECONDS
         ):
-            return session_id, cached["outcome"]
+            return session_id, cached["evaluation"]
 
     events = session_handling.list_events(session_id)
-    outcome = None
+    evaluation = None
 
-    # Events are returned in chronological order.
-    # Keep the most recent valid final outcome.
-    for event in events:
-        if event.author != "system":
+    # Process events chronologically.
+    ordered_events = sorted(
+        events,
+        key=lambda event: format_timestamp(
+            getattr(event, "timestamp", None)
+        )
+    )
+
+    for event in ordered_events:
+        if event.author not in ("system", "eval_author"):
             continue
 
         content = getattr(event, "content", None)
@@ -136,33 +141,49 @@ def get_session_outcome(session):
         for part in parts:
             text = getattr(part, "text", None)
 
-            if not text or "final_outcome" not in text:
+            if not isinstance(text, str) or "final_outcome" not in text:
                 continue
 
             try:
                 data = json.loads(text)
-
-                if isinstance(data, dict):
-                    value = data.get("final_outcome")
-
-                    if isinstance(value, str):
-                        value = value.strip().upper()
-
-                        if value in ("HELPED", "NOT_HELPED", "UNCLEAR"):
-                            outcome = value
-
             except (json.JSONDecodeError, TypeError):
                 continue
 
+            if not isinstance(data, dict):
+                continue
+
+            outcome = data.get("final_outcome")
+
+            if not isinstance(outcome, str):
+                continue
+
+            outcome = outcome.strip().upper()
+
+            if outcome not in ("HELPED", "NOT_HELPED", "UNCLEAR"):
+                continue
+
+            evaluation = {
+                "ai_evaluation": (
+                    data.get("ai_evaluation")
+                    if isinstance(data.get("ai_evaluation"), dict)
+                    else None
+                ),
+                "user_feedback": (
+                    data.get("user_feedback")
+                    if isinstance(data.get("user_feedback"), dict)
+                    else None
+                ),
+                "final_outcome": outcome
+            }
+
     with outcome_cache_lock:
         outcome_cache[session_id] = {
-            "outcome": outcome,
+            "evaluation": evaluation,
             "update_time": update_time,
             "fetched_at": time.monotonic()
         }
 
-    return session_id, outcome
-
+    return session_id, evaluation
 
 
 # Get session metadata without downloading event histories.
@@ -202,12 +223,41 @@ def get_outcomes():
 
     with ThreadPoolExecutor(max_workers=6) as executor:
         results = list(executor.map(
-            get_session_outcome,
+            get_session_evaluation,
+            google_sessions
+        ))
+
+    return jsonify({
+        session_id: (
+            evaluation["final_outcome"]
+            if evaluation else None
+        )
+        for session_id, evaluation in results
+    })
+
+@app.get("/sessions/evaluations")
+def get_evaluations():
+    """
+    Return individual AI evaluations, user feedback,
+    and combined final outcomes for all sessions.
+    """
+    google_sessions = get_google_sessions()
+
+    contact_id = request.args.get("contactId")
+
+    if contact_id:
+        google_sessions = [
+            session for session in google_sessions
+            if session.user_id == contact_id
+        ]
+
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        results = list(executor.map(
+            get_session_evaluation,
             google_sessions
         ))
 
     return jsonify(dict(results))
-
 
 # Get one session with its full event history.
 @app.get("/sessions/<session_id>")
