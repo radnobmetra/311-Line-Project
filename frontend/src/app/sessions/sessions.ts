@@ -1,3 +1,10 @@
+import { FormsModule } from '@angular/forms'; // Permits the use of ngModel in the .html
+import { form, FormField } from '@angular/forms/signals';
+
+import { ActivatedRoute } from '@angular/router';
+import { Component, inject, signal, computed  } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Component, inject, signal } from '@angular/core';
@@ -12,7 +19,15 @@ import {
 } from '../../services/sessions.service';
 import { tableToCsv } from '../utils/exportToCSV';
 
+interface sortFilterInput {
+    sortDate: string;
+    filterStartDate: string;
+    filterEndDate: string;
+    filterTopic: string;
+}
+
 @Component({
+  imports: [DatePipe, RouterLink, PhonePipe, FormsModule],
   selector: 'app-sessions',
   imports: [DatePipe, DecimalPipe, RouterLink, PhonePipe],
   templateUrl: './sessions.html',
@@ -36,6 +51,16 @@ export class Sessions {
   // Backend service.
   sessionsService = inject(SessionsService);
 
+  // Signal array to hold the raw request records.
+  requests = signal<SessionDetails[]>([]);
+
+  // Will hold the search bar input.
+  searchInput = signal<string>('');
+
+  // Store session + related phone number.
+  sessionMap = signal<Map<string, SessionDetails>>(new Map());
+
+  // Track the current outcome filter state
   // Session data.
   sessionMap = signal<Map<string, SessionDetails>>(new Map());
 
@@ -105,6 +130,53 @@ export class Sessions {
 
     });
   }
+    sortFilterModel = signal<sortFilterInput>({
+        sortDate: "",
+        filterStartDate: "",
+        filterEndDate: "",
+        filterTopic: "",
+    });
+    sortFilterForm = form(this.sortFilterModel);
+      // This function applies searching and filtering to the requests.
+    displayed_reqs = computed(() => {
+        // The "..." unpacks the signal array into a normal array so that it can be filtered and sorted.
+        let processed_records = [...this.requests()];
+
+        // If any of the fields are null, set them to an empty string so that
+        // the search bar and filter functions don't throw errors.
+        processed_records.forEach((record) => {
+            if (record.session.id == null) record.session.id = "";
+            if (record.phoneNumber == null) record.phoneNumber = "";
+        });
+
+        // Search Bar functionality
+        const query = this.searchInput().toLowerCase().trim();
+        if (query !== '') {
+            processed_records = processed_records.filter(record => {
+                if (
+                record.session.id.toString().includes(query) ||
+                record.phoneNumber.toLowerCase().includes(query) //||
+                // record.topic.toLowerCase().includes(query) ||
+                // record.createdAt.toLowerCase().includes(query)
+                ) {
+                    return true;
+                }
+                else {
+                    // this.toggleSelectedMsg(record.id, true);
+                    return false;
+                }
+            });
+        }
+
+        // Filter by id
+        const idFilter = this.sortFilterForm.filterTopic().value();
+        if (idFilter) {
+            processed_records = processed_records.filter(
+                (record) => record.session.id == idFilter);
+        }
+
+        return processed_records;
+    });
 
   // Retrieve individual and combined evaluation results
   // without blocking the session table.
@@ -142,6 +214,14 @@ export class Sessions {
     this.currentFilter.set(selectElement.value);
   }
 
+  // Helper method to safely extract the final_outcome from the system event
+  getFinalOutcome(session: any): string | null {
+    if (!session || !session.events) return null;
+
+    const outcomeEvent = session.events.find((e: any) =>
+      e.author === 'system' &&
+      e.content?.parts?.[0]?.text?.includes('final_outcome')
+    );
   // Get the combined final outcome for a session.
   getFinalOutcome(session: Session): string | null {
     return this.evaluations()[session.id]?.final_outcome ?? null;
@@ -161,6 +241,8 @@ export class Sessions {
   get sortedSessions(): SessionDetails[] {
 
     const filter = this.currentFilter();
+    const allSessions = Array.from(this.sessionMap().values());
+    console.log("First session payload:", allSessions[0]?.session);
 
     const allSessions = Array.from(
       this.sessionMap().values()
@@ -185,4 +267,5 @@ export class Sessions {
       )
     );
   }
+
 }
