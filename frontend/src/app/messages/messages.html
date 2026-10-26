@@ -1,5 +1,10 @@
 <section class="messages-page">
-    <h1>Messages</h1>
+    <div class="title-btn">
+        <h1>Messages</h1>
+        <button type="button" class="export-btn" (click)="onExport()" aria-label="Export messages data">Export</button>
+    </div>
+    <!-- Just an indent between the title and the table, don't mind this -->
+    <p class="table-hint"></p>
     @if(messages().length > 0)
     {
     <table>

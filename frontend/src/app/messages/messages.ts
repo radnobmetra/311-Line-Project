@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Message } from '../../interfaces/message.interface';
 import { MessagesService } from '../../services/messages.service';
 import { ActivatedRoute } from '@angular/router';
+import { tableToCsv } from '../utils/exportToCSV';
 
 @Component({
   imports: [DatePipe],
@@ -33,5 +34,12 @@ export class Messages {
       next: (messages) => this.messages.set(messages),
       error: (err) => console.error("Messages polling error:", err)
     });
+  }
+
+
+  onExport(): void {
+    const rows = this.messages();
+    // Calls the export utility.
+    tableToCsv(rows, 'messages');
   }
 }

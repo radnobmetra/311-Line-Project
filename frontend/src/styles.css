@@ -17,3 +17,30 @@ html, body {
   height: 100%;
   margin: 0;
 }
+
+/* Lets the button and title be on the same line */
+.title-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* Button style itself */
+.export-btn {
+    margin-right: 40px;
+
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #1976d2;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    
+}
+/* When the cursor hovers over the button */
+.export-btn:hover {
+    background-color: #1565c0;
+}
