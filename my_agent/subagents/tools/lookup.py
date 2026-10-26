@@ -356,6 +356,8 @@ async def search_knowledge_tool(
         )
 
     except Exception as e:
+        tool_context.state["outcome_label"] = f"Elasticsearch search error: {str(e)}"
+        
         logging.error(
             {
                 "message": (

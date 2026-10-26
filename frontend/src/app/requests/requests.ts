@@ -29,6 +29,7 @@ export class Requests {
     searchInput = signal<string>('');
 
     constructor() {
+        // Retrieve all service requests from the db.
         this.requestsService.getAllServiceRequests().subscribe({
             next: (requests) => this.requests.set(requests),
             error: (err) => console.error("Request polling error:", err)
@@ -159,7 +160,7 @@ export class Requests {
         const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
         const a = document.createElement('a');
         a.href = url;
-        a.download = `events-db-${stamp}.csv`;
+        a.download = `requests-db-${stamp}.csv`;
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();

@@ -191,9 +191,12 @@ def get_ticket_details(ticket_number, tool_context:ToolContext):
                 retval = ticket_details
             else:
                 retval = "There was an error retrieving ArcGIS data for this ticket."
+                tool_context.state["outcome_label"] = retval
         elif response_JSON["status"] == "error":
-             
              retval = response_JSON["message"]
+             tool_context.state["outcome_label"] = retval
     else:
         retval = "Ticket number is not valid."
+        tool_context.state["outcome_label"] = retval
+        
     return retval

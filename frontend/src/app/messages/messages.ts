@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { SessionsService } from '../../services/sessions.service';
 import { Session } from '../../interfaces/session.interface';
+import { tableToCsv } from '../utils/exportToCSV';
 
 // Structure of an event returned by our Flask API.
 interface SessionEvent {
@@ -42,6 +43,9 @@ export class Messages {
   private route = inject(ActivatedRoute);
   private sessionsService = inject(SessionsService);
 
+  onExport(): void {
+    tableToCsv(this.logEntries(), 'messages');
+  }
   // The session ID is on the parent route:
   // /session-details/:id/messages
   sessionID =

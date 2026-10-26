@@ -10,6 +10,7 @@ import {
   SessionsService,
   SessionEvaluation
 } from '../../services/sessions.service';
+import { tableToCsv } from '../utils/exportToCSV';
 
 @Component({
   selector: 'app-sessions',
@@ -18,6 +19,16 @@ import {
   styleUrl: './sessions.css'
 })
 export class Sessions {
+
+  onExport(): void {
+    const rows = Array.from(this.sessionMap().values())
+      .map(item => item.session);
+
+    tableToCsv(
+      rows,
+      this.contactID ? `sessions-${this.contactID}` : 'sessions'
+    );
+  }
 
   // Get the contact ID from the URL, if one exists.
   contactID = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';

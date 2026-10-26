@@ -1,7 +1,16 @@
 
 <section class="messages-page">
 
-  <h1>Session Log</h1>
+  <div class="title-btn">
+    <h1>Session Log</h1>
+    <button
+      type="button"
+      class="export-btn"
+      (click)="onExport()"
+    >
+      Export
+    </button>
+  </div>
 
   <p class="log-subtitle">
     Session ID: {{ sessionID }}

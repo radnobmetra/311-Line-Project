@@ -1,6 +1,9 @@
 import json
 import random
 
+
+errorMode = False
+
 def submit_report(report_type: str, location: str, details: str = "None provided", photo_url: str = "None provided") -> str:
     """
     Placeholder function in lieu of reporting to a tracking system.
@@ -14,6 +17,12 @@ def submit_report(report_type: str, location: str, details: str = "None provided
     Returns:
         status (str): A JSON string containing the success status and ticket number, or an error.
     """
+
+	# Testing statement for simulator failgure.
+    if errorMode == True:
+        return json.dumps({"status": "Error", "message": "An error has occured, please try again or use the website at https://311.cityofsacramento.org/s/new-service"})
+
+	
     if location == "":
         return json.dumps({"status": "Error", "message": "An Error has occured, no valid address"})
     
