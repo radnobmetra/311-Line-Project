@@ -21,25 +21,6 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-.export-btn {
-    position: fixed;
-    left: 50%;
-    bottom: 24px;
-    transform: translateX(-50%);
-
-    padding: 12px 32px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #ffffff;
-    background-color: #1976d2;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    z-index: 1000;
-}
-
 .requests-table {
     width: 100%;
     border-collapse: collapse;
@@ -76,16 +57,9 @@ tr:nth-child(odd) {
     background-color: #d0d0d0;
 }
 
-.export-btn:hover {
-    background-color: #1565c0;
-    transform: translateX(-50%) translateY(-2px);
-}
-
-.export-btn:active {
-    transform: translateX(-50%) translateY(0);
-}
-
-.export-btn:focus-visible {
-    outline: 3px solid #90caf9;
-    outline-offset: 2px;
+/* Sets the filter options horizontally */
+fieldset {
+    float: left;
+    width: 30%;
+    box-sizing: border-box;
 }

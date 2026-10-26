@@ -17,7 +17,6 @@ overseer_agent = LlmAgent(
     description="Routes user requests to the correct specialist and returns a single final response.",
     instruction=OVERSEER_INSTRUCTION,
     sub_agents=[
-        ticketstatus_agent, 
         end_conversation, 
         pothole_report_draft_agent, 
         parkmeter_agent,
@@ -25,6 +24,7 @@ overseer_agent = LlmAgent(
     ],
     tools=[
         qa_agent, 
+        ticketstatus_agent, 
         AgentTool(agent=greeting_agent),
         validateInput,
         update_num_invalid_requests,

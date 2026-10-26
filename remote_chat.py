@@ -252,35 +252,15 @@ async def main():
     source = "terminal"
     user_id = f"{user_number}-{source}"
 
-    # Create or reuse a session.
-    session_id = create_update_agent_session(
-        user_Number=user_number,
-        ttl=1800,
-        source=source,
-    )
-
-    session = await remote_agent.async_get_session(
-        user_id=user_id,
-        session_id=session_id,
-    )
-
-    if session is None:
-        raise RuntimeError(
-            "Could not retrieve session from deployed agent."
-        )
-
+    # Setup Initial Session state variables to avoid reference errors before the loop
+    session_id = None
+    last_response_event = None
+    last_response_text = None
     debug = False
-
-    # Most recent user-visible response.
-    last_response_event, last_response_text = (
-        restore_last_response(session_id)
-    )
 
     print()
     print("Connected to deployed 311 Agent Runtime")
     print("User:", user_id)
-    print("Session:", session_id)
-    print()
     print("Commands:")
     print("  /session       show current session ID")
     print("  /events        show saved session events")
@@ -303,6 +283,20 @@ async def main():
         if message == "/quit":
             break
 
+        # time over handling
+        new_session_id = create_update_agent_session(
+            user_Number=user_number,
+            ttl=1000,  # timer
+            source=source,
+        )
+        
+        # if session rolled over due to a time over, resets the last response context so you don't rate an old session's event
+        if session_id != new_session_id:
+            if session_id is not None:
+                print(f"\n[SYSTEM: TTL Expired. Session {session_id} marked as resolved.]")
+            session_id = new_session_id
+            last_response_event, last_response_text = restore_last_response(session_id)
+            
         if message == "/session":
             print("Session:", session_id)
             continue

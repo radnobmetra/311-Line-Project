@@ -1,11 +1,21 @@
 
 <section class="sessions-page">
 
-  @if (contactID) {
-    <h1>Sessions for {{ contactID | phone }}</h1>
-  } @else {
-    <h1>All Sessions</h1>
-  }
+  <div class="title-btn">
+    @if (contactID) {
+      <h1>Sessions for {{ contactID | phone }}</h1>
+    } @else {
+      <h1>All Sessions</h1>
+    }
+
+    <button
+      type="button"
+      class="export-btn"
+      (click)="onExport()"
+    >
+      Export
+    </button>
+  </div>
 
   <p class="table-hint">
     Click a record in the table to view additional details.
