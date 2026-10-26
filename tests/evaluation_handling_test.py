@@ -28,3 +28,8 @@ def test_evaluate_completed_session():
 # for running script w details, use 'python tests/evaluation_handling_test.py'
 if __name__ == "__main__":
     test_evaluate_completed_session()
+
+def test_evaluate_given_sessions():
+    test_author_name = "John_test"
+    sessions_modified = evaluation_handling.evaluate_given_sessions([test_author_name])
+    assert sessions_modified == 0

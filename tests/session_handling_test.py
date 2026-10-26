@@ -72,6 +72,11 @@ def test_delete_sessions():
 	output = session_handling.delete_session(test_session)
 	assert output == True
 
+def test_marking_inactive_sessions():
+	ttl = 3.154e+7 # 1 Year in seconds
+
+	session_count = session_handling.mark_inactive_sessions(ttl)
+	assert session_count == 0
 def test_timeout_marks_old_session_resolved():
 	testNum = "916-555-5555"
 	source = "pytest"
