@@ -39,7 +39,7 @@ client = agentplatform.Client(
 
 
 adc_credentials, _ = google.auth.default(
-	scopes = ["https://www.googleapis.com/auth/cloud-platform"]	         
+	scopes = ["https://www.googleapis.com/auth/cloud-platform"]
 )
 print("ADC Service Account: ", getattr(adc_credentials, "Service account email", None))
 
@@ -51,12 +51,12 @@ def create_update_agent_session(
     Reuse the user's most recently updated session if it
     has been active within ttl seconds.
 	Otherwise, create a new session.
-    
+
     Inputs:
 		user_Number (str):  usersPhone Number / Identifier
 		ttl (int): Time-to-live in seconds
 		source (str): adding onto user id to mark identifier
-    
+
     Returns:
 		str: Google-generated session ID
     """
@@ -108,15 +108,15 @@ def create_update_agent_session(
 
 
 def add_custom_event(author:str, custom_data:dict, session_ID:int):
-		
+
 	"""
 	Appends a message as an event to the attached session with custom author
 
 	Args:
 
-	Inputs: 
+	Inputs:
 		author (str): author of the message for tracking
-		custom_data (str): custom data to be appended 
+		custom_data (str): custom data to be appended
 		session_ID (int): session to add the event true
 	Returns:
 		True if completed
@@ -124,7 +124,7 @@ def add_custom_event(author:str, custom_data:dict, session_ID:int):
 
 	### Appending the users message
 	client.sessions.events.append(
-		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"] + "/sessions/" + str(session_ID), 
+		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"] + "/sessions/" + str(session_ID),
 		invocation_id = str(uuid.uuid4()),
 		timestamp = datetime.now(tz=timezone.utc),
 		author=author,
@@ -137,13 +137,13 @@ def add_custom_event(author:str, custom_data:dict, session_ID:int):
 	)
 	return True
 
-	
+
 
 
 def create_session(user_Number: str, source: str) -> str:
     """
     Creates a session with the user ID.
-    
+
     Inputs:
 		user_Number (str): Users ID, used in format <user_Number>-<source>
 		source (str): Source of session creation
@@ -186,27 +186,27 @@ def list_users_sessions(user_Number:str, source:str):
 
 	Args:
 
-	Inputs: 
+	Inputs:
 		user_Number(str): Users ID, used in format <user_Number>-<source>
 		source(str): Source of session creation
 	Returns:
 		sessions(sessions[]): List of sessions
 	"""
 	filter_query = "user_id=" + user_Number + "-" + source
-	
+
 	sessions = client.sessions.list(
 		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
 		config={"filter": filter_query}
 	)
 	return list(sessions)
-	
+
 def list_events(session_ID:int):
 	"""
 	Lists all events for a given session_ID
 
 	Args:
 
-	Inputs: 
+	Inputs:
 		session_ID(int) ID that the events are from
 	Returns:
 		events(list of events): List of events
@@ -221,35 +221,34 @@ def list_events(session_ID:int):
 
 
 
+
 def list_sessions():
-	"""
-	Lists of all sessions
+    """
+        Lists of all sessions
 
-	Args:
+        Args:
 
-	Inputs: 
-		None
-	Returns:
-		List of sesssions
-	"""
-	
-	sessions = []
-	for session in client.sessions.list(
-		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
-		config={"filter": "user_id=managed-runtime-test-ad3df20d" }
-	):
-		sessions.append(session)
-	return sessions
+        Inputs:
+            None
+        Returns:
+            List of sesssions
+    """
+    sessions = client.sessions.list(
+        name="reasoningEngines/" + os.environ["SESSION_AGENT_ENGINE_ID"]
+    )
 
-	
+    return list(sessions)
+
+
+
 
 def delete_session(session_ID:int):
 	"""
 	deletes a session
 
 	Args:
-		
-	Inputs: 
+
+	Inputs:
 		session_ID(int): ID to be deleted
 	Returns:
 		True if deleted
@@ -279,7 +278,7 @@ def add_user_message(
 ) -> bool | str:
     """
     Append a user message to a session.
-    
+
     Inputs:
 		user_Message (str): The message to append.
 		session_ID (str): The session to append the message to.

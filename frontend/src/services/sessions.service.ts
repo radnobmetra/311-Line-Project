@@ -1,53 +1,59 @@
-import { Service, inject } from '@angular/core';
+
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, switchMap, map } from 'rxjs';
 import { Session } from '../interfaces/session.interface';
 import { Contact } from '../interfaces/contact.interface';
 
-@Service()
+@Injectable({
+  providedIn: 'root'
+})
 export class SessionsService {
-    http = inject(HttpClient);
-    // sessions API endpoint.
-    apiUrl = 'http://localhost:3000/sessions';
-    // contacts API endpoint.
-    contactsApiUrl = 'http://localhost:3000/contacts';
 
-    // A fetch function that calls the endpoint to get all sessions.
-    getAllSessions(): Observable<Session[]> {
-        const sessionsData =  this.http.get<Session[]>(`${this.apiUrl}`);
-        return sessionsData;
-    }
+  private http = inject(HttpClient);
 
-    // A fetch function that calls the endpoint to get a specific session by ID.
-    getSessionById(sessionId: string): Observable<Session> {
-        const sessionData =  this.http.get<Session>(`${this.apiUrl}/${sessionId}`);
-        return sessionData;
-    }
+  // Flask backend endpoints.
+  apiUrl = 'http://localhost:5000/sessions';
+  contactsApiUrl = 'http://localhost:5000/contacts';
 
-    // A fetch function that calls the endpoint to get all sessions for a specific contact by contact ID.
-    getSessionsPerContact(contactId: string): Observable<Session[]> {
-        const sessionsData =  this.http.get<Session[]>(`${this.apiUrl}?_where={"contactId":{"eq":"${contactId}"}}`);
-        return sessionsData;
-    }
+  // Retrieve all sessions (metadata only).
+  getAllSessions(): Observable<Session[]> {
+    return this.http.get<Session[]>(this.apiUrl);
+  }
 
-    // A fetch function that calls the endpoint to get the contact associated with a specific session by session ID.
-    getContactBySessionId(sessionId: string): Observable<Contact> {
-        return this.getSessionById(sessionId).pipe(switchMap((session: Session) => {
-                const contactId = session.contactId;
-                return this.http.get<Contact>(`${this.contactsApiUrl}/${contactId}`);
-            })
-        );
-    }
+  // Retrieve a specific session with its events.
+  getSessionById(sessionId: string): Observable<Session> {
+    return this.http.get<Session>(
+      `${this.apiUrl}/${encodeURIComponent(sessionId)}`
+    );
+  }
 
-    // A fetch function that calls the endpoint to get the phone number associated with a specific session by session ID.
-    getPhoneNumberBySessionId(sessionId: string): Observable<string> {
-        return this.getContactBySessionId(sessionId).pipe(switchMap((contact: Contact) => {
-                const phoneNumber = contact.phoneNumber;
-                return new Observable<string>((observer) => {
-                    observer.next(phoneNumber);
-                    observer.complete();
-                });
-            })
-        );
-    }
+  // Retrieve sessions belonging to a contact.
+  getSessionsPerContact(contactId: string): Observable<Session[]> {
+    return this.http.get<Session[]>(
+      this.apiUrl,
+      {
+        params: { contactId }
+      }
+    );
+  }
+
+
+  // Retrieve the contact associated with a session.
+  getContactBySessionId(sessionId: string): Observable<Contact> {
+    return this.getSessionById(sessionId).pipe(
+      switchMap((session: Session) =>
+        this.http.get<Contact>(
+          `${this.contactsApiUrl}/${encodeURIComponent(session.contactId)}`
+        )
+      )
+    );
+  }
+
+  // Retrieve the phone number associated with a session.
+  getPhoneNumberBySessionId(sessionId: string): Observable<string> {
+    return this.getContactBySessionId(sessionId).pipe(
+      map((contact: Contact) => contact.phoneNumber)
+    );
+  }
 }
