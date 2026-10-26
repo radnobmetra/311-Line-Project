@@ -5,6 +5,20 @@ import { Observable, switchMap, map } from 'rxjs';
 import { Session } from '../interfaces/session.interface';
 import { Contact } from '../interfaces/contact.interface';
 
+export interface SessionEvaluation {
+  ai_evaluation: {
+    score: number;
+  } | null;
+
+  user_feedback: {
+    thumbs_up: number;
+    thumbs_down: number;
+    rating: string | null;
+  } | null;
+
+  final_outcome: 'HELPED' | 'NOT_HELPED' | 'UNCLEAR' | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,6 +52,29 @@ export class SessionsService {
     );
   }
 
+  // Retrieve evaluation outcomes separately.
+  getSessionOutcomes(
+    contactId?: string
+  ): Observable<Record<string, string | null>> {
+    return this.http.get<Record<string, string | null>>(
+      `${this.apiUrl}/outcomes`,
+      {
+        params: contactId ? { contactId } : {}
+      }
+    );
+  }
+  // Retrieve the individual AI evaluation, user feedback,
+  // and combined final outcome for each session.
+  getSessionEvaluations(
+    contactId?: string
+  ): Observable<Record<string, SessionEvaluation | null>> {
+    return this.http.get<Record<string, SessionEvaluation | null>>(
+      `${this.apiUrl}/evaluations`,
+      {
+        params: contactId ? { contactId } : {}
+      }
+    );
+  }
 
   // Retrieve the contact associated with a session.
   getContactBySessionId(sessionId: string): Observable<Contact> {

@@ -214,3 +214,17 @@ def find_existing_feedback(
             getattr(entry, "update_time", None) or ""
         )
     )
+
+def list_session_feedback(session_id: str):
+    """
+    Retrieve all user feedback entries associated with a session.
+    """
+    entries = client.feedback_entries.list(
+        parent=RUNTIME_NAME
+    )
+
+    return [
+        entry
+        for entry in entries
+        if str(entry.session_id) == str(session_id)
+    ]
