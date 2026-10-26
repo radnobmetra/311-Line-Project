@@ -7,6 +7,7 @@ import time
 load_dotenv()
 load_dotenv('./my_agent/.env')
 
+
 # handles EVEN MORE issues with cloud account shenanigans
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.environ.get("AGENT_RUNTIME_LOCATION") or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-west1")
@@ -29,6 +30,9 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 
+
+
+
 os.environ["GOOGLE_GENAI_USE_ENTERPRISE"] = "TRUE"
 client = agentplatform.Client(
   project=PROJECT_ID,
@@ -44,6 +48,20 @@ adc_credentials, _ = google.auth.default(
 print("ADC Service Account: ", getattr(adc_credentials, "Service account email", None))
 
 
+def get_update_time(session):
+    updated = session.update_time
+
+    if isinstance(updated, str):
+        updated = datetime.fromisoformat(
+            updated.replace("Z", "+00:00")
+        )
+
+    if updated.tzinfo is None:
+        updated = updated.replace(
+            tzinfo=timezone.utc
+        )
+
+    return updated
 
 def create_update_agent_session(
     user_Number: str,ttl: int,source: str) -> str:
@@ -72,20 +90,7 @@ def create_update_agent_session(
             source=source
         )
 
-    def get_update_time(session):
-        updated = session.update_time
 
-        if isinstance(updated, str):
-            updated = datetime.fromisoformat(
-                updated.replace("Z", "+00:00")
-            )
-
-        if updated.tzinfo is None:
-            updated = updated.replace(
-                tzinfo=timezone.utc
-            )
-
-        return updated
 
     latest_session = max(
         possible_sessions,
@@ -98,8 +103,12 @@ def create_update_agent_session(
         datetime.now(timezone.utc) - last_updated
     ).total_seconds()
 
+    old_session_id = latest_session.name.rsplit("/", 1)[-1]
+
     if elapsed < ttl:
-        return latest_session.name.rsplit("/", 1)[-1]
+        return old_session_id
+
+    mark_session_resolved(old_session_id)
 
     return create_session(
         user_Number=user_Number,
@@ -193,12 +202,10 @@ def list_users_sessions(user_Number:str, source:str):
 		sessions(sessions[]): List of sessions
 	"""
 	filter_query = "user_id=" + user_Number + "-" + source
+
+	return list_filtered_sessions(filter_query)
 	
-	sessions = client.sessions.list(
-		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
-		config={"filter": filter_query}
-	)
-	return list(sessions)
+
 	
 def list_events(session_ID:int):
 	"""
@@ -236,7 +243,7 @@ def list_sessions():
 	sessions = []
 	for session in client.sessions.list(
 		name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
-		config={"filter": "user_id=managed-runtime-test-ad3df20d" }
+		#config={"filter": "user_id=managed-runtime-test-ad3df20d" }
 	):
 		sessions.append(session)
 	return sessions
@@ -423,5 +430,82 @@ def add_agent_message(
         )
 
     return event_id
+
+def mark_session_resolved(session_ID: str) -> bool:
+    """
+    Appends a state update event to mark a time over session as resolved.
+    """
+    client.sessions.events.append(
+        name=_session_name(session_ID),
+        invocation_id=str(uuid.uuid4()),
+        timestamp=datetime.now(tz=timezone.utc),
+        author="system",
+        config={
+            "actions": {
+                "state_delta": {
+                    "status": "resolved",
+                    "outcome_label": "session timeout",
+                }
+            },
+            "content": {
+                "role": "model",
+                "parts": [{"text": "Session resolved due to timeout."}]
+            }
+        }
+    )
+    return True
+
+
+def get_session(session_ID: str):
+    """Retrieve a session resource by its ID."""
+    return client.sessions.get(
+        name=_session_name(session_ID)
+    )
+
+def list_filtered_sessions(filter_query:str):
+    """
+     
+    """
+    sessions = client.sessions.list(
+	name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
+	config={"filter": filter_query}
+	)
+    return list(sessions)
+     
+
+def mark_inactive_sessions(
+    ttl:int
+):
+    """
+    Marks any sessions older than the given ttl as finished with the state of incomplete.
+
+    Input:
+    ttl (int): Interval in seconds that sessions older than this should be marked
+    
+    Returns:
+    inactive_sessions (int): number of sessions marked as inactive
+    """
+    sessions = list(list_sessions())
+   # print(sessions[-3])
+    inactive_sessions = 0
+
+    
+    for session in sessions:
+        update_time = get_update_time(session)
+        inactive_time = datetime.now(timezone.utc) - update_time
+        inactive_time = inactive_time.total_seconds()
+
+        if inactive_time > ttl:
+            #Pull last event data
+            events = list_events(session.name.rsplit("/", 1)[-1])
+            if len(events) != 0:
+                last_event = events[-1]
+                last_event_author = last_event.author
+
+                end_states = ["eval_author", "session_timeout"]
+                if last_event_author not in end_states:
+                    inactive_sessions += 1
+                    add_custom_event("session_timeout", "closed: timeout", session.name.rsplit("/", 1)[-1])       
+    return inactive_sessions     	 
 
 

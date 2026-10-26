@@ -1,11 +1,14 @@
-<h1>Request Logs</h1>
+<div class="title-btn">
+    <h1>Request Logs</h1>
+    <button type="button" class="export-btn" (click)="onExport()" aria-label="Export analytics data">Export</button>
+</div>
 <form (submit)="$event.preventDefault()">
     <div class="search_container">
         <label for="search">Search:</label>
         <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search Table Values...">
     </div>
     <fieldset id="sort-date-fieldset">
-        <legend style="font-weight:bold">Sort by date</legend>
+        <legend>Sort by date</legend>
         <div>
             <label>
                 <input type="radio" [formField]="sortFilterForm.sortDate" value="newest" />
@@ -94,3 +97,4 @@
     </tbody>
 </table>
 <button type="button" class="export-btn" (click)="onExport()" aria-label="Export analytics data">Export</button>
+</table>

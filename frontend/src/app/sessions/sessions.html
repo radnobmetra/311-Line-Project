@@ -67,13 +67,12 @@
 <!-- </form> -->
 
 <section class="sessions-page">
-    @if (contactID)
-    {
-    <h1>Sessions for {{ (sessionMap().values().next().value?.phoneNumber ?? '') | phone }}</h1>
-    }
-    @else
-    {
-    <h1>All Sessions</h1>
+
+  <div class="title-btn">
+    @if (contactID) {
+      <h1>Sessions for {{ contactID | phone }}</h1>
+    } @else {
+      <h1>All Sessions</h1>
     }
 
     <form (submit)="$event.preventDefault()">
@@ -99,12 +98,84 @@
     @if(sessionMap().size > 0) {
     <table>
         <tr>
+    <button
+      type="button"
+      class="export-btn"
+      (click)="onExport()"
+    >
+      Export
+    </button>
+  </div>
+
+  <p class="table-hint">
+    Click a record in the table to view additional details.
+  </p>
+
+  <div class="filter-controls">
+    <label for="outcome-filter">
+      <strong>Filter by Outcome:</strong>
+    </label>
+
+    <select
+      id="outcome-filter"
+      (change)="setFilter($event)"
+      [disabled]="loading() || loadingOutcomes() || outcomeError()"
+    >
+      <option value="ALL">All Sessions</option>
+      <option value="HELPED">Helped</option>
+      <option value="NOT_HELPED">Not Helped</option>
+      <option value="UNCLEAR">Unclear</option>
+    </select>
+  </div>
+
+  <!-- Initial session loading state -->
+  @if (loading()) {
+
+    <div class="loading-state" role="status">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <span>Loading sessions from Google Agent Engine...</span>
+    </div>
+
+  } @else if (errorMessage()) {
+
+    <p class="empty-state" role="alert">
+      {{ errorMessage() }}
+    </p>
+
+  } @else {
+
+    <!-- Outcomes continue loading after the table appears -->
+    @if (loadingOutcomes()) {
+
+      <div class="loading-state" role="status">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span>Sessions loaded. Loading evaluation results...</span>
+      </div>
+
+    }
+
+    @if (outcomeError()) {
+
+      <p class="outcome-error" role="alert">
+        Sessions loaded, but evaluation results could not be retrieved.
+      </p>
+
+    }
+
+    @if (sessionMap().size > 0) {
+
+      <table>
+        <thead>
+          <tr>
             <th>Session ID</th>
-            @if (!contactID)
-            {
-            <th>Phone Number</th>
+
+            @if (!contactID) {
+              <th>Phone Number</th>
             }
+
             <th>Status</th>
+            <th>AI Score</th>
+            <th>User Feedback</th>
             <th>Outcome</th>
             <th>Started At</th>
             <th>Last Message At</th>
@@ -120,18 +191,76 @@
 
             <td>
                 @switch(getFinalOutcome(sessionDetails.session)) {
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (sessionDetails of sortedSessions; track sessionDetails.session.id) {
+
+            <tr
+              [routerLink]="['/session-details', sessionDetails.session.id]"
+              class="clickable-row"
+            >
+              <!-- Session ID -->
+              <td>{{ sessionDetails.session.id }}</td>
+
+              <!-- Phone Number -->
+              @if (!contactID) {
+                <td>{{ sessionDetails.phoneNumber | phone }}</td>
+              }
+
+              <!-- Status -->
+              <td>{{ sessionDetails.session.status }}</td>
+
+              <!-- AI Score -->
+              <td>
+                @if (loadingOutcomes()) {
+                  <span class="outcome-loading">Loading...</span>
+                } @else if (getAiScore(sessionDetails.session) !== null) {
+                  <span>
+                    {{ getAiScore(sessionDetails.session) | number:'1.2-2' }}
+                  </span>
+                } @else {
+                  <span class="outcome-empty">--</span>
+                }
+              </td>
+
+              <!-- User Feedback -->
+              <td>
+                @if (loadingOutcomes()) {
+                  <span class="outcome-loading">Loading...</span>
+                } @else {
+                  @if (getUserFeedback(sessionDetails.session); as feedback) {
+                    <span>
+                      Up: {{ feedback.thumbs_up }}
+                      /
+                      Down: {{ feedback.thumbs_down }}
+                    </span>
+                  } @else {
+                    <span class="outcome-empty">--</span>
+                  }
+                }
+              </td>
+
+              <!-- Final Outcome -->
+              <td>
+                @if (loadingOutcomes()) {
+                  <span class="outcome-loading">Loading...</span>
+                } @else {
+                  @switch (getFinalOutcome(sessionDetails.session)) {
                     @case ('HELPED') {
-                        <span class="badge" style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">HELPED</span>
+                      <span class="badge outcome-helped">HELPED</span>
                     }
                     @case ('NOT_HELPED') {
-                        <span class="badge" style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">NOT HELPED</span>
+                      <span class="badge outcome-not-helped">NOT HELPED</span>
                     }
                     @case ('UNCLEAR') {
-                        <span class="badge" style="background-color: #e2e3e5; color: #383d41; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">UNCLEAR</span>
+                      <span class="badge outcome-unclear">UNCLEAR</span>
                     }
                     @default {
-                        <span style="color: gray;">--</span>
+                      <span class="outcome-empty">--</span>
                     }
+                  }
                 }
             </td>
 
@@ -140,7 +269,30 @@
         </tr>
         }
     </table>
+              </td>
+
+              <!-- Timestamps -->
+              <td>{{ sessionDetails.session.startedAt | date:'short' }}</td>
+              <td>{{ sessionDetails.session.lastMessageAt | date:'short' }}</td>
+            </tr>
+
+          }
+        </tbody>
+      </table>
+
+      @if (sortedSessions.length === 0) {
+        <p class="empty-state">
+          No sessions match the selected outcome filter.
+        </p>
+      }
+
     } @else {
-    <p class="empty-state">No session is found.</p>
+
+      <p class="empty-state">
+        No sessions found.
+      </p>
+
     }
+  }
+
 </section>

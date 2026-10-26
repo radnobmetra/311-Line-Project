@@ -6,6 +6,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ServiceRequestsService } from '../../services/service-requests.service';
 import { ServiceRequest } from '../../interfaces/service-request.interface';
+import { tableToCsv } from '../utils/exportToCSV';
 
 interface sortFilterInput {
     sortDate: string;
@@ -90,4 +91,16 @@ export class ServiceRequests {
 
         return processed_records;
     });
+
+  onExport(): void {
+    let rows = this.serviceRequests();
+    // Calls the export utility.
+    tableToCsv(rows, 'service-requests');
+  }
+  contactRequests = computed(() => {
+    return this.serviceRequests().filter(request => request.sessionId === this.sessionID);
+  });
+  onExportContact(): void {
+    tableToCsv(this.contactRequests(), `service-requests-${this.sessionID}`);
+  }
 }

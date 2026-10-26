@@ -1,0 +1,11 @@
+.git
+**/.git
+**/node_modules
+**/dist
+**/.angular
+**/__pycache__
+**/.venv
+**/.env
+**/.env.*
+**/sa-key.json
+**/*service-account*.json

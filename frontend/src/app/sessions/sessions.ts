@@ -5,10 +5,19 @@ import { ActivatedRoute } from '@angular/router';
 import { Component, inject, signal, computed  } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+
 import { PhonePipe } from '../../pipes/phone.pipe';
 import { SessionDetails } from '../../interfaces/session-details.interface';
-import { SessionsService } from '../../services/sessions.service';
-import { ContactsService } from '../../services/contacts.service';
+import { Session } from '../../interfaces/session.interface';
+import {
+  SessionsService,
+  SessionEvaluation
+} from '../../services/sessions.service';
+import { tableToCsv } from '../utils/exportToCSV';
 
 interface sortFilterInput {
     sortDate: string;
@@ -20,15 +29,26 @@ interface sortFilterInput {
 @Component({
   imports: [DatePipe, RouterLink, PhonePipe, FormsModule],
   selector: 'app-sessions',
-  styleUrl: './sessions.css',
+  imports: [DatePipe, DecimalPipe, RouterLink, PhonePipe],
   templateUrl: './sessions.html',
+  styleUrl: './sessions.css'
 })
 export class Sessions {
-  // Get the contact ID from the route parameters.
-  contactID = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? "";
 
-  // Inject services.
-  contactsService = inject(ContactsService);
+  onExport(): void {
+    const rows = Array.from(this.sessionMap().values())
+      .map(item => item.session);
+
+    tableToCsv(
+      rows,
+      this.contactID ? `sessions-${this.contactID}` : 'sessions'
+    );
+  }
+
+  // Get the contact ID from the URL, if one exists.
+  contactID = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
+
+  // Backend service.
   sessionsService = inject(SessionsService);
 
   // Signal array to hold the raw request records.
@@ -41,62 +61,74 @@ export class Sessions {
   sessionMap = signal<Map<string, SessionDetails>>(new Map());
 
   // Track the current outcome filter state
+  // Session data.
+  sessionMap = signal<Map<string, SessionDetails>>(new Map());
+
+  /// Individual and combined evaluations, indexed by session ID.
+  evaluations = signal<Record<string, SessionEvaluation | null>>({});
+
+  // Selected outcome filter.
   currentFilter = signal<string>('ALL');
 
+  // Loading states.
+  loading = signal<boolean>(true);
+  loadingOutcomes = signal<boolean>(false);
+
+  // Error states.
+  errorMessage = signal<string>('');
+  outcomeError = signal<boolean>(false);
+
   constructor() {
-    // If a contact ID was provided.
-    if (this.contactID) {
-      // Get the phone number first.
-      this.contactsService.getPhoneNumberByContactId(this.contactID).subscribe({
-          next: (phoneNumber) => {
-            // Then get the sessions belonging to the contact.
-            this.sessionsService.getSessionsPerContact(this.contactID).subscribe({
-                next: (sessionsData) => {
-                  const map = new Map<string, SessionDetails>();
+    this.loadSessions();
+  }
 
-                  // For each session, add it to the map along with the phone number.
-                  for (const session of sessionsData) {
-                    map.set(session.id, {
-                      session: session,
-                      phoneNumber: phoneNumber
-                    });
-                  }
-                  // Update the signal with the new map.
-                  this.sessionMap.set(map);
-                },
-                error: (err) =>console.error("Error retrieving sessions:", err)});
-          },
-          error: (err) => console.error("Error retrieving phone number:", err)
-        });
-    } else {
-      // Retrieve all sessions.
-      this.sessionsService.getAllSessions().subscribe({
-        next: (sessionsData) => {
-          // For each session, retrieve the phone number related to that session.
-          for (const session of sessionsData) {
-            // Retrieve the phone number related to the session.
-            this.sessionsService.getPhoneNumberBySessionId(session.id).subscribe({
-                next: (phoneNumber) => {
-                  // Update the sessionMap signal with the new session and phone number.
-                  this.sessionMap.update((currentMap) => {
-                    // Create a new Map so the signal detects the change.
-                    const updatedMap = new Map(currentMap);
+  // STEP 1: Retrieve session metadata.
+  loadSessions(): void {
 
-                    // Add the session and phone number to the map.
-                    updatedMap.set(session.id, {
-                      session: session,
-                      phoneNumber: phoneNumber
-                    });
+    this.loading.set(true);
+    this.errorMessage.set('');
+    this.outcomeError.set(false);
+    this.evaluations.set({});
 
-                    // Return the updated map to update the signal.
-                    return updatedMap;
-                  });
-                },
-                error: (err) => console.error("Error retrieving phone number:", err)});
-          }
-        },
-        error: (err) => console.error("Error retrieving sessions:", err)});
-    }
+    const request = this.contactID
+      ? this.sessionsService.getSessionsPerContact(this.contactID)
+      : this.sessionsService.getAllSessions();
+
+    request.subscribe({
+
+      next: (sessionsData: Session[]) => {
+
+        const map = new Map<string, SessionDetails>();
+
+        for (const session of sessionsData) {
+          map.set(session.id, {
+            session: session,
+            phoneNumber: session.contactId
+          });
+        }
+
+        // Display sessions immediately.
+        this.sessionMap.set(map);
+        this.loading.set(false);
+
+        // Only request outcomes if sessions exist.
+        if (sessionsData.length > 0) {
+          this.loadOutcomes();
+        }
+      },
+
+      error: (err: unknown) => {
+
+        console.error('Error loading sessions:', err);
+
+        this.errorMessage.set(
+          'Unable to load sessions. Check that the Flask backend is running.'
+        );
+
+        this.loading.set(false);
+      }
+
+    });
   }
     sortFilterModel = signal<sortFilterInput>({
         sortDate: "",
@@ -146,9 +178,39 @@ export class Sessions {
         return processed_records;
     });
 
-  // Update the active filter when the dropdown changes
-  setFilter(event: Event) {
+  // Retrieve individual and combined evaluation results
+  // without blocking the session table.
+  loadOutcomes(): void {
+
+    this.loadingOutcomes.set(true);
+    this.outcomeError.set(false);
+
+    this.sessionsService.getSessionEvaluations(
+      this.contactID || undefined
+    ).subscribe({
+
+      next: (evaluationData: Record<string, SessionEvaluation | null>) => {
+
+        this.evaluations.set(evaluationData);
+        this.loadingOutcomes.set(false);
+      },
+
+      error: (err: unknown) => {
+
+        console.error('Error loading session evaluations:', err);
+
+        this.outcomeError.set(true);
+        this.loadingOutcomes.set(false);
+      }
+
+    });
+  }
+
+  // Update the selected outcome filter.
+  setFilter(event: Event): void {
+
     const selectElement = event.target as HTMLSelectElement;
+
     this.currentFilter.set(selectElement.value);
   }
 
@@ -160,32 +222,49 @@ export class Sessions {
       e.author === 'system' &&
       e.content?.parts?.[0]?.text?.includes('final_outcome')
     );
-
-    if (outcomeEvent) {
-      try {
-        const data = JSON.parse(outcomeEvent.content.parts[0].text);
-        return data.final_outcome;
-      } catch {
-        return null;
-      }
-    }
-    return null;
+  // Get the combined final outcome for a session.
+  getFinalOutcome(session: Session): string | null {
+    return this.evaluations()[session.id]?.final_outcome ?? null;
   }
 
-  // Returns the sessions filtered by outcome, then sorted by ID
+  // Get the individual AI evaluation score.
+  getAiScore(session: Session): number | null {
+    return this.evaluations()[session.id]?.ai_evaluation?.score ?? null;
+  }
+
+  // Get the stored user feedback summary.
+  getUserFeedback(session: Session) {
+    return this.evaluations()[session.id]?.user_feedback ?? null;
+  }
+
+  // Filter and sort the session table.
   get sortedSessions(): SessionDetails[] {
+
     const filter = this.currentFilter();
     const allSessions = Array.from(this.sessionMap().values());
     console.log("First session payload:", allSessions[0]?.session);
 
+    const allSessions = Array.from(
+      this.sessionMap().values()
+    );
+
     const filteredSessions = allSessions.filter(item => {
-      if (filter === 'ALL') return true;
+
+      if (filter === 'ALL') {
+        return true;
+      }
+
       const outcome = this.getFinalOutcome(item.session);
+
       return outcome?.toUpperCase() === filter.toUpperCase();
     });
 
     return filteredSessions.sort(
-      (a, b) => Number(a.session.id) - Number(b.session.id)
+      (a, b) => a.session.id.localeCompare(
+        b.session.id,
+        undefined,
+        { numeric: true }
+      )
     );
   }
 
