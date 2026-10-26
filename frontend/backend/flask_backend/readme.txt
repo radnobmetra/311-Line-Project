@@ -3,9 +3,9 @@ This folder contains the backend for the admin dashboard's agent chat page.
 
 dependencies
 ==============
-Before running the flask app, you will need to install flask and flask_cors:   
+Before running the flask app, you will need to install flask and flask-cors:   
     pip install flask
-    pip install flask_cors
+    pip install flask-cors
 
 Also, make sure that your env file is updated and has the REASONING_ENGINE_APP_NAME field.
 
