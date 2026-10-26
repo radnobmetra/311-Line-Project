@@ -1,8 +1,9 @@
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ServiceRequestsService } from '../../services/service-requests.service';
 import { ServiceRequest } from '../../interfaces/service-request.interface';
+import { tableToCsv } from '../utils/exportToCSV';
 
 @Component({
   imports: [RouterLink, DatePipe],
@@ -33,5 +34,17 @@ export class ServiceRequests {
         error: (err) => console.error("Service requests polling error:", err)
       });
     }
+  }
+
+  onExport(): void {
+    let rows = this.serviceRequests();
+    // Calls the export utility.
+    tableToCsv(rows, 'service-requests');
+  }
+  contactRequests = computed(() => {
+    return this.serviceRequests().filter(request => request.sessionId === this.sessionID);
+  });
+  onExportContact(): void {
+    tableToCsv(this.contactRequests(), `service-requests-${this.sessionID}`);
   }
 }

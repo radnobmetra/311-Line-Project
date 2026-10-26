@@ -1,11 +1,18 @@
 <section class="service-requests-page">
     @if (sessionID)
     {
-    <h1>Service Requests</h1>
+    <div class="title-btn">
+        <h1>Service Requests</h1>
+        <button type="button" class="export-btn" (click)="onExportContact()" aria-label="Export service requests data for session">Export</button>
+    </div>
+    
     }
     @else
     {
-    <h1>All Service Requests</h1>
+    <div class="title-btn">
+        <h1>All Service Requests</h1>
+        <button type="button" class="export-btn" (click)="onExport()" aria-label="Export service requests data">Export</button>
+    </div>
     }
 
     <p class="table-hint">
