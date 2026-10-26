@@ -13,6 +13,7 @@ import { SessionDetails } from './session-details/session-details';
 import { ServiceRequests } from './service-requests/service-requests';
 import { RequestDetails } from './request-details/request-details';
 import { FlaggedConvo } from './flagged-convo/flagged-convo';
+import { agentChat } from './agent-chat/agent-chat';
 
 export const routes: Routes = [
     // Disabled authentication temporarily until we are done creating all pages.
@@ -25,6 +26,7 @@ export const routes: Routes = [
      { path: 'messages', component: Messages, canActivate: [guardian] },
      { path: 'profile', component: Profile, canActivate: [guardian] },
      { path: 'contacts', component: Contacts, canActivate: [guardian] },
+     { path: 'agent-chat', component: agentChat, canActivate: [guardian] },
      { path: 'sessions', component: Sessions, canActivate: [guardian] },
      { path: 'sessions/:id', component: Sessions, canActivate: [guardian] },
      { path: 'session-details/:id', component: SessionDetails, 
