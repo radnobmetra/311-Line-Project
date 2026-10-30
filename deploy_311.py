@@ -85,6 +85,9 @@ RUNTIME_ENV_VARS = {
         "MODEL_LOCATION",
         "us",
     ),
+    "AGENT_RUNTIME_LOCATION": RUNTIME_LOCATION,
+    "ENABLE_MANAGED_SESSION_TIMER": "1",
+    "EVALUATION_SAMPLE_RATE": "0",
 }
 
 if os.environ.get("RANKING_API_REGION"):
@@ -98,10 +101,14 @@ SOURCE_PACKAGES = [
     "my_agent",
     "timerloop.py",
     "session_manager.py",
+    "session_handling.py",
+    "evaluation_handling.py",
+    "user_feedback_handling.py",
     "runtime_app.py",
     "requirements.txt",
     "emergency_cases.json",
 ]
+
 
 REQUIRED_SOURCE_PATHS = [
     SOURCE_DIR / path
@@ -299,7 +306,22 @@ CLASS_METHODS = [
 
 # DEPLOY
 def main() -> None:
+    # Keep deployed session code identical to local code.
+    files_to_sync = (
+        "timerloop.py",
+        "session_handling.py",
+        "evaluation_handling.py",
+        "user_feedback_handling.py",
+    )
+
+    for filename in files_to_sync:
+        shutil.copy2(
+            PROJECT_DIR / filename,
+            SOURCE_DIR / filename
+        )
+
     validate_source()
+
     validate_entrypoint()
     verify_authentication()
 

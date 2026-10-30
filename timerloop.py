@@ -6,12 +6,14 @@ from my_agent.subagents.end_conversation import end_conversation
 from google.adk.runners import Runner
 from google.genai import types
 from session_manager import app_name, session_service
+import logging
 
 #hurryup checks if user sent a message, timesup is the timer in seconds
 HURRY_UP = "useronline.json"
 TIMES_UP = 30*60
 
 def run_loop():
+    last_managed_check = 0
     while True:
         if os.path.exists(HURRY_UP):
             with open(HURRY_UP, "r") as file:
@@ -59,5 +61,29 @@ def run_loop():
             if db_updated:
                 with open(HURRY_UP, "w") as file:
                     json.dump(active_sessions, file, indent=4)
+        
+        # Check Google-managed sessions once per minute.
+        # Disabled until explicitly enabled.
+        if (
+            os.environ.get("ENABLE_MANAGED_SESSION_TIMER") == "1"
+            and time.monotonic() - last_managed_check >= 60
+        ):
+            last_managed_check = time.monotonic()
+
+            try:
+                from session_handling import mark_inactive_sessions
+
+                count = mark_inactive_sessions(ttl=1800)
+
+                logging.info(
+                    "Managed session check complete. New timeouts: %s",
+                    count
+                )
+
+            except Exception:
+                logging.exception(
+                    "Managed session inactivity check failed"
+                )
+
         #efficency  
         time.sleep(5)

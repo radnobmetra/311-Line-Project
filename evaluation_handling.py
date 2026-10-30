@@ -20,7 +20,19 @@ def evaluate_completed_session(session_id: int):
             return None
             
         #sort events
-        ordered_events = sorted(events, key=lambda event: event.timestamp)
+        ordered_events = sorted(
+            (
+                event for event in events
+                if event.author not in (
+                    "session_timeout", "eval_author", "system"
+                )
+                and event.invocation_id
+                and event.content is not None
+            ),
+            key=lambda event: event.timestamp
+        )
+        if not ordered_events:
+            return None
         
         # group by invocation_id to link user requests with agent responses
         groups = defaultdict(list)

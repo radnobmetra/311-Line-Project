@@ -12,15 +12,21 @@ load_dotenv('./my_agent/.env')
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.environ.get("AGENT_RUNTIME_LOCATION") or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-west1")
 
+
 PROJECT_DIR = Path(__file__).resolve().parent
 
-raw_credentials = Path(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "./sa-key.json"))
-CREDENTIALS_FILE = (
-	raw_credentials.resolve()
-	if raw_credentials.is_absolute()
-	else (PROJECT_DIR / raw_credentials).resolve()
-)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(CREDENTIALS_FILE)
+credentials_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+
+if credentials_path:
+    credentials_file = Path(credentials_path).expanduser()
+
+    if not credentials_file.is_absolute():
+        credentials_file = PROJECT_DIR / credentials_file
+
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(
+        credentials_file.resolve()
+    )
+
 
 
 
@@ -104,6 +110,22 @@ def create_update_agent_session(
     ).total_seconds()
 
     old_session_id = latest_session.name.rsplit("/", 1)[-1]
+    # Never reopen a timed-out or evaluated session.
+    events = list_events(old_session_id)
+
+    if any(
+        event.author in (
+            "session_timeout",
+            "eval_author",
+            "evaluation_skipped"
+        )
+        for event in events
+    ):
+        return create_session(
+            user_Number=user_Number,
+            source=source
+        )
+
 
     if elapsed < ttl:
         return old_session_id
@@ -473,39 +495,84 @@ def list_filtered_sessions(filter_query:str):
     return list(sessions)
      
 
-def mark_inactive_sessions(
-    ttl:int
-):
-    """
-    Marks any sessions older than the given ttl as finished with the state of incomplete.
 
-    Input:
-    ttl (int): Interval in seconds that sessions older than this should be marked
-    
-    Returns:
-    inactive_sessions (int): number of sessions marked as inactive
-    """
-    sessions = list(list_sessions())
-   # print(sessions[-3])
+
+def mark_inactive_sessions(ttl: int):
+    import hashlib
+    import logging
+    from evaluation_handling import evaluate_completed_session
+
+    sample_rate = float(
+        os.environ.get("EVALUATION_SAMPLE_RATE", "0.10")
+    )
+
+    if not 0 <= sample_rate <= 1:
+        raise ValueError("EVALUATION_SAMPLE_RATE must be between 0 and 1")
+
     inactive_sessions = 0
 
-    
-    for session in sessions:
-        update_time = get_update_time(session)
-        inactive_time = datetime.now(timezone.utc) - update_time
-        inactive_time = inactive_time.total_seconds()
+    for session in list_sessions():
+        session_id = session.name.rsplit("/", 1)[-1]
+        events = list_events(session_id)
 
-        if inactive_time > ttl:
-            #Pull last event data
-            events = list_events(session.name.rsplit("/", 1)[-1])
-            if len(events) != 0:
-                last_event = events[-1]
-                last_event_author = last_event.author
+        # Skip completely empty sessions.
+        if not events:
+            continue
 
-                end_states = ["eval_author", "session_timeout"]
-                if last_event_author not in end_states:
-                    inactive_sessions += 1
-                    add_custom_event("session_timeout", "closed: timeout", session.name.rsplit("/", 1)[-1])       
-    return inactive_sessions     	 
+        authors = {event.author for event in events}
 
+        # Already evaluated or deliberately excluded.
+        if "eval_author" in authors or "evaluation_skipped" in authors:
+            continue
 
+        already_timed_out = "session_timeout" in authors
+
+        if not already_timed_out:
+            inactive_time = (
+                datetime.now(timezone.utc) - get_update_time(session)
+            ).total_seconds()
+
+            if inactive_time < ttl:
+                continue
+
+            add_custom_event(
+                "session_timeout",
+                "closed: timeout",
+                session_id
+            )
+            inactive_sessions += 1
+
+        # Don't evaluate conversations without user messages.
+        if "user" not in authors:
+            add_custom_event(
+                "evaluation_skipped",
+                "no_user_messages",
+                session_id
+            )
+            continue
+
+        # Deterministically select approximately 10%.
+        hash_value = int.from_bytes(
+            hashlib.sha256(session_id.encode()).digest()[:8],
+            "big"
+        )
+        selected = hash_value / (1 << 64) < sample_rate
+
+        if not selected:
+            add_custom_event(
+                "evaluation_skipped",
+                "not_selected_for_sampling",
+                session_id
+            )
+            continue
+
+        # Evaluate selected sessions.
+        result = evaluate_completed_session(session_id)
+
+        if result is None:
+            logging.error(
+                "Evaluation failed for session %s",
+                session_id
+            )
+
+    return inactive_sessions

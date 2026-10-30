@@ -248,7 +248,7 @@ def restore_last_response(session_id):
 async def main():
     remote_agent = get_remote_agent()
 
-    user_number = "remote-chat-test"
+    user_number = "eval-test-3e3832339a"
     source = "terminal"
     user_id = f"{user_number}-{source}"
 
