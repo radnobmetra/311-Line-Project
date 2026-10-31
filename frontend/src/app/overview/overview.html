@@ -36,9 +36,11 @@
       [disabled]="!isSliderAvailable"
       (input)="onSliderChange($event)"
     />
-    <span *tfIf="!isSliderAvailable" style="color: gray; font-size: 0.9em;">
-      (Slider unavailable for Hour/Year)
-    </span>
+ @if (!isSliderAvailable) {
+  <span style="color: gray; font-size: 14px;">
+    Slider is unavailable.
+  </span>
+}
   </div>
 
     <!-- </div> -->
