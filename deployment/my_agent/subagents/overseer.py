@@ -10,6 +10,7 @@ from .parkmeter_reporting import parkmeter_agent
 from .tools.user_request_tracking import update_num_invalid_requests
 from .tools.validateinput import validateInput
 from .streetlight_reporting import streetlight_reporting_agent
+from .tools.user_mal_input import user_mal_input
 
 overseer_agent = LlmAgent(
     model=MODEL,
@@ -28,5 +29,6 @@ overseer_agent = LlmAgent(
         AgentTool(agent=greeting_agent),
         validateInput,
         update_num_invalid_requests,
+        user_mal_input
     ],
 )
