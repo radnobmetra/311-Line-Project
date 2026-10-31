@@ -24,15 +24,15 @@
 
         <div class="slider-container" style="margin-top: 15px;">
     <label>
-      Range: <strong>{{ rangeUnit() }}</strong> 
+      Range: <strong>{{ rangeUnit() }}</strong>
       {{ periodRange() }}(s)
     </label>
     <br>
-    <input 
-      type="range" 
-      min="1" 
-      [max]="sliderMax" 
-      [value]="rangeUnit()" 
+    <input
+      type="range"
+      min="1"
+      [max]="sliderMax"
+      [value]="rangeUnit()"
       [disabled]="!isSliderAvailable"
       (input)="onSliderChange($event)"
     />
@@ -41,10 +41,10 @@
     </span>
   </div>
 
-    </div>
+    <!-- </div> -->
 
-    <div class="graph">
+    <!-- <div class="graph">
         <h2 class="title">Title</h2>
         <img class="img" src="line-graph.png" />
-    </div>
+    </div> -->
 </div>
