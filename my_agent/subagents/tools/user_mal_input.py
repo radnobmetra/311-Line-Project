@@ -28,14 +28,12 @@ def user_mal_input(user_input: str) -> str:
 
     # CHECK 1: Input Length
     if len(input) > 150:
-        print("Input too long, rejecting.")
         return "REJECTED"
 
     # CHECK 2: SQL Injection Patterns
     # Uses RegEx to check for SQL injection patterns.
     # Will match any SQL keywords at the beginning of the user input.
     if re.search(r'^(select|insert|update|delete|from)\s+\*.', input):
-        print("SQL injection pattern detected, rejecting.")
         return "REJECTED"
     
     # Set list "mal_keywords" to the contents of the emergency_cases.json file
@@ -51,7 +49,6 @@ def user_mal_input(user_input: str) -> str:
     for keyword in mal_section:
         if keyword in input:
             # Returns "REJECTED" if any malicious keyword is found in the user input.
-            print(f"Malicious keyword '{keyword}' detected, rejecting.")
             return "REJECTED"
     
     # CHECK 4: Comparing user input to the malicious phrases at the top of the file
@@ -72,5 +69,4 @@ def user_mal_input(user_input: str) -> str:
                 return "REJECTED"
 
     # Returns "ALLOWED" if no detections are made.
-    print("No malicious content detected, allowing.")
     return "ALLOWED"
