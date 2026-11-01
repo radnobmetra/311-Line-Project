@@ -1,47 +1,44 @@
 <div class="overviewHeader">
-    <h1> Welcome, User</h1>
-    <div class="stats">
-        <h3> 15 Users Helped Today</h3>
-        <h3> 6 Active Sessions</h3>
-    </div>
+  <h1>Welcome</h1>
+  <div class="stats">
+    <h3> Total number of sessions: {{sessionsCount()}}</h3>
+  </div>
 </div>
 
 <div class="body">
 
 
-    <div class="graph">
-        <h2 class="title">Ticket Progress</h2>
-        <canvas id="ticketChart" priority></canvas>
-    </div>
-
-    <div class="graph">
-        <h2 class="title">Latest Sessions</h2>
-        <canvas id="sessionChart" priority></canvas>
-        <button (click)="periodToggle('hour')">Hour</button>
-        <button (click)="periodToggle('day')">Day</button>
-        <button (click)="periodToggle('month')">Month</button>
-        <button (click)="periodToggle('year')">Year</button>
-
-        <div class="slider-container" style="margin-top: 15px;">
-    <label>
-      Range: <strong>{{ rangeUnit() }}</strong>
-      {{ periodRange() }}(s)
-    </label>
-    <br>
-    <input
-      type="range"
-      min="1"
-      [max]="sliderMax"
-      [value]="rangeUnit()"
-      [disabled]="!isSliderAvailable"
-      (input)="onSliderChange($event)"
-    />
- @if (!isSliderAvailable) {
-  <span style="color: gray; font-size: 14px;">
-    Slider is unavailable.
-  </span>
-}
+  <div class="graph">
+    <h2 class="title">Sessions Outcome</h2>
+    <app-chart-wrapper [loading]="sessionOutcomesLoading()" [error]="sessionOutcomesError()">
+      <canvas id="sessionsOutcomeChart" priority></canvas>
+    </app-chart-wrapper>
   </div>
+
+  <div class="graph">
+    <h2 class="title">Latest Sessions</h2>
+    <app-chart-wrapper [loading]="sessionsLoading()" [error]="sessionsError()">
+      <canvas id="sessionChart" priority></canvas>
+    </app-chart-wrapper>
+    <button (click)="periodToggle('hour')">Hour</button>
+    <button (click)="periodToggle('day')">Day</button>
+    <button (click)="periodToggle('month')">Month</button>
+    <button (click)="periodToggle('year')">Year</button>
+
+    <div class="slider-container" style="margin-top: 15px;">
+      <label>
+        Range: <strong>{{ rangeUnit() }}</strong>
+        {{ periodRange() }}(s)
+      </label>
+      <br>
+      <input type="range" min="1" [max]="sliderMax" [value]="rangeUnit()" [disabled]="!isSliderAvailable"
+        (input)="onSliderChange($event)" />
+      @if (!isSliderAvailable) {
+      <span style="color: gray; font-size: 14px;">
+        Slider is unavailable.
+      </span>
+      }
+    </div>
 
     <!-- </div> -->
 
@@ -49,4 +46,4 @@
         <h2 class="title">Title</h2>
         <img class="img" src="line-graph.png" />
     </div> -->
-</div>
+  </div>
