@@ -6,6 +6,19 @@
     <p class="table-hint">
         Click a record in the table to view additional details.
     </p>
+
+    @if(loading()) {
+    <div class="loading-state" role="status">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <span>Loading contacts from Google Agent Engine...</span>
+    </div>
+    }
+
+    @else if(errorMessage()) {
+    <p class="empty-state" role="alert">
+        {{ errorMessage() }}
+    </p>
+    } @else {
     @if(contacts().length > 0)
     {
     <table>
@@ -22,5 +35,6 @@
     </table>
     } @else {
     <p class="empty-state">No contacts is found.</p>
+    }
     }
 </section>

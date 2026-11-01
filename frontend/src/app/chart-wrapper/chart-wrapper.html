@@ -1,0 +1,14 @@
+<div class="chart-container" [attr.aria-busy]="loading()">
+    <ng-content />
+
+    @if (error()) {
+    <div class="overlay" role="alert">
+        {{ error() }}
+    </div>
+    } @else if (loading()) {
+    <div class="overlay" role="status">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Loading chart…</span>
+    </div>
+    }
+</div>
