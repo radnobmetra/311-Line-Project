@@ -4,6 +4,7 @@ import os
 import json
 import time
 from werkzeug.utils import secure_filename
+from tempfile import TemporaryDirectory
 
 from threading import Lock
 from concurrent.futures import ThreadPoolExecutor
@@ -25,15 +26,14 @@ from .remote_chat_dashboard import (
 app = Flask(__name__, static_folder=None)
 CORS(app)
 
+# Angular build location inside the container.
+STATIC_DIR = (Path(__file__).resolve().parent.parent / "static").resolve()
+
 # Cache settings, in seconds.
 SESSION_CACHE_SECONDS = 60
 OUTCOME_CACHE_SECONDS = 120
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-# Angular build location inside the container.
-STATIC_DIR = (Path(__file__).resolve().parent.parent / "static").resolve()
-UPLOAD_FOLDER = STATIC_DIR / "temp"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 session_cache = {"expires": 0, "sessions": []}
 session_cache_lock = Lock()
@@ -240,10 +240,18 @@ def sendImage():
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(filepath)
-        # send image to agent
-        responseJson = asyncio.run(send_image_get_response(filepath, user_number))
+
+        # Create a unique folder in the OS's temp directory
+        with TemporaryDirectory(prefix="agent-image-") as temp_dir:
+            filepath = Path(temp_dir) / filename
+            file.save(str(filepath))
+
+            # Wait for the agent to finish using the local file
+            responseJson = asyncio.run(
+                send_image_get_response(str(filepath), user_number)
+            )
+
+        # The temporary folder and uploaded file have been deleted
         return responseJson
 
     return error_msg

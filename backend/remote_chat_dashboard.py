@@ -533,13 +533,4 @@ async def send_image_get_response(imgFilePath: str, user_number: str) -> json:
     print("Agent:", final_text)
     print()
 
-    # attempt to delete temporary image file
-    try:
-        os.remove(imgFilePath)
-        print("Temporary image file was deleted.")
-    except:
-        print("Temporary image file could not be deleted.")
-
-    print()
-
     return {"author": msg_author, "contents": final_text}
