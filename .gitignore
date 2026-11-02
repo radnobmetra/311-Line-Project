@@ -225,4 +225,4 @@ sa-key.json
 runtime_id.txt
 pytest.ini
 
-tests/admin_credentials.json
+selenium_tests/admin_credentials.json

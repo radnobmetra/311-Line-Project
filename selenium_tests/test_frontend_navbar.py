@@ -4,14 +4,14 @@
 # that contains username and password values that selenium can use to log in to the 
 # dashboard.
 
-# tests/admin_credentials.json should contain the following:
+# selenium_tests/admin_credentials.json should contain the following:
 # {
 #     "USERNAME": "admin username goes here", 
 #     "PASSWORD": "admin password goes here"
 # }
 
 # To run the script, run this command from the project root:
-#       python tests/test_frontend_navbar.py
+#       python selenium_tests/test_frontend_navbar.py
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,7 +23,7 @@ import json
 def run_navbar_test():
     #get admin credentials from json file
     try:
-        with open('tests/admin_credentials.json','r') as f:
+        with open('selenium_tests/admin_credentials.json','r') as f:
             credentials = json.load(f)
         USERNAME = credentials['USERNAME']
         PASSWORD = credentials['PASSWORD']
