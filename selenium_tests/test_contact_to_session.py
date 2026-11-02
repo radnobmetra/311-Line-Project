@@ -15,8 +15,11 @@
 #     "PASSWORD": "admin password goes here"
 # }
 
-# To run the script, run this command from the project root:
-#       python selenium_tests/test_contact_to_session.py
+# To run the script, run this command from the selenium_tests folder:
+#       python test_contact_to_session.py
+
+# To run pytest, run this command from the selenium_tests folder:
+#   python -m pytest
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -25,13 +28,13 @@ from selenium.webdriver.support import expected_conditions as EC
 import json
 
 
-def run_contact_to_session_test():
+def test_contact_to_session():
 
     #---------------- creating the web driver and logging in ------------------
 
     #get admin credentials from json file
     try:
-        with open('selenium_tests/admin_credentials.json','r') as f:
+        with open('admin_credentials.json','r') as f:
             credentials = json.load(f)
         USERNAME = credentials['USERNAME']
         PASSWORD = credentials['PASSWORD']
@@ -134,4 +137,4 @@ def teardown(driver):
 
 
 if __name__ == "__main__":
-    run_contact_to_session_test()
+    test_contact_to_session()
