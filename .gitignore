@@ -224,3 +224,5 @@ sa-key.json
 .DS_Store
 runtime_id.txt
 pytest.ini
+
+tests/admin_credentials.json
