@@ -1,22 +1,14 @@
 import { FormsModule } from '@angular/forms'; // Permits the use of ngModel in the .html
 import { form, FormField } from '@angular/forms/signals';
 
-import { ActivatedRoute } from '@angular/router';
-import { Component, inject, signal, computed  } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed  } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
 import { PhonePipe } from '../../pipes/phone.pipe';
 import { SessionDetails } from '../../interfaces/session-details.interface';
 import { Session } from '../../interfaces/session.interface';
-import {
-  SessionsService,
-  SessionEvaluation
-} from '../../services/sessions.service';
+import { SessionsService, SessionEvaluation } from '../../services/sessions.service';
 import { tableToCsv } from '../utils/exportToCSV';
 
 interface sortFilterInput {
@@ -27,9 +19,8 @@ interface sortFilterInput {
 }
 
 @Component({
-  imports: [DatePipe, RouterLink, PhonePipe, FormsModule],
+  imports: [DatePipe, DecimalPipe, RouterLink, PhonePipe, FormsModule, PhonePipe],
   selector: 'app-sessions',
-  imports: [DatePipe, DecimalPipe, RouterLink, PhonePipe],
   templateUrl: './sessions.html',
   styleUrl: './sessions.css'
 })
@@ -61,8 +52,6 @@ export class Sessions {
   sessionMap = signal<Map<string, SessionDetails>>(new Map());
 
   // Track the current outcome filter state
-  // Session data.
-  sessionMap = signal<Map<string, SessionDetails>>(new Map());
 
   /// Individual and combined evaluations, indexed by session ID.
   evaluations = signal<Record<string, SessionEvaluation | null>>({});
@@ -215,13 +204,13 @@ export class Sessions {
   }
 
   // Helper method to safely extract the final_outcome from the system event
-  getFinalOutcome(session: any): string | null {
-    if (!session || !session.events) return null;
+  // getFinalOutcome(session: any): string | null {
+  //   if (!session || !session.events) return null;
 
-    const outcomeEvent = session.events.find((e: any) =>
-      e.author === 'system' &&
-      e.content?.parts?.[0]?.text?.includes('final_outcome')
-    );
+  //   const outcomeEvent = session.events.find((e: any) =>
+  //     e.author === 'system' &&
+  //     e.content?.parts?.[0]?.text?.includes('final_outcome')
+  //   );
   // Get the combined final outcome for a session.
   getFinalOutcome(session: Session): string | null {
     return this.evaluations()[session.id]?.final_outcome ?? null;
@@ -241,8 +230,8 @@ export class Sessions {
   get sortedSessions(): SessionDetails[] {
 
     const filter = this.currentFilter();
-    const allSessions = Array.from(this.sessionMap().values());
-    console.log("First session payload:", allSessions[0]?.session);
+    // const allSessions = Array.from(this.sessionMap().values());
+    // console.log("First session payload:", allSessions[0]?.session);
 
     const allSessions = Array.from(
       this.sessionMap().values()
@@ -267,5 +256,5 @@ export class Sessions {
       )
     );
   }
-
 }
+
