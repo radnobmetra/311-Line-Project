@@ -2,6 +2,7 @@ import pytest
 import os
 from pathlib import Path
 import sys
+from time import sleep
 sys.path.insert(1, "..\\311-Line-Project")
 
 import session_handling
@@ -72,12 +73,40 @@ def test_delete_sessions():
 	output = session_handling.delete_session(test_session)
 	assert output == True
 
-def test_marking_inactive_sessions():
-	ttl = 3.154e+7 # 1 Year in seconds
 
+def test_marking_inactive_sessions():
+	print("Testing mark_inactive_sessions function.")
+	testNum = "test_marking_inactive_sessions"
+	source = "pytest"
+	ttl = 0		
+
+	#create a new session
+	session_id = session_handling.create_update_agent_session(
+		user_Number=testNum, ttl=500000, source=source
+	)
+
+	#mark_inactive_sessions should mark the new session as inactive
 	session_count = session_handling.mark_inactive_sessions(ttl)
-	assert session_count == 0
+	print("Number of inactive sessions = "+ str(session_count))
+
+	#verify that mark_inactive_sessions has marked the new session as inactive
+	assert session_count > 0
+
+	# verify state persistence on the session's events and session state
+	events = session_handling.list_events(session_id)
+	assert len(events) > 0
+	
+	resolved_events = [
+		e for e in events
+		if getattr(e, "actions", None)
+		and getattr(e.actions, "state_delta", None)
+		and e.actions.state_delta.get("status") == "resolved"
+	]
+	assert len(resolved_events) > 0
+
+
 def test_timeout_marks_old_session_resolved():
+	print("Testing that timeout marks sessions as resolved when sessions are updated.")
 	testNum = "916-555-5555"
 	source = "pytest"
 
@@ -104,3 +133,9 @@ def test_timeout_marks_old_session_resolved():
 	]
 	assert len(resolved_events) > 0
 	assert resolved_events[-1].actions.state_delta.get("outcome_label") == "session timeout"
+
+
+
+#if __name__ == "__main__":
+	#test_timeout_marks_old_session_resolved()
+	#test_marking_inactive_sessions()
