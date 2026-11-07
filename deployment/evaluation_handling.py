@@ -24,7 +24,11 @@ def evaluate_completed_session(session_id: int):
             (
                 event for event in events
                 if event.author not in (
-                    "session_timeout", "eval_author", "system"
+                    "session_timeout",
+                    "eval_author",
+                    "evaluation_skipped",
+                    "evaluation_attempted",
+                    "system"
                 )
                 and event.invocation_id
                 and event.content is not None
@@ -119,8 +123,10 @@ def evaluate_completed_session(session_id: int):
         return evaluation_record
 
         
-    except Exception as e:
-        logging.error(f"evaluation failed for session {session_id}: {e}")
+    except Exception:
+        logging.exception(
+            "Evaluation failed for session %s", session_id
+        )
         return None
 
 

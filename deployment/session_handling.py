@@ -521,8 +521,12 @@ def mark_inactive_sessions(ttl: int):
 
         authors = {event.author for event in events}
 
-        # Already evaluated or deliberately excluded.
-        if "eval_author" in authors or "evaluation_skipped" in authors:
+        # Skip sessions already evaluated, skipped, or attempted.
+        if (
+            "eval_author" in authors
+            or "evaluation_skipped" in authors
+            or "evaluation_attempted" in authors
+        ):
             continue
 
         already_timed_out = "session_timeout" in authors
@@ -566,7 +570,13 @@ def mark_inactive_sessions(ttl: int):
             )
             continue
 
-        # Evaluate selected sessions.
+        # Record the attempt before evaluating.
+        add_custom_event(
+            "evaluation_attempted",
+            "started",
+            session_id
+        )
+
         result = evaluate_completed_session(session_id)
 
         if result is None:
