@@ -16,10 +16,11 @@
     }
 
     <form (submit)="$event.preventDefault()">
-      <div class="search_container">
-          <label for="search">Search: </label>
-          <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search Table Values...">
-      </div></form>
+        <div class="search_container">
+            <label for="search">Search:</label>
+            <input type="text" id="search" name="search" [(ngModel)]="searchInput" placeholder="Search Table Values...">
+        </div>
+    </form>
 
     <p class="table-hint">
         Click a record in the table to view additional details.
@@ -33,7 +34,7 @@
             <th>Status</th>
             <th>Created At</th>
         </tr>
-        @for (serviceRequest of serviceRequests(); track serviceRequest.id) {
+        @for (serviceRequest of displayed_reqs(); track serviceRequest.id) {
         <tr [routerLink]="['/request-details', serviceRequest.id]" class="clickable-row">
             <td>{{ serviceRequest.id}}</td>
             <td>{{ serviceRequest.title}}</td>
@@ -42,6 +43,9 @@
         </tr>
         }
     </table>
+    @if (displayed_reqs().length === 0) {
+    <p class="empty-state">No service requests match the current search.</p>
+    }
     } @else {
     <p class="empty-state">No service requests are found.</p>
     }

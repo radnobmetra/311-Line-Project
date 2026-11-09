@@ -1,5 +1,4 @@
 import { FormsModule } from '@angular/forms'; // Permits the use of ngModel in the .html
-import { form, FormField } from '@angular/forms/signals';
 
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Component, inject, signal, computed } from '@angular/core';
@@ -7,13 +6,6 @@ import { DatePipe } from '@angular/common';
 import { ServiceRequestsService } from '../../services/service-requests.service';
 import { ServiceRequest } from '../../interfaces/service-request.interface';
 import { tableToCsv } from '../utils/exportToCSV';
-
-interface sortFilterInput {
-    sortDate: string;
-    filterStartDate: string;
-    filterEndDate: string;
-    filterTopic: string;
-}
 
 @Component({
   imports: [RouterLink, DatePipe, FormsModule],
@@ -48,49 +40,30 @@ export class ServiceRequests {
       });
     }
   }
-      sortFilterModel = signal<sortFilterInput>({
-        sortDate: "",
-        filterStartDate: "",
-        filterEndDate: "",
-        filterTopic: "",
+
+  // This function applies searching to the service requests table.
+  // It works the same way as the search bars on the requests and sessions
+  // pages: the query is case-insensitive and trimmed, and it is matched
+  // against the values displayed in the table.
+  displayed_reqs = computed(() => {
+    const query = this.searchInput().toLowerCase().trim();
+
+    return this.serviceRequests().filter((record) => {
+
+      // An empty search box shows every record.
+      if (query === '') {
+        return true;
+      }
+
+      // Null safe comparisons so the search bar doesn't throw errors.
+      return (
+        String(record.id ?? '').toLowerCase().includes(query) ||
+        String(record.title ?? '').toLowerCase().includes(query) ||
+        String(record.status ?? '').toLowerCase().includes(query) ||
+        String(record.createdAt ?? '').toLowerCase().includes(query)
+      );
     });
-    sortFilterForm = form(this.sortFilterModel);
-      // This function applies searching and filtering to the requests.
-    displayed_reqs = computed(() => {
-        // The "..." unpacks the signal array into a normal array so that it can be filtered and sorted.
-        let processed_records = [...this.serviceRequests()];
-
-        // If any of the fields are null, set them to an empty string so that
-        // the search bar and filter functions don't throw errors.
-        processed_records.forEach((record) => {
-            if (record.id == null) record.id = "";
-        });
-
-        // Search Bar functionality
-        const query = this.searchInput().toLowerCase().trim();
-        if (query !== '') {
-            processed_records = processed_records.filter(record => {
-                if (
-                record.id.toString().includes(query)
-                ) {
-                    return true;
-                }
-                else {
-                    // this.toggleSelectedMsg(record.id, true);
-                    return false;
-                }
-            });
-        }
-
-        // Filter by id
-        const idFilter = this.sortFilterForm.filterTopic().value();
-        if (idFilter) {
-            processed_records = processed_records.filter(
-                (record) => record.id == idFilter);
-        }
-
-        return processed_records;
-    });
+  });
 
   onExport(): void {
     let rows = this.serviceRequests();
