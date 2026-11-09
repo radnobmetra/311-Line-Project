@@ -388,10 +388,50 @@ def add_agent_message(agent_Message: str, session_ID: str, invocation_id: str) -
     return event_id
 
 
+
+def get_event_text(event: any) -> str:
+    event_text = ""
+
+    content = getattr(event, "content", None)
+    if content:
+        parts = getattr(content, "parts", None) or []
+        if parts:
+            text = "".join(
+                part.text or ""
+                for part in parts
+                if getattr(part, "text", None) is not None
+            )
+
+    return event_text
+
+
+
 def mark_session_resolved(session_ID: str) -> bool:
     """
     Appends a state update event to mark a time over session as resolved.
+    Returns true if successful
     """
+
+    events = list_events(session_ID)
+
+    #get list of events that already mark the session as resolved
+    resolved_events = [
+        e for e in events
+        if ((
+            getattr(e, "actions", None)
+            and getattr(e.actions, "state_delta", None)
+            and e.actions.state_delta.get("status") == "resolved"
+            )
+            or get_event_text(e).strip() == "closed: timeout"
+            or get_event_text(e).strip() == "Session resolved due to timeout."
+        )
+    ]
+
+    #Return true if session has already been marked as resolved
+    if len(resolved_events) > 0:
+        return True
+
+    # otherwise, mark the session as resolved
     client.sessions.events.append(
         name=_session_name(session_ID),
         invocation_id=str(uuid.uuid4()),
@@ -406,26 +446,29 @@ def mark_session_resolved(session_ID: str) -> bool:
             },
             "content": {
                 "role": "model",
-                "parts": [{"text": "Session resolved due to timeout."}],
-            },
-        },
+                "parts": [{"text": "Session resolved due to timeout."}]
+            }
+        }
     )
     return True
 
 
 def get_session(session_ID: str):
     """Retrieve a session resource by its ID."""
-    return client.sessions.get(name=_session_name(session_ID))
-
-
-def list_filtered_sessions(filter_query: str):
-    """ """
-    sessions = client.sessions.list(
-        name="reasoningEngines/" + os.environ["SESSION_AGENT_ENGINE_ID"],
-        config={"filter": filter_query},
+    return client.sessions.get(
+        name=_session_name(session_ID)
     )
-    return list(sessions)
 
+def list_filtered_sessions(filter_query:str):
+    """
+     
+    """
+    sessions = client.sessions.list(
+	name = "reasoningEngines/" +os.environ["SESSION_AGENT_ENGINE_ID"],
+	config={"filter": filter_query}
+	)
+    return list(sessions)
+     
 
 def mark_inactive_sessions(ttl: int):
     """
@@ -437,8 +480,8 @@ def mark_inactive_sessions(ttl: int):
     Returns:
     inactive_sessions (int): number of sessions marked as inactive
     """
+    
     sessions = list(list_sessions())
-    # print(sessions[-3])
     inactive_sessions = 0
 
     for session in sessions:
@@ -447,18 +490,10 @@ def mark_inactive_sessions(ttl: int):
         inactive_time = inactive_time.total_seconds()
 
         if inactive_time > ttl:
-            # Pull last event data
-            events = list_events(session.name.rsplit("/", 1)[-1])
-            if len(events) != 0:
-                last_event = events[-1]
-                last_event_author = last_event.author
+            # mark session as resolved due to timeout
+            session_ID = session.name.rsplit("/", 1)[-1]
+            mark_session_resolved(session_ID)
+            inactive_sessions = inactive_sessions + 1
 
-                end_states = ["eval_author", "session_timeout"]
-                if last_event_author not in end_states:
-                    inactive_sessions += 1
-                    add_custom_event(
-                        "session_timeout",
-                        "closed: timeout",
-                        session.name.rsplit("/", 1)[-1],
-                    )
     return inactive_sessions
+
