@@ -91,7 +91,7 @@ token = driver.execute_async_script(indexdb_script)
 print("Retrieved Token Data:", token)
 
 # Find logout button and use it
-uniWebDriverAction(driver, (By.ID, "logout"), None)
+uniWebDriverAction(driver, (By.ID, "logout-btn"), None)
 
 # Check if logout went through and user is redirected to login page
 WebDriverWait(driver, 5).until(EC.url_contains("/login"))
