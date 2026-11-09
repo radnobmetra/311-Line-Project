@@ -105,16 +105,27 @@ def run_batch(candidates, max_evaluations):
             print(f"ALREADY HANDLED: {session_id}")
             continue
 
-        # Mark session inactivity, just as the original timer does.
+        # Check inactivity before closing the session.
         if "session_timeout" not in authors:
-            # Re-read the latest session update to avoid timing out new activity.
             current_session = sh.get_session(session_id)
-            age = (datetime.now(timezone.utc) -
-                   sh.get_update_time(current_session)).total_seconds()
+            age = (
+                datetime.now(timezone.utc)
+                - sh.get_update_time(current_session)
+            ).total_seconds()
+
             if age < INACTIVITY_SECONDS:
                 print(f"STILL ACTIVE: {session_id}")
                 continue
-            sh.add_custom_event("session_timeout", "closed: timeout", session_id)
+
+        sh.mark_session_resolved(session_id)
+
+        # Preserve the timeout marker used by manual evaluation.
+        if "session_timeout" not in authors:
+            sh.add_custom_event(
+                "session_timeout",
+                "closed: timeout",
+                session_id
+            )
 
         if item["no_user"] or not item["selected"]:
             reason = "no_user_messages" if item["no_user"] else "not_selected_for_sampling"

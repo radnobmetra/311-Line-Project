@@ -2,6 +2,7 @@ import pytest
 import os
 from pathlib import Path
 import sys
+from time import sleep
 sys.path.insert(1, "..\\311-Line-Project")
 
 import session_handling
@@ -72,12 +73,47 @@ def test_delete_sessions():
 	output = session_handling.delete_session(test_session)
 	assert output == True
 
-def test_marking_inactive_sessions():
-	ttl = 3.154e+7 # 1 Year in seconds
 
-	session_count = session_handling.mark_inactive_sessions(ttl)
-	assert session_count == 0
+def test_marking_inactive_sessions(monkeypatch):
+    import uuid
+
+    # Create a unique test session.
+    test_num = f"test-inactive-{uuid.uuid4().hex[:8]}"
+    session_id = session_handling.create_session(
+        test_num, "pytest"
+    )
+    # Add a message so the session isn't empty.
+    session_handling.add_user_message(
+        "Test inactivity handling",
+        session_id
+    )
+    # Restrict the inactivity scan to this session.
+    test_session = session_handling.get_session(session_id)
+    monkeypatch.setattr(
+        session_handling,
+        "list_sessions",
+        lambda: [test_session]
+    )
+    # Disable evaluations during this test.
+    monkeypatch.setenv("EVALUATION_SAMPLE_RATE", "0")
+    # Trigger timeout.
+    session_count = session_handling.mark_inactive_sessions(ttl=0)
+    assert session_count == 1
+    events = session_handling.list_events(session_id)
+    # Verify resolved-state functionality.
+    assert any(
+        session_handling.has_resolved_state(event)
+        for event in events
+    )
+    # Verify timeout marker.
+    assert any(
+        event.author == "session_timeout"
+        for event in events
+    )
+
+
 def test_timeout_marks_old_session_resolved():
+	print("Testing that timeout marks sessions as resolved when sessions are updated.")
 	testNum = "916-555-5555"
 	source = "pytest"
 
@@ -104,3 +140,9 @@ def test_timeout_marks_old_session_resolved():
 	]
 	assert len(resolved_events) > 0
 	assert resolved_events[-1].actions.state_delta.get("outcome_label") == "session timeout"
+
+
+
+#if __name__ == "__main__":
+	#test_timeout_marks_old_session_resolved()
+	#test_marking_inactive_sessions()

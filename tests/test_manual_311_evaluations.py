@@ -26,7 +26,7 @@ def forbidden_cloud_call(*args, **kwargs):
 fake_session_handling = types.ModuleType("session_handling")
 for name in (
     "list_sessions", "list_events", "get_update_time", "get_session",
-    "add_custom_event",
+    "add_custom_event", "mark_session_resolved",
 ):
     setattr(fake_session_handling, name, forbidden_cloud_call)
 
@@ -75,6 +75,18 @@ class FakeCloud:
         self.events[session_id].append(types.SimpleNamespace(author=author))
         return True
 
+    def mark_session_resolved(self, session_id):
+        self.writes.append(("system", "resolved", session_id))
+        self.events[session_id].append(
+            types.SimpleNamespace(
+                author="system",
+                actions=types.SimpleNamespace(
+                    state_delta={"status": "resolved"}
+                ),
+            )
+        )
+        return True
+
 
 class TestManualEvaluations(unittest.TestCase):
     @classmethod
@@ -99,6 +111,7 @@ class TestManualEvaluations(unittest.TestCase):
             patch.object(batch.sh, "get_update_time", self.fake.get_update_time),
             patch.object(batch.sh, "get_session", self.fake.get_session),
             patch.object(batch.sh, "add_custom_event", self.fake.add_custom_event),
+            patch.object(batch.sh, "mark_session_resolved", self.fake.mark_session_resolved),
         ]
         for p in self.patches:
             p.start()
