@@ -3,20 +3,20 @@ import geopandas as geopanda
 from shapely.geometry import Point
 from .address_to_coords import get_coordinates
 
-def verify_address(address: str) -> dict:
+def verify_address(address: str, tool_context) -> dict:
     """
     calls get_coordinates to retrieve location data, then verifies 
-    if it falls within sac  limits.
+    if it falls within sac limits.
     """
-    # address2coords tool
-    coords = get_coordinates(address)
+    coords = get_coordinates(address, tool_context)
     
     if not coords:
         return {
             "verified": False,
             "lat": None,
             "lng": None,
-            "message": "Error address not found."}
+            "message": "Error address not found."
+        }
         
     lat, lng = coords
     

@@ -35,7 +35,7 @@ def validateInput (tool_context: ToolContext) -> bool:
     if invalid_request_limit_reached(tool_context):
         request_is_valid = False
 
-    elif user_mal_input(user_input):
+    elif user_mal_input(user_input) == "REJECTED":
         request_is_valid = False
     
     elif emergency_check(user_input) == "Emergency Alert":

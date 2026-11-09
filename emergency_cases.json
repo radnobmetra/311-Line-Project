@@ -1,7 +1,8 @@
 {
     "emergency_key":
     [
-            "fire", 
+            "fire",
+            "burn",
             "gun",
             "blood",
             "injured",
@@ -14,7 +15,7 @@
             "suicide",
             "homicide",
             "911",
-            "stabbing"
+            "stabbing"  
     ],
 
     "malicious_key":
@@ -24,6 +25,7 @@
             ".pdf",
             ".txt",
             ".org",
-            ".gov"
+            ".gov",
+            ".csv"
     ]
 }

@@ -8,9 +8,7 @@ RUN npm ci --legacy-peer-deps
 
 COPY frontend/ ./
 
-RUN npm run build -- \
-    --configuration production \
-    --output-path=dist/dashboard
+RUN npm run build -- --configuration production --output-path=dist/dashboard
 
 
 # Run Flask and serve the Angular build.
@@ -26,9 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ ./backend/
 
-COPY --from=frontend-build \
-    /frontend/dist/dashboard/browser/ \
-    ./static/
+COPY --from=frontend-build /frontend/dist/dashboard/browser/ ./static/
 
 RUN useradd --create-home appuser
 USER appuser
