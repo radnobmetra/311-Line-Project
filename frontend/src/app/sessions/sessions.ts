@@ -1,5 +1,4 @@
 import { FormsModule } from '@angular/forms'; // Permits the use of ngModel in the .html
-import { form, FormField } from '@angular/forms/signals';
 
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Component, inject, signal, computed  } from '@angular/core';
@@ -10,13 +9,6 @@ import { SessionDetails } from '../../interfaces/session-details.interface';
 import { Session } from '../../interfaces/session.interface';
 import { SessionsService, SessionEvaluation } from '../../services/sessions.service';
 import { tableToCsv } from '../utils/exportToCSV';
-
-interface sortFilterInput {
-    sortDate: string;
-    filterStartDate: string;
-    filterEndDate: string;
-    filterTopic: string;
-}
 
 @Component({
   imports: [DatePipe, DecimalPipe, RouterLink, PhonePipe, FormsModule, PhonePipe],
@@ -41,9 +33,6 @@ export class Sessions {
 
   // Backend service.
   sessionsService = inject(SessionsService);
-
-  // Signal array to hold the raw request records.
-  requests = signal<SessionDetails[]>([]);
 
   // Will hold the search bar input.
   searchInput = signal<string>('');
@@ -119,53 +108,6 @@ export class Sessions {
 
     });
   }
-    sortFilterModel = signal<sortFilterInput>({
-        sortDate: "",
-        filterStartDate: "",
-        filterEndDate: "",
-        filterTopic: "",
-    });
-    sortFilterForm = form(this.sortFilterModel);
-      // This function applies searching and filtering to the requests.
-    displayed_reqs = computed(() => {
-        // The "..." unpacks the signal array into a normal array so that it can be filtered and sorted.
-        let processed_records = [...this.requests()];
-
-        // If any of the fields are null, set them to an empty string so that
-        // the search bar and filter functions don't throw errors.
-        processed_records.forEach((record) => {
-            if (record.session.id == null) record.session.id = "";
-            if (record.phoneNumber == null) record.phoneNumber = "";
-        });
-
-        // Search Bar functionality
-        const query = this.searchInput().toLowerCase().trim();
-        if (query !== '') {
-            processed_records = processed_records.filter(record => {
-                if (
-                record.session.id.toString().includes(query) ||
-                record.phoneNumber.toLowerCase().includes(query) //||
-                // record.topic.toLowerCase().includes(query) ||
-                // record.createdAt.toLowerCase().includes(query)
-                ) {
-                    return true;
-                }
-                else {
-                    // this.toggleSelectedMsg(record.id, true);
-                    return false;
-                }
-            });
-        }
-
-        // Filter by id
-        const idFilter = this.sortFilterForm.filterTopic().value();
-        if (idFilter) {
-            processed_records = processed_records.filter(
-                (record) => record.session.id == idFilter);
-        }
-
-        return processed_records;
-    });
 
   // Retrieve individual and combined evaluation results
   // without blocking the session table.
@@ -233,9 +175,18 @@ export class Sessions {
     // const allSessions = Array.from(this.sessionMap().values());
     // console.log("First session payload:", allSessions[0]?.session);
 
-    const allSessions = Array.from(
+    let allSessions = Array.from(
       this.sessionMap().values()
     );
+
+    // Search Bar functionality. Matches the session ID the same way the
+    // service requests page matches its IDs: case-insensitive substring match.
+    const query = this.searchInput().toLowerCase().trim();
+    if (query !== '') {
+      allSessions = allSessions.filter(item =>
+        (item.session.id ?? '').toString().toLowerCase().includes(query)
+      );
+    }
 
     const filteredSessions = allSessions.filter(item => {
 

@@ -17,6 +17,19 @@
     </button>
   </div>
 
+  <form (submit)="$event.preventDefault()">
+    <div class="search_container">
+      <label for="search">Search:</label>
+      <input
+        type="text"
+        id="search"
+        name="search"
+        [(ngModel)]="searchInput"
+        placeholder="Search by Session ID..."
+      >
+    </div>
+  </form>
+
   <p class="table-hint">
     Click a record in the table to view additional details.
   </p>
@@ -173,7 +186,7 @@
 
       @if (sortedSessions.length === 0) {
         <p class="empty-state">
-          No sessions match the selected outcome filter.
+          No sessions match the current search or outcome filter.
         </p>
       }
 
