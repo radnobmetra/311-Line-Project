@@ -44,22 +44,22 @@
         <legend>Filter by topic</legend>
         <div>
             <label>
-                <input type="radio" value="ticket" [formField]="sortFilterForm.filterTopic" />
+                <input type="radio" id="topicTicket" value="ticket" [formField]="sortFilterForm.filterTopic" />
                 Topic - ticket </label>
         </div>
         <div>
             <label>
-                <input type="radio" value="general" [formField]="sortFilterForm.filterTopic" />
+                <input type="radio" id="topicGeneralQuestion" value="general" [formField]="sortFilterForm.filterTopic" />
                 Topic - general question </label>
         </div>
         <div>
             <label>
-                <input type="radio" value="both" [formField]="sortFilterForm.filterTopic" />
+                <input type="radio" id="topicTicketQuestion" value="both" [formField]="sortFilterForm.filterTopic" />
                 Topic - both (ticket and general question) </label>
         </div>
         <div>
             <label>
-                <input type="radio" value="none" [formField]="sortFilterForm.filterTopic" />
+                <input type="radio" id="topicNone" value="none" [formField]="sortFilterForm.filterTopic" />
                 Topic - none </label>
         </div>
         <div>
