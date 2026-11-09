@@ -5,7 +5,7 @@ from google.genai.types import Content, Part
 from typing import AsyncGenerator, Optional
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
-from ..config import MODEL, QA_INSTRUCTION
+from ..config import MODEL, QA_INSTRUCTION, QA_REVIEWER_INSTRUCTION, QA_CLARIFIER_INSTRUCTION
 from .tools.lookup import search_knowledge_tool
 from google.adk import Workflow
 
@@ -57,58 +57,7 @@ qa_reviewer_agent = LlmAgent(
     model=MODEL,
     name="QAReviewerAgent",
     description="Checks whether the QA answer is acceptable.",
-    instruction='''
-        You are a strict reviewer.
-        
-        Original user question:
-        {user_question}
-
-        Search query used:
-        {lookup_query}
-
-        Retrieved document results:
-        {search_results}
-
-        Draft answer:
-        {qa}
-
-        Note:
-        If "No search was performed." appears above, evaluate whether the
-        situation can be classified without document retrieval, such as an
-        emergency or an obviously ambiguous request.
-
-        Classify the draft answer into exactly one of these labels:
-
-        - pass
-            Use only if the answer is directly responsive and supported by the retrieved documents.
-
-        - pass_with_clarification
-            The answer is supported and reasonably helpful, but the user's question is broad, vague, or underspecified, so the final response should also ask the user to clarify or narrow the topic.
-
-        - unsupported_answer
-            Use if the answer is unsupported, speculative, vague, generic, incomplete, or misses important details that the documents do contain.
-
-        - emergency
-            Use if the user appears to describe an emergency, imminent danger, active crime, urgent medical issue, fire, immediate safety threat, or another situation that should be directed to 911.
-
-        - no_docs_found
-            Use if the retrieved documents do not contain relevant information needed to answer the question.
-
-        - out_of_jurisdiction
-            Use if the user's question is outside the jurisdiction or scope of Sacramento city services, even if the draft tried to answer it.
-
-        - ambiguous
-            Use if the user's question is too unclear to answer reliably from the documents.
-
-        Be strict.
-        Return exactly one label and nothing else:
-            pass
-            pass_with_clarification
-            unsupported_answer
-            emergency
-            no_docs_found
-            out_of_jurisdiction
-            ambiguous''',
+    instruction=QA_REVIEWER_INSTRUCTION,
     output_key="qa_review",
 )
 
@@ -116,36 +65,10 @@ clarifier_agent = LlmAgent(
     model=MODEL,
     name="ClarifierAgent",
     description="Generates a brief clarification question when the user's request is vague.",
-    instruction='''
-        You generate a short, helpful clarification follow-up.
-
-        Review result:
-        {qa_review}
-
-        Original user question:
-        {user_question}
-
-        Search query used:
-        {lookup_query}
-
-        Draft answer:
-        {qa}
-
-
-        write 1-2 sentences that:
-        - briefly acknowledge the topic
-        - ask the user to clarify what specifically they want
-        - optionally suggest a few relevant directions (based on the question), but do not assume too much
-
-        Do NOT repeat the full answer.
-        Do NOT be verbose.
-        Do NOT hallucinate specific policies.
-
-        Example style:
-        "Could you clarify what specifically you'd like to know about [topic]? I can help with [...]."
-        ''',
+    instruction=QA_CLARIFIER_INSTRUCTION,
     output_key="clarification",
 )
+
 
 class ValidateQA(BaseAgent):
     async def _run_async_impl(

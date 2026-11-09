@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, map } from 'rxjs';
 import { Session } from '../interfaces/session.interface';
 import { Contact } from '../interfaces/contact.interface';
+import { environment } from '../environments/environment';
 
 export interface SessionEvaluation {
   ai_evaluation: {
@@ -27,8 +28,8 @@ export class SessionsService {
   private http = inject(HttpClient);
 
   // Flask backend endpoints.
-  apiUrl = 'http://localhost:5000/sessions';
-  contactsApiUrl = 'http://localhost:5000/contacts';
+  apiUrl = `${environment.apiUrl}/sessions`;
+  contactsApiUrl = `${environment.apiUrl}/contacts`;
 
   // Retrieve all sessions (metadata only).
   getAllSessions(): Observable<Session[]> {

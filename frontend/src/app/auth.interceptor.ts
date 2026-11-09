@@ -2,10 +2,11 @@ import { inject } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
 import { Auth } from '@angular/fire/auth';
 import { from, switchMap } from 'rxjs';
+import { environment } from '../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Only attach credentials to our own relative API URLs.
-  if (!req.url.startsWith('/api/')) {
+  if (!req.url.startsWith(`${environment.apiUrl}`)) {
     return next(req);
   }
 

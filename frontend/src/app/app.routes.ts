@@ -39,15 +39,5 @@ export const routes: Routes = [
     { path: 'service-requests', component: ServiceRequests, canActivate: [guardian] },
     { path: 'request-details/:id', component: RequestDetails, canActivate: [guardian] },
     { path: 'flagged-convo', component: FlaggedConvo, canActivate: [guardian]},
-    { path: '', redirectTo: '/login', pathMatch: 'full' } //redirct
-/*
-    { path: 'login', component: Login }, //login page
-    { path: 'overview', component: Overview,  }, //guadian ensures valid entry
-    { path: 'settings', component: Settings,  },
-    { path: 'analytics', component: Analytics,  },
-    { path: 'requests', component: Requests,  },
-    { path: 'messages', component: Messages,  },
-    { path: 'profile', component: Profile,  },
-    { path: 'events', component: Events,  },
-    { path: '', redirectTo: '/overview', pathMatch: 'full' } //redirct */
+    { path: '', redirectTo: '/login', pathMatch: 'full' } //redirect
 ];

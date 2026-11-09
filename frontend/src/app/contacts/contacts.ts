@@ -19,11 +19,26 @@ export class Contacts {
     // Array to store all available contacts
     contacts = signal<Contact[]>([]);
 
+    loading = signal<boolean>(true);
+    errorMessage = signal<string>('');
+
     constructor() {
+        this.loading.set(true);
+        this.errorMessage.set('');
+
         // Retrieve all contacts from the db.
         this.contactsService.getAllContacts().subscribe({
-            next: (contactsData) => { this.contacts.set(contactsData); },
-            error: (err) => console.error("Error fetching data:", err)
+            next: (contactsData) => { 
+                this.contacts.set(contactsData); 
+
+                this.loading.set(false);
+            },
+            error: (err) => {
+                console.error("Error fetching data:", err);
+
+                this.errorMessage.set('Unable to load contacts. Check that the Flask backend is running.');
+                this.loading.set(false);
+            }
         });
     }
 

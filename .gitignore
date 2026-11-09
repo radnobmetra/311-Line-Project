@@ -212,6 +212,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# Selenium
+selenium_tests/admin_credentials.json
 
 # ADK
 .adk
@@ -224,3 +226,4 @@ sa-key.json
 .DS_Store
 runtime_id.txt
 pytest.ini
+selenium_tests/admin_credentials.json

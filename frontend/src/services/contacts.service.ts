@@ -2,12 +2,13 @@ import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
 import { Contact } from '../interfaces/contact.interface';
+import { environment } from '../environments/environment';
 
 @Service()
 export class ContactsService {
     http = inject(HttpClient);
     // Contacts API endpoint.
-    apiUrl = 'http://localhost:5000/contacts';
+    apiUrl = `${environment.apiUrl}/contacts`;
 
 
     // A fetch function that calls the endpoint to get all contacts. 

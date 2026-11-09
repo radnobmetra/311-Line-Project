@@ -13,6 +13,14 @@ load_dotenv()
 from session_manager import app_name, session_service
 from my_agent import app as adk_app
 
+import time
+
+# to track timestamps: { "user_id": [timestamp1, timestamp2] }
+request_tracker = {}
+RATE_LIMIT = 10
+TIME_WINDOW_SEC = 60
+STATIC_WARNING = "System Warning: You have sent too many messages. Please wait a minute and try again."
+
 app = Flask(__name__)
 
 @app.route("/reply_sms", methods=['POST'])
@@ -21,6 +29,27 @@ async def reply_sms():
     incoming_msg = request.values.get('Body', '')
     # Gets the user's phone number as the user_id and removes the '+' character at the start of the number.
     user_id = request.values.get('From', 'default_user').replace('+', '')
+
+    # reply rate
+    current_time = time.time()
+    if user_id not in request_tracker:
+        request_tracker[user_id] = []
+    request_tracker[user_id] = [t for t in request_tracker[user_id] if current_time - t < TIME_WINDOW_SEC]
+    
+    # check if they hit the 10 request cap
+    if len(request_tracker[user_id]) >= RATE_LIMIT:
+        print(f"Throttled attempt logged from {user_id}")
+        resp = MessagingResponse()
+        resp.message(STATIC_WARNING)
+        return Response(str(resp), mimetype='text/xml')
+        
+   # if under limit, record this request and proceed to LLM
+    request_tracker[user_id].append(current_time)
+    
+
+
+
+    
     # A runner is required to process the conversation with the ADK app.
     runner = Runner(
         app=adk_app,
