@@ -1,6 +1,6 @@
 <div class="overviewHeader">
   <h1>Welcome</h1>
-  <div class="stats">
+  <div class="stats" [attr.data-ready]="sessionCountReady()">
     <h3> Total number of sessions: {{sessionsCount()}}</h3>
   </div>
 </div>
@@ -8,16 +8,18 @@
 <div class="body">
 
 
-  <div class="graph">
+  <div id="sessionsOutcomeDiv" class="graph">
     <h2 class="title">Sessions Outcome</h2>
-    <app-chart-wrapper [loading]="sessionOutcomesLoading()" [error]="sessionOutcomesError()">
+    <app-chart-wrapper [loading]="sessionOutcomesLoading()" [error]="sessionOutcomesError()"
+      [attr.data-ready]="!sessionOutcomesLoading() && !sessionOutcomesError()">
       <canvas id="sessionsOutcomeChart" priority></canvas>
     </app-chart-wrapper>
   </div>
 
-  <div class="graph">
+  <div id="latestSessionsDiv" class="graph">
     <h2 class="title">Latest Sessions</h2>
-    <app-chart-wrapper [loading]="sessionsLoading()" [error]="sessionsError()">
+    <app-chart-wrapper [loading]="sessionsLoading()" [error]="sessionsError()"
+      [attr.data-ready]="!sessionsLoading() && !sessionsError()">
       <canvas id="sessionChart" priority></canvas>
     </app-chart-wrapper>
     <button (click)="periodToggle('hour')">Hour</button>

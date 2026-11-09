@@ -1,6 +1,6 @@
 <div class="title-btn">
     <h1>Request Logs</h1>
-    <button type="button" class="export-btn" (click)="onExport()" aria-label="Export analytics data">Export</button>
+    <button type="button" id="exportBtn" class="export-btn" (click)="onExport()" aria-label="Export analytics data">Export</button>
 </div>
 <form (submit)="$event.preventDefault()">
     <div class="search_container">
@@ -21,7 +21,7 @@
         </div>
         <div>
             <label>
-                <input type="radio" [formField]="sortFilterForm.sortDate" value="" />
+                <input type="radio" id="sortDateNone" [formField]="sortFilterForm.sortDate" value="" />
                 Don't sort by date</label>
         </div>
     </fieldset>
@@ -30,12 +30,12 @@
         <legend>Filter by date</legend>
         <div>
             <label>After date
-                <input type="date" [formField]="sortFilterForm.filterStartDate" />
+                <input type="date" id="filterAfterDate" [formField]="sortFilterForm.filterStartDate" />
             </label>
         </div>
         <div>
             <label>Before date
-                <input type="date" [formField]="sortFilterForm.filterEndDate" />
+                <input type="date" id="filterBeforeDate" [formField]="sortFilterForm.filterEndDate" />
             </label>
         </div>
     </fieldset>
@@ -64,7 +64,7 @@
         </div>
         <div>
             <label>
-                <input type="radio" value="" [formField]="sortFilterForm.filterTopic" />
+                <input type="radio" id="filterTopicNone" value="" [formField]="sortFilterForm.filterTopic" />
                 Don't filter by topic </label>
         </div>
     </fieldset>
@@ -95,6 +95,4 @@
         </tr>
         }
     </tbody>
-<!-- </table> -->
-<button type="button" class="export-btn" (click)="onExport()" aria-label="Export analytics data">Export</button>
 </table>

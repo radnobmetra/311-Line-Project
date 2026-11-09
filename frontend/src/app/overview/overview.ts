@@ -17,6 +17,8 @@ Chart.register(...registerables);
   templateUrl: './overview.html',
 })
 export class Overview {
+  readonly sessionCountReady = signal(false);
+
   // Hashmap that will store session outcomes and their respective count.
   sessionOutcomesCountMap = new Map<string, number>();
 
@@ -53,6 +55,8 @@ export class Overview {
   }
 
   constructor() {
+    this.sessionCountReady.set(false);
+
     this.sessionOutcomesLoading.set(true);
     this.sessionOutcomesError.set('');
 
@@ -79,9 +83,11 @@ export class Overview {
     this.sessionService.getAllSessions().subscribe({
       next: (sessions) => {
         this.storedSessions = sessions; // saves data to class variable storedSessions
-        this.sessionsCount.set(sessions.length); // Set sessions count
-        this.displayGraph(sessions, this.periodRange(), this.rangeUnit()); // saves choice of which time range to show
 
+        this.sessionsCount.set(sessions.length); // Set sessions count
+        this.sessionCountReady.set(true);
+
+        this.displayGraph(sessions, this.periodRange(), this.rangeUnit()); // saves choice of which time range to show
         this.sessionsLoading.set(false);
       },
       error: (err) => {
