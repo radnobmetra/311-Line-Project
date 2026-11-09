@@ -226,4 +226,5 @@ sa-key.json
 .DS_Store
 runtime_id.txt
 pytest.ini
+
 selenium_tests/admin_credentials.json
