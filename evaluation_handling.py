@@ -18,9 +18,39 @@ def evaluate_completed_session(session_id: int):
         
         if not events:
             return None
+
+        # Never re-evaluate a session with saved results.
+        if any(
+            event.author == "eval_author"
+            for event in events
+        ):
+            logging.info(
+                "Session %s already has evaluation results.",
+                session_id
+            )
+            return None
             
         #sort events
-        ordered_events = sorted(events, key=lambda event: event.timestamp)
+        ordered_events = sorted(
+            (
+                event for event in events
+                if event.author not in (
+                    "session_timeout",
+                    "eval_author",
+                    "evaluation_skipped",
+                    "evaluation_attempted",
+                    "evaluation_error",
+                    "timer_diagnostic",
+                    "user_feedback",
+                    "system",
+                )
+                and event.invocation_id
+                and event.content is not None
+            ),
+            key=lambda event: event.timestamp
+        )
+        if not ordered_events:
+            return None
         
         # group by invocation_id to link user requests with agent responses
         groups = defaultdict(list)
@@ -51,24 +81,43 @@ def evaluate_completed_session(session_id: int):
                 )
             )
             
-        # create the agent data payload
+        # Build configurations for the agents actually
+        # present in this conversation.
+        agent_ids = {
+            AGENT_ID if event.author == "agent" else event.author
+            for event in ordered_events
+            if event.author != "user"
+        }
+
+        agent_configs = {
+            agent_id: types.evals.AgentConfig(
+                agent_id=agent_id
+            )
+            for agent_id in agent_ids
+        }
+
         agent_data = types.evals.AgentData(
-            agents={
-                AGENT_ID: types.evals.AgentConfig(
-                    agent_id=AGENT_ID,
-                    instruction="sacramento 311 helpful assistant" 
-                )
-            },
+            agents=agent_configs,
             turns=turns,
         )
         
-       # create a dedicated evaluation client using a supported region
+        # create a dedicated evaluation client using a supported region
         import agentplatform
         eval_client = agentplatform.Client(
             project=session_handling.PROJECT_ID, 
             location="us-west1"
         )
-        
+
+        # Only one worker may run a paid evaluation.
+        if not session_handling.claim_evaluation(
+            str(session_id)
+        ):
+            logging.info(
+                "Skipping evaluation for unclaimed session %s",
+                session_id
+            )
+            return None
+
         result = eval_client.evals.evaluate(
             dataset=types.EvaluationDataset(
                 eval_cases=[
@@ -99,6 +148,7 @@ def evaluate_completed_session(session_id: int):
         )
 
         if not already_evaluated:
+
             save_combined_session_results(
                 str(session_id),
                 evaluation_record
@@ -107,8 +157,11 @@ def evaluate_completed_session(session_id: int):
         return evaluation_record
 
         
-    except Exception as e:
-        logging.error(f"evaluation failed for session {session_id}: {e}")
+    except Exception:
+        logging.exception(
+            "Evaluation failed for session %s",
+            session_id
+        )
         return None
 
 
@@ -132,41 +185,67 @@ def calculate_final_outcome(eval_score, user_feedback):
 
 def summarize_session_feedback(session_id: str):
     """
-    Retrieve feedback for a session and calculate
-    the overall user feedback rating.
+    Summarize feedback stored as managed session events.
+    Only the latest rating for each response/user pair counts.
+    Does not call Google's Feedback Entries API.
     """
 
-    entries = list_session_feedback(str(session_id))
+    latest_ratings = {}
 
-    latest_entries = {}
+    # list_events() already returns events in timestamp order.
+    events = session_handling.list_events(str(session_id))
 
-    for entry in entries:
-        key = (
-            str(entry.event_id),
-            str(entry.user_id)
-        )
+    for event in events:
+        if event.author != "user_feedback":
+            continue
 
-        previous = latest_entries.get(key)
+        content = getattr(event, "content", None)
+        parts = getattr(content, "parts", None) or []
 
-        if (
-            previous is None
-            or str(getattr(entry, "update_time", None) or "")
-            > str(getattr(previous, "update_time", None) or "")
-        ):
-            latest_entries[key] = entry
+        for part in parts:
+            text = getattr(part, "text", None)
 
-    thumbs_up = 0
-    thumbs_down = 0
+            if not text:
+                continue
 
-    for entry in latest_entries.values():
-        rating = str(entry.feedback_type).upper().split(".")[-1]
+            try:
+                data = json.loads(text)
+            except (TypeError, ValueError):
+                logging.warning(
+                    "Invalid feedback event in session %s",
+                    session_id,
+                )
+                continue
 
-        if rating == "THUMBS_UP":
-            thumbs_up += 1
-        elif rating == "THUMBS_DOWN":
-            thumbs_down += 1
+            if not isinstance(data, dict):
+                continue
 
-    # Determine the session's overall feedback
+            event_id = data.get("event_id")
+            user_id = data.get("user_id")
+            rating = data.get("rating")
+
+            if (
+                not event_id
+                or not user_id
+                or rating not in ("up", "down")
+            ):
+                continue
+
+            key = (str(event_id), str(user_id))
+
+            # Newer events overwrite older ratings.
+            latest_ratings[key] = rating
+
+    thumbs_up = sum(
+        rating == "up"
+        for rating in latest_ratings.values()
+    )
+
+    thumbs_down = sum(
+        rating == "down"
+        for rating in latest_ratings.values()
+    )
+
     if thumbs_up > thumbs_down:
         overall_rating = "thumbs_up"
     elif thumbs_down > thumbs_up:
@@ -177,7 +256,7 @@ def summarize_session_feedback(session_id: str):
     return {
         "thumbs_up": thumbs_up,
         "thumbs_down": thumbs_down,
-        "rating": overall_rating
+        "rating": overall_rating,
     }
 
 def combine_session_results(session_id: str, eval_results: dict):

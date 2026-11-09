@@ -1,8 +1,10 @@
 
 import asyncio
 from pathlib import Path
-
+import json
 from dotenv import load_dotenv
+import uuid
+
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -13,6 +15,7 @@ from session_handling import (
     client,
     create_update_agent_session,
     list_events,
+    add_custom_event,
 )
 from user_feedback_handling import (
     find_response_event_id,
@@ -248,7 +251,8 @@ def restore_last_response(session_id):
 async def main():
     remote_agent = get_remote_agent()
 
-    user_number = "remote-chat-test"
+    # TEMPORARY: Testing automatic inactivity evaluation.
+    user_number = f"remote-chat-{uuid.uuid4().hex[:8]}"
     source = "terminal"
     user_id = f"{user_number}-{source}"
 
@@ -428,6 +432,24 @@ async def main():
                     raise RuntimeError(
                         "Saved feedback did not match "
                         "the requested response and rating."
+                    )
+                
+                # Also record the rating in the managed session.
+                # This lets the deployed evaluator read feedback
+                # without calling feedback_entries.list().
+                recorded = add_custom_event(
+                    author="user_feedback",
+                    custom_data=json.dumps({
+                        "event_id": str(event_id),
+                        "user_id": str(user_id),
+                        "rating": rating,
+                    }),
+                    session_ID=str(session_id),
+                )
+
+                if recorded is not True:
+                    raise RuntimeError(
+                        "Feedback was saved, but its session event was not."
                     )
 
                 print()

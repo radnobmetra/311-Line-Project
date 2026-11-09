@@ -74,35 +74,42 @@ def test_delete_sessions():
 	assert output == True
 
 
-def test_marking_inactive_sessions():
-	print("Testing mark_inactive_sessions function.")
-	testNum = "test_marking_inactive_sessions"
-	source = "pytest"
-	ttl = 0		
+def test_marking_inactive_sessions(monkeypatch):
+    import uuid
 
-	#create a new session
-	session_id = session_handling.create_update_agent_session(
-		user_Number=testNum, ttl=500000, source=source
-	)
-
-	#mark_inactive_sessions should mark the new session as inactive
-	session_count = session_handling.mark_inactive_sessions(ttl)
-	print("Number of inactive sessions = "+ str(session_count))
-
-	#verify that mark_inactive_sessions has marked the new session as inactive
-	assert session_count > 0
-
-	# verify state persistence on the session's events and session state
-	events = session_handling.list_events(session_id)
-	assert len(events) > 0
-	
-	resolved_events = [
-		e for e in events
-		if getattr(e, "actions", None)
-		and getattr(e.actions, "state_delta", None)
-		and e.actions.state_delta.get("status") == "resolved"
-	]
-	assert len(resolved_events) > 0
+    # Create a unique test session.
+    test_num = f"test-inactive-{uuid.uuid4().hex[:8]}"
+    session_id = session_handling.create_session(
+        test_num, "pytest"
+    )
+    # Add a message so the session isn't empty.
+    session_handling.add_user_message(
+        "Test inactivity handling",
+        session_id
+    )
+    # Restrict the inactivity scan to this session.
+    test_session = session_handling.get_session(session_id)
+    monkeypatch.setattr(
+        session_handling,
+        "list_sessions",
+        lambda: [test_session]
+    )
+    # Disable evaluations during this test.
+    monkeypatch.setenv("EVALUATION_SAMPLE_RATE", "0")
+    # Trigger timeout.
+    session_count = session_handling.mark_inactive_sessions(ttl=0)
+    assert session_count == 1
+    events = session_handling.list_events(session_id)
+    # Verify resolved-state functionality.
+    assert any(
+        session_handling.has_resolved_state(event)
+        for event in events
+    )
+    # Verify timeout marker.
+    assert any(
+        event.author == "session_timeout"
+        for event in events
+    )
 
 
 def test_timeout_marks_old_session_resolved():

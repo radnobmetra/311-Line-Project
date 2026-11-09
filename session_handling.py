@@ -12,15 +12,21 @@ load_dotenv('./my_agent/.env')
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.environ.get("AGENT_RUNTIME_LOCATION") or os.environ.get("GOOGLE_CLOUD_LOCATION", "us-west1")
 
+
 PROJECT_DIR = Path(__file__).resolve().parent
 
-raw_credentials = Path(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "./sa-key.json"))
-CREDENTIALS_FILE = (
-	raw_credentials.resolve()
-	if raw_credentials.is_absolute()
-	else (PROJECT_DIR / raw_credentials).resolve()
-)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(CREDENTIALS_FILE)
+credentials_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+
+if credentials_path:
+    credentials_file = Path(credentials_path).expanduser()
+
+    if not credentials_file.is_absolute():
+        credentials_file = PROJECT_DIR / credentials_file
+
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(
+        credentials_file.resolve()
+    )
+
 
 
 
@@ -104,11 +110,34 @@ def create_update_agent_session(
     ).total_seconds()
 
     old_session_id = latest_session.name.rsplit("/", 1)[-1]
+    # Never reopen a timed-out or evaluated session.
+    events = list_events(old_session_id)
+    if any(
+        event.author in (
+            "session_timeout",
+            "eval_author",
+            "evaluation_skipped",
+            "evaluation_attempted",
+            "evaluation_error",
+        ) or has_resolved_state(event)
+        for event in events
+    ):
+        return create_session(
+            user_Number=user_Number,
+            source=source
+        )
+
 
     if elapsed < ttl:
         return old_session_id
 
     mark_session_resolved(old_session_id)
+
+    add_custom_event(
+        "session_timeout",
+        "closed: timeout",
+        old_session_id
+    )
 
     return create_session(
         user_Number=user_Number,
@@ -434,21 +463,18 @@ def add_agent_message(
 
 
 def get_event_text(event: any) -> str:
-    event_text = ""
-
     content = getattr(event, "content", None)
-    if content:
-        parts = getattr(content, "parts", None) or []
-        if parts:
-            text = "".join(
-                part.text or ""
-                for part in parts
-                if getattr(part, "text", None) is not None
-            )
+    parts = getattr(content, "parts", None) or []
 
-    return event_text
+    return "".join(
+        getattr(part, "text", None) or ""
+        for part in parts
+    )
 
-
+def has_resolved_state(event) -> bool:
+    actions = getattr(event, "actions", None)
+    state_delta = getattr(actions, "state_delta", None) or {}
+    return state_delta.get("status") == "resolved"
 
 def mark_session_resolved(session_ID: str) -> bool:
     """
@@ -458,21 +484,8 @@ def mark_session_resolved(session_ID: str) -> bool:
 
     events = list_events(session_ID)
 
-    #get list of events that already mark the session as resolved
-    resolved_events = [
-        e for e in events
-        if ((
-            getattr(e, "actions", None)
-            and getattr(e.actions, "state_delta", None)
-            and e.actions.state_delta.get("status") == "resolved"
-            )
-            or get_event_text(e).strip() == "closed: timeout"
-            or get_event_text(e).strip() == "Session resolved due to timeout."
-        )
-    ]
-
-    #Return true if session has already been marked as resolved
-    if len(resolved_events) > 0:
+    # Check whether this session already has a resolved state.
+    if any(has_resolved_state(event) for event in events):
         return True
 
     # otherwise, mark the session as resolved
@@ -514,30 +527,176 @@ def list_filtered_sessions(filter_query:str):
     return list(sessions)
      
 
+
+def claim_evaluation(session_id: str) -> bool:
+    """
+    Claim a conversation for evaluation using a uniquely named
+    Vertex AI session.
+
+    Only the worker that successfully creates the claim may evaluate.
+    Any error prevents evaluation (fail closed).
+    """
+    import hashlib
+    import logging
+
+    claim_id = (
+        "eval-lock-"
+        + hashlib.sha256(
+            str(session_id).encode("utf-8")
+        ).hexdigest()[:32]
+    )
+
+    try:
+        operation = client.sessions.create(
+            name=(
+                "reasoningEngines/"
+                + os.environ["SESSION_AGENT_ENGINE_ID"]
+            ),
+            user_id="evaluation-lock",
+            config={
+                "session_id": claim_id,
+                "wait_for_completion": True,
+            },
+        )
+
+        response = getattr(operation, "response", None)
+        response_name = getattr(response, "name", "") or ""
+
+        if (
+            getattr(operation, "error", None)
+            or not response_name.endswith(
+                f"/sessions/{claim_id}"
+            )
+        ):
+            logging.error(
+                "Evaluation claim was not confirmed for %s",
+                session_id
+            )
+            return False
+
+        logging.info(
+            "Evaluation claimed for session %s",
+            session_id
+        )
+        return True
+
+    except Exception as exc:
+        if "already exists" in str(exc).lower():
+            logging.info(
+                "Evaluation already claimed for %s",
+                session_id
+            )
+        else:
+            logging.error(
+                "Could not claim evaluation for %s: %s",
+                session_id,
+                exc
+            )
+
+        return False
+
+
 def mark_inactive_sessions(ttl: int):
-    """
-    Marks any sessions older than the given ttl as finished with the state of incomplete.
+    import hashlib
+    import logging
+    from evaluation_handling import evaluate_completed_session
 
-    Input:
-    ttl (int): Interval in seconds that sessions older than this should be marked
+    sample_rate = float(
+        os.environ.get("EVALUATION_SAMPLE_RATE", "0.10")
+    )
 
-    Returns:
-    inactive_sessions (int): number of sessions marked as inactive
-    """
+    if not 0 <= sample_rate <= 1:
+        raise ValueError("EVALUATION_SAMPLE_RATE must be between 0 and 1")
     
-    sessions = list(list_sessions())
     inactive_sessions = 0
 
-    for session in sessions:
-        update_time = get_update_time(session)
-        inactive_time = datetime.now(timezone.utc) - update_time
-        inactive_time = inactive_time.total_seconds()
+    for session in list_sessions():
+        session_id = session.name.rsplit("/", 1)[-1]
 
-        if inactive_time > ttl:
-            # mark session as resolved due to timeout
-            session_ID = session.name.rsplit("/", 1)[-1]
-            mark_session_resolved(session_ID)
-            inactive_sessions = inactive_sessions + 1
+        # Ignore sessions used only as evaluation claims.
+        if session_id.startswith("eval-lock-"):
+            continue
+
+        events = list_events(session_id)
+
+        # Skip completely empty sessions.
+        if not events:
+            continue
+
+        authors = {event.author for event in events}
+
+        already_timed_out = "session_timeout" in authors
+
+        if already_timed_out and not any(
+            has_resolved_state(event) for event in events
+        ):
+            mark_session_resolved(session_id)
+
+        if not already_timed_out:
+            inactive_time = (
+                datetime.now(timezone.utc) - get_update_time(session)
+            ).total_seconds()
+
+            if inactive_time < ttl:
+                continue
+
+            # Mark the session as resolved.
+            mark_session_resolved(session_id)
+
+            # Record the timeout for evaluation tracking.
+            add_custom_event(
+                "session_timeout",
+                "closed: timeout",
+                session_id
+            )
+            inactive_sessions += 1
+
+        # Don't evaluate sessions that were already processed.
+        if authors & {
+            "eval_author",
+            "evaluation_skipped",
+            "evaluation_attempted",
+            "evaluation_error",
+        }:
+            continue
+
+        # Don't evaluate conversations without user messages.
+        if "user" not in authors:
+            add_custom_event(
+                "evaluation_skipped",
+                "no_user_messages",
+                session_id
+            )
+            continue
+
+        # Deterministically select approximately 10%.
+        hash_value = int.from_bytes(
+            hashlib.sha256(session_id.encode()).digest()[:8],
+            "big"
+        )
+        selected = hash_value / (1 << 64) < sample_rate
+        
+        if not selected:
+            add_custom_event(
+                "evaluation_skipped",
+                "not_selected_for_sampling",
+                session_id
+            )
+            continue
+
+        # Record the attempt before evaluating.
+        add_custom_event(
+            "evaluation_attempted",
+            "started",
+            session_id
+        )
+
+        result = evaluate_completed_session(session_id)
+
+        if result is None:
+            logging.error(
+                "Evaluation failed for session %s",
+                session_id
+            )
 
     return inactive_sessions
-
