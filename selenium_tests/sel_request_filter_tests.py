@@ -53,7 +53,7 @@ def test_request_filtering():
 	topic_filter_none = driver.find_element(by=By.ID, value="topicNone")
 	topic_filter_none.click()
 
-	topic_filter_noFilter = driver.find_element(by=By.ID, value="topicNoFilter")
+	topic_filter_noFilter = driver.find_element(by=By.ID, value="filterTopicNone")
 	topic_filter_noFilter.click()
 
 
