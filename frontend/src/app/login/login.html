@@ -10,7 +10,7 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="passLogin" [(ngModel)]="user.password" placeholder="Your Password" required/>
             </div>
-            <button type="submit" [disabled]="!loginForm.valid">Login</button>
+            <button type="submit" id="loginButton" [disabled]="!loginForm.valid">Login</button>
         </form>
         <label class="error_message" *ngIf="loginError">Invalid email or password.</label>
     </div>
