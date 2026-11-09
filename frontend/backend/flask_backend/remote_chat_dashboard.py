@@ -20,6 +20,7 @@ from .session_handling import (
     create_update_agent_session,
     list_events,
     add_image_event_to_session,
+    add_custom_event,
 )
 from .user_feedback_handling import (
     find_response_event_id,
@@ -389,6 +390,21 @@ async def send_message_get_response(user_number: str, message: str) -> json:
             ):
                 print("Saved feedback did not match the requested response and rating.")
                 return(error_msg)
+            
+            recorded = add_custom_event(
+                author="user_feedback",
+                custom_data=json.dumps({
+                    "event_id": str(event_id),
+                    "user_id": str(user_id),
+                    "rating": rating,
+                }),
+                session_ID=str(session_id),
+            )
+
+            if recorded is not True:
+                raise RuntimeError(
+                    "Feedback was saved, but its session event was not."
+                )
 
             print("Feedback saved and verified!")
             return({"author":"Agent", "contents":"Feedback saved!"})

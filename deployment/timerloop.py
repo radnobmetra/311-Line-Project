@@ -13,7 +13,9 @@ HURRY_UP = "useronline.json"
 TIMES_UP = 30*60
 
 def run_loop():
+    logging.warning("Managed timer thread started")
     last_managed_check = 0
+
     while True:
         if os.path.exists(HURRY_UP):
             with open(HURRY_UP, "r") as file:
@@ -69,7 +71,7 @@ def run_loop():
             and time.monotonic() - last_managed_check >= 60
         ):
             last_managed_check = time.monotonic()
-
+            logging.warning("Managed session check starting")
             try:
                 from session_handling import mark_inactive_sessions
 

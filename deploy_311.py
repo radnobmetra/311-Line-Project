@@ -86,7 +86,7 @@ RUNTIME_ENV_VARS = {
         "us",
     ),
     "AGENT_RUNTIME_LOCATION": RUNTIME_LOCATION,
-    "ENABLE_MANAGED_SESSION_TIMER": "1",
+    "ENABLE_MANAGED_SESSION_TIMER": "0",
     "EVALUATION_SAMPLE_RATE": "0",
 }
 
@@ -119,6 +119,7 @@ FORBIDDEN_NAMES = {
     ".env",
     "sa-key.json",
     ".venv",
+    ".adk",
 }
 
 

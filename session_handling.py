@@ -496,6 +496,73 @@ def list_filtered_sessions(filter_query:str):
      
 
 
+def claim_evaluation(session_id: str) -> bool:
+    """
+    Claim a conversation for evaluation using a uniquely named
+    Vertex AI session.
+
+    Only the worker that successfully creates the claim may evaluate.
+    Any error prevents evaluation (fail closed).
+    """
+    import hashlib
+    import logging
+
+    claim_id = (
+        "eval-lock-"
+        + hashlib.sha256(
+            str(session_id).encode("utf-8")
+        ).hexdigest()[:32]
+    )
+
+    try:
+        operation = client.sessions.create(
+            name=(
+                "reasoningEngines/"
+                + os.environ["SESSION_AGENT_ENGINE_ID"]
+            ),
+            user_id="evaluation-lock",
+            config={
+                "session_id": claim_id,
+                "wait_for_completion": True,
+            },
+        )
+
+        response = getattr(operation, "response", None)
+        response_name = getattr(response, "name", "") or ""
+
+        if (
+            getattr(operation, "error", None)
+            or not response_name.endswith(
+                f"/sessions/{claim_id}"
+            )
+        ):
+            logging.error(
+                "Evaluation claim was not confirmed for %s",
+                session_id
+            )
+            return False
+
+        logging.info(
+            "Evaluation claimed for session %s",
+            session_id
+        )
+        return True
+
+    except Exception as exc:
+        if "already exists" in str(exc).lower():
+            logging.info(
+                "Evaluation already claimed for %s",
+                session_id
+            )
+        else:
+            logging.error(
+                "Could not claim evaluation for %s: %s",
+                session_id,
+                exc
+            )
+
+        return False
+
 
 def mark_inactive_sessions(ttl: int):
     import hashlib
@@ -508,11 +575,16 @@ def mark_inactive_sessions(ttl: int):
 
     if not 0 <= sample_rate <= 1:
         raise ValueError("EVALUATION_SAMPLE_RATE must be between 0 and 1")
-
+    
     inactive_sessions = 0
 
     for session in list_sessions():
         session_id = session.name.rsplit("/", 1)[-1]
+
+        # Ignore sessions used only as evaluation claims.
+        if session_id.startswith("eval-lock-"):
+            continue
+
         events = list_events(session_id)
 
         # Skip completely empty sessions.
@@ -561,7 +633,7 @@ def mark_inactive_sessions(ttl: int):
             "big"
         )
         selected = hash_value / (1 << 64) < sample_rate
-
+        
         if not selected:
             add_custom_event(
                 "evaluation_skipped",

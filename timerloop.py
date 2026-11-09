@@ -15,6 +15,7 @@ TIMES_UP = 30*60
 def run_loop():
     logging.warning("Managed timer thread started")
     last_managed_check = 0
+
     while True:
         if os.path.exists(HURRY_UP):
             with open(HURRY_UP, "r") as file:
