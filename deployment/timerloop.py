@@ -1,91 +1,32 @@
-import time
-import json
-import os
-import asyncio
-from my_agent.subagents.end_conversation import end_conversation 
-from google.adk.runners import Runner
-from google.genai import types
-from session_manager import app_name, session_service
 import logging
+import os
+import time
 
-#hurryup checks if user sent a message, timesup is the timer in seconds
-HURRY_UP = "useronline.json"
-TIMES_UP = 30*60
+CHECK_INTERVAL_SECONDS = 60
+SESSION_TTL_SECONDS = 1800
+
 
 def run_loop():
-    logging.warning("Managed timer thread started")
-    last_managed_check = 0
+    """Periodically close inactive Google-managed sessions."""
 
-    while True:
-        if os.path.exists(HURRY_UP):
-            with open(HURRY_UP, "r") as file:
-                try:
-                    sessions = json.load(file)
-                except json.JSONDecodeError:
-                    sessions = {}
+    logging.info("Managed session inactivity timer started")
 
-            current_time = time.time()
-            active_sessions = {}
-            db_updated = False
+    while os.environ.get("ENABLE_MANAGED_SESSION_TIMER") == "1":
+        try:
+            from session_handling import mark_inactive_sessions
 
-            for user_id, data in sessions.items():
-                if current_time - data.get("last_active", 0) >= TIMES_UP:
-                    print(f"\nSession timed out! Logging transcript...")
-                    
-                    transcript = data.get("transcript", "")
-                    #doesnt rly work but it does?
-                    prompt_text = f"System: The user is inactive. Log this transcript using your tool, say goodbye, and run the session_reviewer. Transcript:\n{transcript}" 
+            count = mark_inactive_sessions(
+                ttl=SESSION_TTL_SECONDS
+            )
 
-                    sess_id = user_id
+            logging.info(
+                "Managed session check complete. New timeouts: %s",
+                count,
+            )
 
-                    runner = Runner(
-                        agent=end_conversation,
-                        app_name=app_name,
-                        session_service=session_service
-                    )
-                    content = types.Content(role="user", parts=[types.Part(text=prompt_text)])
-                    
-                    # bugs agent to run and captures it
-                    events = runner.run(user_id=user_id, session_id=sess_id, new_message=content)
-                    for event in events:
-                        pass
-                    asyncio.run(session_service.delete_session(app_name=app_name,
-                                                               user_id=user_id, session_id=sess_id))
-                    print("Logged and session ended!")
-                    # will likely come back to edit this heavily when sms drops
-                    # web server is rly weird with this stuff, sms should be more flexible, i hope..
+        except Exception:
+            logging.exception(
+                "Managed session inactivity check failed"
+            )
 
-
-                    db_updated = True
-                else:
-                    active_sessions[user_id] = data
-
-            if db_updated:
-                with open(HURRY_UP, "w") as file:
-                    json.dump(active_sessions, file, indent=4)
-        
-        # Check Google-managed sessions once per minute.
-        # Disabled until explicitly enabled.
-        if (
-            os.environ.get("ENABLE_MANAGED_SESSION_TIMER") == "1"
-            and time.monotonic() - last_managed_check >= 60
-        ):
-            last_managed_check = time.monotonic()
-            logging.warning("Managed session check starting")
-            try:
-                from session_handling import mark_inactive_sessions
-
-                count = mark_inactive_sessions(ttl=1800)
-
-                logging.info(
-                    "Managed session check complete. New timeouts: %s",
-                    count
-                )
-
-            except Exception:
-                logging.exception(
-                    "Managed session inactivity check failed"
-                )
-
-        #efficency  
-        time.sleep(5)
+        time.sleep(CHECK_INTERVAL_SECONDS)

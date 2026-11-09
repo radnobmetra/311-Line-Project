@@ -42,9 +42,9 @@ def __validate_ticket_num_format(ticket_number):
 # Private method intended for internal use only.
 def __ticket_num_correctly_identified(tool_context:ToolContext, validated_ticket_num):
     """
-    verifies that the ticket status agent has correctly extracted the 
+    verifies that the ticket status agent has correctly extracted the
     ticket number from the user's message. Called by get_ticket_details.
-    
+
     Arguments:
     tool_context
     ticket_number: the validated ticket number (in 123456-1234567 format)
@@ -191,9 +191,12 @@ def get_ticket_details(ticket_number, tool_context:ToolContext):
                 retval = ticket_details
             else:
                 retval = "There was an error retrieving ArcGIS data for this ticket."
+                tool_context.state["outcome_label"] = retval
         elif response_JSON["status"] == "error":
-             
              retval = response_JSON["message"]
+             tool_context.state["outcome_label"] = retval
     else:
         retval = "Ticket number is not valid."
+        tool_context.state["outcome_label"] = retval
+
     return retval
