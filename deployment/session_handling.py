@@ -112,13 +112,14 @@ def create_update_agent_session(
     old_session_id = latest_session.name.rsplit("/", 1)[-1]
     # Never reopen a timed-out or evaluated session.
     events = list_events(old_session_id)
-
     if any(
         event.author in (
             "session_timeout",
             "eval_author",
-            "evaluation_skipped"
-        )
+            "evaluation_skipped",
+            "evaluation_attempted",
+            "evaluation_error",
+        ) or has_resolved_state(event)
         for event in events
     ):
         return create_session(
@@ -131,6 +132,12 @@ def create_update_agent_session(
         return old_session_id
 
     mark_session_resolved(old_session_id)
+
+    add_custom_event(
+        "session_timeout",
+        "closed: timeout",
+        old_session_id
+    )
 
     return create_session(
         user_Number=user_Number,
@@ -453,10 +460,35 @@ def add_agent_message(
 
     return event_id
 
+
+
+def get_event_text(event: any) -> str:
+    content = getattr(event, "content", None)
+    parts = getattr(content, "parts", None) or []
+
+    return "".join(
+        getattr(part, "text", None) or ""
+        for part in parts
+    )
+
+def has_resolved_state(event) -> bool:
+    actions = getattr(event, "actions", None)
+    state_delta = getattr(actions, "state_delta", None) or {}
+    return state_delta.get("status") == "resolved"
+
 def mark_session_resolved(session_ID: str) -> bool:
     """
     Appends a state update event to mark a time over session as resolved.
+    Returns true if successful
     """
+
+    events = list_events(session_ID)
+
+    # Check whether this session already has a resolved state.
+    if any(has_resolved_state(event) for event in events):
+        return True
+
+    # otherwise, mark the session as resolved
     client.sessions.events.append(
         name=_session_name(session_ID),
         invocation_id=str(uuid.uuid4()),
@@ -593,15 +625,12 @@ def mark_inactive_sessions(ttl: int):
 
         authors = {event.author for event in events}
 
-        # Skip sessions already evaluated, skipped, or attempted.
-        if (
-            "eval_author" in authors
-            or "evaluation_skipped" in authors
-            or "evaluation_attempted" in authors
-        ):
-            continue
-
         already_timed_out = "session_timeout" in authors
+
+        if already_timed_out and not any(
+            has_resolved_state(event) for event in events
+        ):
+            mark_session_resolved(session_id)
 
         if not already_timed_out:
             inactive_time = (
@@ -611,12 +640,25 @@ def mark_inactive_sessions(ttl: int):
             if inactive_time < ttl:
                 continue
 
+            # Mark the session as resolved.
+            mark_session_resolved(session_id)
+
+            # Record the timeout for evaluation tracking.
             add_custom_event(
                 "session_timeout",
                 "closed: timeout",
                 session_id
             )
             inactive_sessions += 1
+
+        # Don't evaluate sessions that were already processed.
+        if authors & {
+            "eval_author",
+            "evaluation_skipped",
+            "evaluation_attempted",
+            "evaluation_error",
+        }:
+            continue
 
         # Don't evaluate conversations without user messages.
         if "user" not in authors:

@@ -1,10 +1,11 @@
+from google.adk.tools.tool_context import ToolContext
 import json
 import random
 
 
 errorMode = False
 
-def submit_report(report_type: str, location: str, details: str = "None provided", photo_url: str = "None provided") -> str:
+def submit_report(report_type: str, location: str, tool_context: ToolContext, details: str = "None provided", photo_url: str = "None provided") -> str:
     """
     Placeholder function in lieu of reporting to a tracking system.
 
@@ -20,10 +21,12 @@ def submit_report(report_type: str, location: str, details: str = "None provided
 
 	# Testing statement for simulator failgure.
     if errorMode == True:
+        tool_context.state["outcome_label"] = "Submission simulator failure."
         return json.dumps({"status": "Error", "message": "An error has occured, please try again or use the website at https://311.cityofsacramento.org/s/new-service"})
 
 	
     if location == "":
+        tool_context.state["outcome_label"] = "No valid address provided for submission."
         return json.dumps({"status": "Error", "message": "An Error has occured, no valid address"})
     
     prefixes = {

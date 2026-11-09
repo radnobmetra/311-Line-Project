@@ -185,13 +185,13 @@ def _rerank(query, docs: list[dict[str,str]]):
         model="semantic-ranker-default@latest",
         ignore_record_details_in_response=True
     )
-    
+
     try:
         response = _get_g_client().rank(request=request)
     except Exception as e:
         logging.error(f"Something went wrong while reranking: {str(e)}", extra={"json_fields": {"query": query, "docs": docs, "records": records, "error": str(e), "traceback": traceback.format_exc()}})
         raise e
-    
+
     ranked = [proto.Message.to_dict(r) for r in response.records]
     return ranked  # sorted by descending score
 
@@ -356,6 +356,8 @@ async def search_knowledge_tool(
         )
 
     except Exception as e:
+        tool_context.state["outcome_label"] = f"Elasticsearch search error: {str(e)}"
+
         logging.error(
             {
                 "message": (
