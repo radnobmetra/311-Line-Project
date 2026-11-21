@@ -1,12 +1,14 @@
 import asyncio
 import os
 import uuid
+import sys
 
 import pandas as pd
 import vertexai
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
+sys.path.insert(1, "../311-Line-Project")
 
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -186,123 +188,126 @@ overseer_quality_metric = PointwiseMetric(
 	),
 )
 
-if __name__ == "__main__":
+def test_overseer_evaluation():
+	if __name__ == "__main__":
 
-	#Run Overseer workflow
-	print("Running Overseer workflow...\n")
+		#Run Overseer workflow
+		print("Running Overseer workflow...\n")
 
-	eval_dataset_with_responses = asyncio.run(
-		generate_eval_responses(eval_dataset)
-	)
+		eval_dataset_with_responses = asyncio.run(
+			generate_eval_responses(eval_dataset)
+		)
 
-	print(eval_dataset_with_responses)
-	print("\nRESPONSES GENERATED")
-	print(
-		eval_dataset_with_responses[
-			["prompt", "response", "reference"]
-		].to_string(index=False)
-	)
-
-	# Send those responses to Google's evaluation service
-	print("\nRunning Google evaluation...\n")
-
-	eval_task = EvalTask(
-		dataset=eval_dataset_with_responses,
-		metrics=[
-			overseer_quality_metric,
-		],
-	)
-
-	eval_result = eval_task.evaluate()
-	results = eval_result.metrics_table
-
-
-	#clean results for display
-	clean_results = results[
-	["prompt","reference",
-	 "response","overseer_response_quality/score",
-	 "overseer_response_quality/explanation",]
-	 ].copy()
-
-	clean_results = clean_results.rename(
-		columns={
-			"prompt": "Prompt",
-			"reference": "Expected Response",
-			"response": "Actual Response",
-			"overseer_response_quality/score": "Score",
-			"overseer_response_quality/explanation": "Evaluator Explanation",
-		}
-	)
-
-	print(clean_results)
-	#Terminal Summary
-	print("\n" + "=" * 80)
-	print("SUMMARY")
-	print("=" * 80)
-	print(f"Tests run: {len(clean_results)}")
-	print(
-		f"Average score: "
-		f"{clean_results['Score'].mean():.2f}"
-	)
-	print(
-		f"Passed: "
-		f"{(clean_results['Score'] == 1).sum()}"
-		f"/{len(clean_results)}"
-	)
-
-	#Terminal Detailed Results
-	print("\nDETAILED RESULTS")
-	for i, row in clean_results.iterrows():
-		print("\n" + "=" * 80)
-		print(f"TEST {i + 1}")
-		print("=" * 80)
-		print(f"\nPROMPT:\n{row['Prompt']}")
-		print(f"\nEXPECTED:\n{row['Expected Response']}")
-		print(f"\nACTUAL RESPONSE:\n{row['Actual Response']}")
-		print(f"\nSCORE: {row['Score']}")
+		print(eval_dataset_with_responses)
+		print("\nRESPONSES GENERATED")
 		print(
-			f"\nEVALUATOR EXPLANATION:\n"
-			f"{row['Evaluator Explanation']}"
+			eval_dataset_with_responses[
+				["prompt", "response", "reference"]
+			].to_string(index=False)
 		)
 
-	#save results
-	results_dir = Path(__file__).resolve().parent / "evaluation_results"
-	results_dir.mkdir(exist_ok=True)
-	csv_path = results_dir / "overseer_eval_results.csv"
-	markdown_path = results_dir / "overseer_eval_results.md"
+		# Send those responses to Google's evaluation service
+		print("\nRunning Google evaluation...\n")
 
-	# Save CSV
-	clean_results.to_csv(
-		csv_path,
-		index=False,
-	)
+		eval_task = EvalTask(
+			dataset=eval_dataset_with_responses,
+			metrics=[
+				overseer_quality_metric,
+			],
+		)
 
-	
-	# Save Markdown report
-	with open(markdown_path, "w", encoding="utf-8") as f:
-		f.write("# Overseer Evaluation Results\n\n")
-		
-		f.write("## Summary\n\n")
-		f.write(f"- Tests run: {len(clean_results)}\n")
-		f.write(f"- Average score: {clean_results['Score'].mean():.2f}\n")
-		f.write(
-			f"- Passed: "
+		eval_result = eval_task.evaluate()
+		results = eval_result.metrics_table
+
+
+		#clean results for display
+		clean_results = results[
+		["prompt","reference",
+		"response","overseer_response_quality/score",
+		"overseer_response_quality/explanation",]
+		].copy()
+
+		clean_results = clean_results.rename(
+			columns={
+				"prompt": "Prompt",
+				"reference": "Expected Response",
+				"response": "Actual Response",
+				"overseer_response_quality/score": "Score",
+				"overseer_response_quality/explanation": "Evaluator Explanation",
+			}
+		)
+
+		print(clean_results)
+		#Terminal Summary
+		print("\n" + "=" * 80)
+		print("SUMMARY")
+		print("=" * 80)
+		print(f"Tests run: {len(clean_results)}")
+		print(
+			f"Average score: "
+			f"{clean_results['Score'].mean():.2f}"
+		)
+		print(
+			f"Passed: "
 			f"{(clean_results['Score'] == 1).sum()}"
-			f"/{len(clean_results)}\n"
+			f"/{len(clean_results)}"
 		)
+
+		#Terminal Detailed Results
+		print("\nDETAILED RESULTS")
 		for i, row in clean_results.iterrows():
-			f.write("\n---\n\n")
-			f.write(f"## Test {i + 1}\n\n")
-			f.write("### Prompt\n\n")
-			f.write(f"{row['Prompt']}\n\n")
-			f.write("### Expected Response\n\n")
-			f.write(f"{row['Expected Response']}\n\n")
-			f.write("### Actual Response\n\n")
-			f.write(f"{row['Actual Response']}\n\n")
-			f.write("### Score\n\n")
-			f.write(f"{row['Score']}\n\n")
-			f.write("### Evaluator Explanation\n\n")
-			f.write(f"{row['Evaluator Explanation']}\n")
+			print("\n" + "=" * 80)
+			print(f"TEST {i + 1}")
+			print("=" * 80)
+			print(f"\nPROMPT:\n{row['Prompt']}")
+			print(f"\nEXPECTED:\n{row['Expected Response']}")
+			print(f"\nACTUAL RESPONSE:\n{row['Actual Response']}")
+			print(f"\nSCORE: {row['Score']}")
+			print(
+				f"\nEVALUATOR EXPLANATION:\n"
+				f"{row['Evaluator Explanation']}"
+			)
+
+		#save results
+		results_dir = Path(__file__).resolve().parent / "evaluation_results"
+		results_dir.mkdir(exist_ok=True)
+		csv_path = results_dir / "overseer_eval_results.csv"
+		markdown_path = results_dir / "overseer_eval_results.md"
+
+		# Save CSV
+		clean_results.to_csv(
+			csv_path,
+			index=False,
+		)
+
 		
-	print(f"\nSaved CSV results to:\n{csv_path}")
-	print(f"\nSaved readable report to:\n{markdown_path}")
+		# Save Markdown report
+		with open(markdown_path, "w", encoding="utf-8") as f:
+			f.write("# Overseer Evaluation Results\n\n")
+			
+			f.write("## Summary\n\n")
+			f.write(f"- Tests run: {len(clean_results)}\n")
+			f.write(f"- Average score: {clean_results['Score'].mean():.2f}\n")
+			f.write(
+				f"- Passed: "
+				f"{(clean_results['Score'] == 1).sum()}"
+				f"/{len(clean_results)}\n"
+			)
+			for i, row in clean_results.iterrows():
+				f.write("\n---\n\n")
+				f.write(f"## Test {i + 1}\n\n")
+				f.write("### Prompt\n\n")
+				f.write(f"{row['Prompt']}\n\n")
+				f.write("### Expected Response\n\n")
+				f.write(f"{row['Expected Response']}\n\n")
+				f.write("### Actual Response\n\n")
+				f.write(f"{row['Actual Response']}\n\n")
+				f.write("### Score\n\n")
+				f.write(f"{row['Score']}\n\n")
+				f.write("### Evaluator Explanation\n\n")
+				f.write(f"{row['Evaluator Explanation']}\n")
+			
+		print(f"\nSaved CSV results to:\n{csv_path}")
+		print(f"\nSaved readable report to:\n{markdown_path}")
+
+
