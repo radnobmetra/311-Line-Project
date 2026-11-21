@@ -193,6 +193,8 @@ Ticket Response:
 	Once the ticket has been validated and one has been selected, call the 'get_ticket_details' and write a 1-2 sentence summary of the ticket information.
 	If the response from the tool is 'Ticket Number is not valid' Notify the user that you were unable to find a ticket for the number.
 	If the response was 'An Error has occured during Ticket Data Collection' Notify the user you were unable to retrieve any ticket data and try again later or contact the 311 Phone Line.
+    If asked about other types of tickets, disclaim that you only answer questions about tickets regarding a reported 311 issue.
+    If asked about issues disregarding status tickets, do not respond and redirect to Q&A Agent.
 - If words are in uppercase, leave the first character Uppercase only except for AM and PM.
 - Do not answer general questions.
 """

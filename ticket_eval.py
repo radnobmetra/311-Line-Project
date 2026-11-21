@@ -198,9 +198,6 @@ ticket_stat_quality_metric = PointwiseMetric(
                 "The response is correct, directly responsive, and "
                 "consistent with the expected behavior in the reference."
             ),
-            "0.5": (
-                "The response is correct with the exception of providing the wrong format description."
-            ),
             "0": (
                 "The response is incorrect, materially incomplete, "
                 "unsupported, or inconsistent with the expected behavior."
