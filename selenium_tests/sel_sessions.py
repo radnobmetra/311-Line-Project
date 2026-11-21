@@ -84,57 +84,57 @@ for index, val in enumerate(rows[:5], start=1): # remove [:5] to view all rows o
 
     print (f"Row {index} Values: {cell_val}")
 
+def test_session_and_export():
+    # Checking for export button function
+    try:
 
-# Checking for export button function
-try:
+        # Enable the browser download behavior via CDP command to grant permission to track download progress events
+        driver.execute_cdp_cmd("Browser.setDownloadBehavior", {
+            "behavior": "allow",
+            "downloadPath": VALID_PATH, # Must specify a path, but will rely on events instead
+            "eventsEnabled": True   # turns on the background events we need
+        })
 
-    # Enable the browser download behavior via CDP command to grant permission to track download progress events
-    driver.execute_cdp_cmd("Browser.setDownloadBehavior", {
+        driver.execute_cdp_cmd("Page.setDownloadBehavior", {
         "behavior": "allow",
-        "downloadPath": VALID_PATH, # Must specify a path, but will rely on events instead
-        "eventsEnabled": True   # turns on the background events we need
-    })
+        "downloadPath": VALID_PATH
+        })
 
-    driver.execute_cdp_cmd("Page.setDownloadBehavior", {
-    "behavior": "allow",
-    "downloadPath": VALID_PATH
-    })
+        # Clear out any stale background events that happened during page loading
+        driver.get_log("performance")
 
-    # Clear out any stale background events that happened during page loading
-    driver.get_log("performance")
+        # Click export button
+        uniWebDriverAction(driver, (By.CLASS_NAME, "export-btn"), None)
 
-    # Click export button
-    uniWebDriverAction(driver, (By.CLASS_NAME, "export-btn"), None)
+        # Poll our event log to ensure chrome reports the download action
+        max_wait = 10
+        start_time = time.time()
+        filename = None
+        success = False
 
-    # Poll our event log to ensure chrome reports the download action
-    max_wait = 10
-    start_time = time.time()
-    filename = None
-    success = False
-
-    while time.time() - start_time < max_wait:
-        # Fetch background system logs produced since our last check
-        logs = driver.get_log("performance")
-        for entry in logs:
-            log_data = json.loads(entry["message"])["message"]
-            method = log_data.get("method")
-            
-            # Look for chrome's native "download is starting" signal
-            if method in ["Browser.downloadWillBegin", "Page.downloadWillBegin"]:
-                filename = log_data["params"]["suggestedFilename"]
-                print(f"Download Works! File: {filename}")
-                success = True
-                break
+        while time.time() - start_time < max_wait:
+            # Fetch background system logs produced since our last check
+            logs = driver.get_log("performance")
+            for entry in logs:
+                log_data = json.loads(entry["message"])["message"]
+                method = log_data.get("method")
                 
-        if success:
-            break
-        time.sleep(0.5)
+                # Look for chrome's native "download is starting" signal
+                if method in ["Browser.downloadWillBegin", "Page.downloadWillBegin"]:
+                    filename = log_data["params"]["suggestedFilename"]
+                    print(f"Download Works! File: {filename}")
+                    success = True
+                    break
+                    
+            if success:
+                break
+            time.sleep(0.5)
 
-    assert success, "Test Failed: Chrome did not trigger a native download event when the button was clicked."
+        assert success, "Test Failed: Chrome did not trigger a native download event when the button was clicked."
 
-    # check filename that was downloaded is correct by checking name and suffix
-    assert filename.startswith("sessions-"), f"Expected prefix 'sessions_export', got: {filename}"
-    assert filename.endswith(".csv"), f"Expected a CSV file format, got: {filename}"
+        # check filename that was downloaded is correct by checking name and suffix
+        assert filename.startswith("sessions-"), f"Expected prefix 'sessions_export', got: {filename}"
+        assert filename.endswith(".csv"), f"Expected a CSV file format, got: {filename}"
 
-finally:
-    driver.quit()
+    finally:
+        driver.quit()
