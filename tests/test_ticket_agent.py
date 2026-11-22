@@ -1,26 +1,24 @@
-
 import subprocess
 import sys
-import pytest
+from pathlib import Path
 
-sys.path.insert(1, "../311-Line-Project")
-#import ticket_eval
-
-subprocess.run([sys.executable, "ticket_eval.py"], check=True)
 
 def test_ticket_agent_evaluation():
+    test_dir = Path(__file__).resolve().parent
+    project_dir = test_dir.parent
 
-	# evaluate ticket agent
-	file = open("evaluation_results/ticket_stat_eval_results.md")
+    if str(project_dir) not in sys.path:
+        sys.path.insert(0, str(project_dir))
 
-	def read_sixth_line():
-		for i in range(6):
-			line = file.readline()
-			if i == 5:
-				return line
+    subprocess.run(
+        [sys.executable, str(project_dir / "ticket_eval.py")],
+        cwd=project_dir,
+        check=True,
+    )
 
-	
-	score_line = read_sixth_line()
-	assert score_line == "- Average score: 1.00\n"
-	print("Test Ran Successfully")
+    results_file = project_dir / "evaluation_results/ticket_stat_eval_results.md"
+    with results_file.open("r", encoding="utf-8") as f:
+        lines = f.read().splitlines()
 
+    assert len(lines) >= 6, f"Expected at least 6 lines, got {len(lines)}"
+    assert lines[5] == "- Average score: 1.00"
