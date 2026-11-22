@@ -1,14 +1,11 @@
 
 
 import sys
-import json
 sys.path.insert(1, "../311-Line-Project")
-from evaluation import evaluate_overseer
-
+import subprocess
 
 def test_overseer_evaluation():
-
-	##evaluate_overseer.test_overseer_evaluation()
+	subprocess.run([sys.executable, "./evaluation/evaluate_overseer.py"], check=True)
 	file = open("evaluation/evaluation_results/overseer_eval_results.md")
 
 	def read_sixth_line():
