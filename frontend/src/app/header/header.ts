@@ -1,10 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { Auth, signOut } from '@angular/fire/auth';
-import {notifications} from '../notifications/notifications.js'
 
 @Component({
-  imports: [RouterLink, notifications],
+  imports: [RouterLink],
   selector: 'app-header',
   styleUrl: './header.css',
   templateUrl: './header.html',
