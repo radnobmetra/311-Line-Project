@@ -20,5 +20,6 @@ def test_overseer_evaluation():
 	
 	score_line = read_sixth_line()
 	assert score_line == "- Average score: 1.00\n"
+	print("Test Ran Successfully")
 
 test_overseer_evaluation()

@@ -311,3 +311,4 @@ def test_overseer_evaluation():
 		print(f"\nSaved readable report to:\n{markdown_path}")
 
 
+test_overseer_evaluation()
