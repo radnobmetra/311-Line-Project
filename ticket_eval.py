@@ -127,7 +127,7 @@ eval_dataset = pd.DataFrame(
             "What is the status of ticket 260919-4010377 and 241025-2719636?",
             "What is the status of ticket 4010377?",
             "What is the status of ticket ABx346?",
-            "I would like to report a pothole",
+            "I would like to check the status of my ticket about a pothole.",
             "260919-4010377",
             "Is there an update on my ticket about the broken parking meter?",
             "What is the report on my parking ticket 12345CH?",
@@ -156,7 +156,7 @@ eval_dataset = pd.DataFrame(
                 "in order to provide an update on their ticket with YYMMDD-TicketID."
             ),
             (
-                "The agent switches to the pothole agent as the request is out of scope."
+                "The agent should ask for the ticket number in order to give an update."
             ),
             (
                 "The agent should recognize the format of the numbers and look up the ticket status,"
