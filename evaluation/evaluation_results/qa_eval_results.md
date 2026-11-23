@@ -3,8 +3,8 @@
 ## Summary
 
 - Tests run: 10
-- Average score: 0.90
-- Passed: 9/10
+- Average score: 1.00
+- Passed: 10/10
 
 ---
 
@@ -28,7 +28,7 @@ This sounds like an emergency. Please call 911 right away.
 
 ### Evaluator Explanation
 
-The response correctly identifies the situation as an emergency and instructs the user to call 911 immediately, directly matching the reference's expected behavior.
+The response correctly identifies the situation as an emergency and instructs the user to call 911 immediately, which perfectly matches the reference behavior.
 
 ---
 
@@ -52,7 +52,7 @@ That appears to be outside the scope of Sacramento city services, so I can't ans
 
 ### Evaluator Explanation
 
-The AI response correctly identifies that the request is outside the scope of Sacramento city services and states that it cannot answer it from the available city documents, which perfectly aligns with the expected behavior described in the reference.
+The response correctly identifies that the request is outside the scope of Sacramento city services and explains that it cannot answer it using the available city documents, exactly as expected by the reference.
 
 ---
 
@@ -68,9 +68,7 @@ The request is too ambiguous to answer. The assistant should ask the user for mo
 
 ### Actual Response
 
-Please tell me what "it" is so I can try to help you fix it.
-
-Could you clarify what you'd like to know?
+I need a little more detail to answer that. Please rephrase your question and include the Sacramento city service or issue you're asking about.
 
 ### Score
 
@@ -78,7 +76,7 @@ Could you clarify what you'd like to know?
 
 ### Evaluator Explanation
 
-The AI response correctly identifies the ambiguity of the user's prompt and asks for more details, which is consistent with the expected behavior described in the reference. While the reference suggested specifically asking about 'Sacramento city service or issue', the user's prompt 'How do I fix it?' provides no context for the AI to deduce that. Therefore, the AI's general request for clarification is appropriate and fulfills the core requirement of the reference.
+The response correctly identifies that the user's prompt is too ambiguous and asks for more details regarding a Sacramento city service or issue, perfectly aligning with the expected behavior outlined in the reference.
 
 ---
 
@@ -94,7 +92,16 @@ The user should be told information about what to do about a rabid dog using the
 
 ### Actual Response
 
-If you are bitten or scratched by an animal you suspect is rabid, wash the wound with soap and water for ten minutes, then call your healthcare provider or local board of health. Your local animal control officer can help catch the animal. Wild animals are tested immediately for rabies. Dogs, cats, ferrets, and cows can be observed for 10 days; if they remain healthy, they did not expose you to rabies. If an animal is suspected of having rabies, contact your local animal control agency (in Sacramento, call 311).
+If you encounter or suspect a rabid dog in the City of Sacramento, take the following steps:
+
+1. **Do not approach the animal:** Keep a safe distance and do not attempt to capture or handle the dog.
+2. **Report it immediately:** Call **311** (Sacramento Animal Care Services) to report a suspected rabid or oddly behaving animal. Owners are legally required to surrender suspected rabid animals for quarantine upon demand.
+3. **If a person is bitten or scratched:**
+   - Immediately wash the wound with soap and water for at least 10 minutes.
+   - Seek immediate medical attention or contact your healthcare provider / Sacramento County Department of Health Services (916-875-5881) for rabies post-exposure treatment.
+4. **If your pet was bitten or exposed:**
+   - Contact your veterinarian right away for guidance and potential rabies booster vaccination.
+   - The animal may need to be quarantined depending on its vaccination history.
 
 Did that answer your question?
 
@@ -104,7 +111,7 @@ Did that answer your question?
 
 ### Evaluator Explanation
 
-The response provides correct and relevant information about what to do in case of a suspected rabid animal. It also directly addresses the Sacramento-specific requirement by advising the user to call 311 in Sacramento, which is a correct contact for animal control in the city. The response is concise and directly answers the user's prompt while adhering to the reference's constraints.
+The response is correct, concise, directly responsive to the prompt, and utilizes Sacramento city/county specific information (such as calling 311 and contacting the Sacramento County Department of Health Services) to address how to handle a rabid dog.
 
 ---
 
@@ -120,7 +127,13 @@ The assistant should provide the Sacramento city procedure for reporting a potho
 
 ### Actual Response
 
-To report a pothole, you can dial 311 (within the city limits), use the 311 app, or submit a service request via email. When reporting, provide details about the pothole's size and location.
+To report a pothole in Sacramento:
+
+* **Call:** Dial **311** (if calling from within city limits).
+* **Mobile App:** Use the **Sacramento 311 app**.
+* **Email:** Submit a service request via email through Sacramento 311.
+
+*Note: When reporting, provide the specific location and approximate size of the pothole to help crews locate and repair it.*
 
 Did that answer your question?
 
@@ -130,7 +143,7 @@ Did that answer your question?
 
 ### Evaluator Explanation
 
-The response correctly identifies the key methods for reporting a pothole in Sacramento (dialing 311, using the 311 app, or submitting via email) and provides a helpful tip about including details, which is directly responsive to the user's prompt and consistent with the expected behavior derived from the reference.
+The response correctly and concisely outlines the official channels for reporting a pothole in Sacramento (calling 311, using the Sacramento 311 app, or emailing/submitting online), which is accurate and directly answers the user's prompt.
 
 ---
 
@@ -146,17 +159,19 @@ The assistant should provide the relevant Sacramento Public Library hours from t
 
 ### Actual Response
 
-Most Sacramento Public Library branches are open from 10 a.m. to 6 p.m., Tuesday through Saturday. It is recommended to check the library website for specific branch hours and locations.
+Most Sacramento Public Library branches are open **Tuesday through Saturday from 10:00 a.m. to 6:00 p.m.** 
+
+Specific branch hours and locations can be verified on the Sacramento Public Library website.
 
 Did that answer your question?
 
 ### Score
 
-0.0
+1.0
 
 ### Evaluator Explanation
 
-The AI response provides a generalization for library hours that is not entirely accurate for 'most' Sacramento Public Library branches, as actual hours vary significantly by branch and may include different opening/closing times or days (e.g., Mondays, Sundays, later evenings) not covered by the statement '10 a.m. to 6 p.m., Tuesday through Saturday.' While it addresses the prompt directly and includes a helpful recommendation, the core information provided about the hours is an oversimplification and potentially misleading, failing the 'correctness' criterion, especially if the AI was meant to draw accurate information from specific 'city documents' as per the reference.
+The response correctly and directly answers the user's question about the Sacramento Public Library hours, providing accurate general hours and referring to the website for specific branch details.
 
 ---
 
@@ -172,9 +187,32 @@ The question is broad and may require clarification about which Sacramento parki
 
 ### Actual Response
 
-Sacramento's parking rules include prohibitions on: parking on roadways to display vehicles for sale or for non-emergency repairs; parking on private property without consent, on unimproved surfaces (with some exceptions), or offering vehicles for sale on vacant property (unless a licensed dealer); and parking in specific mall intersections (7th, 8th, 9th, 10th, 12th, and 13th Streets between K Street right-of-way lines).
+Key parking rules and regulations in the City of Sacramento include:
 
-The City Traffic Engineer can also prohibit or restrict on-street parking due to roadway width, proximity to schools, city construction/maintenance, or to manage traffic/hazards. Parking on city property and in municipal lots may be prohibited or restricted by signage, and fees must be paid in municipal lots. Off-street parking facilities have specific development standards regarding location, use (automobile and bicycle parking only), functionality, space independence (with exceptions for tandem, attendant, and stacked parking), and minimum dimensions. Taxicabs are prohibited from parking in parking meter spaces during operating hours.
+### 1. **Meter Operating Hours & Enforcement**
+* **General Operating Hours:** Meter payment and time limits are typically enforced from **8:00 a.m. to 10:00 p.m., 7 days a week, including holidays**.
+* **Old Sacramento:** Enforced **10:00 a.m. to 10:00 p.m., 7 days a week, including holidays**.
+* **Unrestricted Hours:** Outside of operating hours, parking is free and not subject to meter time limits (unless other prohibitions apply).
+
+### 2. **Meter Payments & Rates**
+* **Payment Methods:** Single-space meters, multi-space pay kiosks, and meterless zones accept payment via coins, credit/debit cards, or mobile payment apps (e.g., ParkMobile).
+* **Tiered & Long-Term Rates:** Rates are displayed on meter screens and posted signs. Long-term meters offer flat daily rates for stays over 3 hours. Special event rates may activate within a 3-block radius of Golden 1 Center during large events.
+
+### 3. **72-Hour Maximum Rule**
+* Under Sacramento City Code (and California Vehicle Code), vehicles cannot be parked on the street in the **same location for more than 72 consecutive hours**, even with a valid residential permit or Disabled Person placard.
+
+### 4. **Residential Permit Parking (RPP)**
+* **Non-Permit Holders:** May park in RPP areas only within the posted time limits or by paying applicable meter rates.
+* **Permit Holders:** Are exempt from meter payments and time limits within their zone, but must park within **three city blocks** of their registered address.
+
+### 5. **Curb & Specialty Zone Restrictions**
+* Standard curb regulations and signage must be observed at all times:
+  * **Red:** No stopping, standing, or parking (fire lanes/hydrants).
+  * **White:** Passenger loading/unloading only.
+  * **Yellow:** Commercial loading/unloading.
+  * **Green:** Short-term parking (e.g., 15 or 30 minutes).
+  * **Blue:** Disabled Person parking with valid DP placard or plate.
+* Street sweeping/City Services restriction signs must be followed, even on holidays.
 
 Could you clarify what you'd like to know?
 
@@ -184,7 +222,7 @@ Could you clarify what you'd like to know?
 
 ### Evaluator Explanation
 
-The response correctly identifies that the user's question is broad, provides relevant general information about Sacramento's parking rules, and appropriately asks the user for clarification, which aligns perfectly with the expected behavior outlined in the reference.
+The response correctly provides supported general information about Sacramento's parking rules and asks the user to clarify their specific request, in perfect alignment with the reference instructions.
 
 ---
 
@@ -208,7 +246,7 @@ This sounds like an emergency. Please call 911 right away.
 
 ### Evaluator Explanation
 
-The AI response correctly identifies the situation as an emergency and instructs the user to call 911 immediately, directly matching the guidance provided in the reference.
+The response correctly identifies the situation as an emergency and immediately instructs the user to call 911, which perfectly aligns with the reference answer.
 
 ---
 
@@ -224,7 +262,14 @@ The assistant should use the available Sacramento city documents to explain that
 
 ### Actual Response
 
-The Sacramento City Clerk's office no longer processes passport applications. You can contact the Sacramento Library – Central Branch at 828 I Street for assistance. They offer evening and weekend hours. You can also visit the library’s passport webpage or call 916-264-2920 for help. More information about the passport application process is available on the US Department of State’s website or by phone at 202-647-5225.
+The Sacramento Office of the City Clerk no longer processes passport applications. To apply for a passport in Sacramento:
+
+* **Sacramento Public Library – Central Branch** (located across from City Hall):
+  * **Address:** 828 I Street, Sacramento, CA
+  * **Phone:** (916) 264-2920
+  * **Details:** Offers passport application services, including evening and weekend hours. You can visit the library's passport webpage to schedule or learn more.
+
+For general application requirements, forms, and instructions, visit the **U.S. Department of State website** or call **202-647-5225**.
 
 Did that answer your question?
 
@@ -234,7 +279,7 @@ Did that answer your question?
 
 ### Evaluator Explanation
 
-The response correctly states that the Sacramento City Clerk's office does not process passport applications, as requested by the reference. It then provides relevant alternative resources, specifically the Sacramento Library – Central Branch with address, hours, and contact details, and also includes the US Department of State's website and phone number, all consistent with the expected behavior of providing alternative resources.
+The response correctly explains that the Sacramento Office of the City Clerk does not process passport applications and provides a relevant alternative location (Sacramento Public Library – Central Branch) along with its details, fully aligning with the reference instructions.
 
 ---
 
@@ -250,7 +295,16 @@ The assistant should provide the Sacramento city procedure for paying a utility 
 
 ### Actual Response
 
-You can pay your utility bill through the City's online utility payment and billing service, Mobile Pay App, automated phone system, or over the phone with a customer service representative. Additionally, the Department of Utilities accepts alternate payment methods such as check, money order, cash, and bank transfers.
+You can pay your Sacramento utility bill using any of the following methods (with no additional charge):
+
+* **Online:** Through the City’s [Online Utility Bill Manager](https://www.cityofsacramento.gov/utilities/pay-your-utility-bill).
+* **Mobile App:** Using the **Sacramento Utilities Mobile Pay App** (available on iOS and Android).
+* **By Phone:** Call **(916) 808-5454** to pay via the automated phone system or with a customer service representative.
+* **By Mail / In Person / Bank Transfer:** Mail or bring a check, money order, or cash to:
+  > **City of Sacramento Department of Utilities**  
+  > 1395 35th Avenue  
+  > Sacramento, CA 95822  
+  *(You can also set up bank transfers/home banking through your financial institution).*
 
 Did that answer your question?
 
@@ -260,4 +314,4 @@ Did that answer your question?
 
 ### Evaluator Explanation
 
-The response directly answers the user's question by listing various methods for paying a Sacramento utility bill. The methods provided (online, app, phone systems, in-person via check/money order/cash, bank transfers) are common and plausible for a city utility service, and the response is directly responsive to the prompt. It does not introduce unsupported material, assuming it's based on the referenced city documents as per the instruction.
+The response correctly and comprehensively details the official methods to pay a Sacramento utility bill, providing accurate contact details, URLs, and physical addresses that are directly responsive to the user's prompt.
