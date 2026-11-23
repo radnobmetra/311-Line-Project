@@ -61,3 +61,18 @@ def admin_driver(driver, base_url, admin_credentials):
         message="Expected the dashboard to open /overview after sign-in.",
     )
     return driver
+
+
+# pytest only collects files that match its python_files pattern (test_*.py by
+# default), which would skip the script-style Selenium suite in sel_phones.py
+# during a plain `pytest` run. Collect it explicitly in that case; when the file
+# is passed on the command line pytest already collects it, so skip it then to
+# avoid registering the test twice.
+def pytest_collect_file(file_path, parent):
+    is_phones_suite = (
+        file_path.name == "sel_phones.py"
+        and file_path.parent == Path(__file__).parent
+    )
+    if is_phones_suite and not parent.session.isinitpath(file_path):
+        return pytest.Module.from_parent(parent, path=file_path)
+    return None
