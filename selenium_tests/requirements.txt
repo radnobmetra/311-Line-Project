@@ -1,0 +1,7 @@
+# Dependencies for the Selenium end-to-end tests in this folder.
+# Install with:  pip install -r selenium_tests/requirements.txt
+# A local Chrome install is also required; Selenium Manager auto-downloads
+# the matching chromedriver on first run.
+
+selenium==4.53.0
+pytest==9.2.0
